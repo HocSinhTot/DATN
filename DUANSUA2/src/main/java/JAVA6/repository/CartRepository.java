@@ -6,7 +6,7 @@ import JAVA6.Model.ProductModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
-public interface CartRepository extends JpaRepository<CartModel, Long> {
+public interface CartRepository extends JpaRepository<CartModel, Integer> {
     
     // Tìm tất cả các sản phẩm trong giỏ của người dùng
     List<CartModel> findByUser(UserModel user);

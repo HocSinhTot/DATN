@@ -24,7 +24,7 @@ public class OrderService {
     }
 
     public OrderStatusModel getOrderStatusByName(String name) {
-        return orderStatusRepository.findByName(name);
+        return orderStatusRepository.findBy(name);
     }
     public List<OrderModel> getAllOrders() {
         return orderRepository.findAll();

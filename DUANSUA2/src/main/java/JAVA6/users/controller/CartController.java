@@ -262,7 +262,7 @@ public class CartController {
       order.setUser(user); // Người mua
       order.setTotal(paymentRequest.getTotalAmount()); // Tổng giá trị
       order.setPaymentMethod(paymentMethod); // Phương thức thanh toán
-      order.setOrderStatus(orderStatusRepository.getReferenceById(1L)); // Đơn hàng mới tạo
+      order.setOrderStatus(orderStatusRepository.getReferenceById( 1)); // Đơn hàng mới tạo
   
       orderRepository.save(order);
   
