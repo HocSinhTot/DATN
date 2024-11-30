@@ -34,7 +34,7 @@ public class ProductDetailsService {
         ProductModel product = productDetailsRepository.findById(productId).orElse(null);
         if (product != null) {
             // Tìm các sản phẩm có cùng thương hiệu hoặc danh mục
-            return productDetailsRepository.findByCategoryIdOrBrandId(product.getCategoryId(), product.getBrandId());
+            return productDetailsRepository.findByCategoryIdOrBrandId(product.getCategory(), product.getBrand());
         }
         return Collections.emptyList(); // Trả về danh sách rỗng nếu không tìm thấy sản phẩm
     }
