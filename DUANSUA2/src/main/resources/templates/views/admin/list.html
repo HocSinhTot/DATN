@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details</title>
+    <link rel="stylesheet" href="/css/styles.css"> <!-- Include your styles -->
+</head>
+
+<body>
+    <header>
+        <h1>Product Details</h1>
+    </header>
+
+    <main>
+        <div class="product-details-container">
+            <div class="product-images">
+                <!-- Loop through images of the product -->
+                <h3>Images:</h3>
+                <div class="image-gallery">
+                    <div th:each="image : ${product.images}">
+                        <img th:src="@{${image.url}}" alt="Product Image" class="product-image" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-info">
+                <h2 th:text="${product.name}">Product Name</h2>
+                <p th:text="${product.description}">Product Description</p>
+                <div class="product-price">
+                    <span th:text="${product.price}">Price: $0.00</span>
+                </div>
+                <div class="product-quantity">
+                    <span th:text="${product.quantity}">Quantity Available: 0</span>
+                </div>
+                <div class="product-category">
+                    <h4>Category:</h4>
+                    <span th:text="${product.category.name}">Category Name</span>
+                </div>
+                <div class="product-brand">
+                    <h4>Brand:</h4>
+                    <span th:text="${product.brand.name}">Brand Name</span>
+                </div>
+
+                <div class="product-colors">
+                    <h4>Available Colors:</h4>
+                    <ul>
+                        <li th:each="color : ${product.colors}" th:text="${color.name}">Color Name</li>
+                    </ul>
+                </div>
+
+                <div class="total-price">
+                    <h4>Total Price:</h4>
+                    <span th:text="${product.totalPrice}">Total Price: $0.00</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <!-- Buttons for adding to cart, etc. -->
+            <button class="btn btn-primary">Add to Cart</button>
+            <button class="btn btn-secondary">Buy Now</button>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Your Company</p>
+    </footer>
+</body>
+
+</html>

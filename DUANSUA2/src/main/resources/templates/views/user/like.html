@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout/head :: head}"></head>
+
+<body class="cnt-home">
+    <!-- ============================================== HEADER ============================================== -->
+    <div th:replace="~{layout/header :: header}"></div>
+
+    <div class="breadcrumb">
+        <div class="container">
+            <div class="breadcrumb-inner">
+                <ul class="list-inline list-unstyled">
+                    <li class="active">Yêu thích</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="body-content">
+        <div class="container">
+            <div class="my-wishlist-page">
+                <div class="row">
+                    <div class="col-md-12 my-wishlist">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th colspan="3" class="heading-title">Sản phẩm yêu thích</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Lặp qua danh sách sản phẩm yêu thích bằng Thymeleaf -->
+                                    <tr th:each="like : ${listLike}">
+                                        <td class="col-md-2">
+                                            <!-- Hiển thị ảnh sản phẩm -->
+                                            <img th:if="${like.product.images.size() > 0}"
+                                                th:src="@{/assets/images/{imageUrl}(imageUrl=${like.product.images[0].url})}"
+                                                class="img-responsive" alt="Product Image" />
+                                        </td>
+                                        <td class="col-md-7">
+                                            <div class="product-name">
+                                                <!-- Hiển thị tên sản phẩm -->
+                                                <a th:href="@{/productdetails/{id}(id=${like.product.id})}"
+                                                    th:text="${like.product.name}"></a>
+                                            </div>
+                                            <div class="rating">
+                                                <!-- Hiển thị đánh giá sao -->
+                                                <i class="fa fa-star rate"></i>
+                                                <i class="fa fa-star rate"></i>
+                                                <i class="fa fa-star rate"></i>
+                                                <i class="fa fa-star rate"></i>
+                                                <i class="fa fa-star non-rate"></i>
+                                                <span class="review">( 06 Đánh giá )</span>
+                                            </div>
+                                            <div class="pric">
+                                                <span style="font-weight: bold; font-size: medium;"
+                                                    th:text="${like.product.price} + ' VNĐ'"></span>
+                                            </div>
+                                        </td>
+                                        <td class="col-md-1 close-btn">
+                                            <!-- Nút xóa sản phẩm khỏi danh sách yêu thích -->
+                                            <a th:href="@{/dellike(id=${like.id})}">
+                                                <i class="fa fa-times"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================== BRANDS CAROUSEL ============================================== -->
+            <div id="brands-carousel" class="logo-slider wow fadeInUp">
+                <div class="logo-slider-inner">
+                    <div id="brand-slider" class="owl-carousel brand-slider custom-carousel owl-theme">
+                        <div class="item m-t-15">
+                            <a href="#" class="image">
+                                <img data-echo="assets/images/brands/brand1.png" src="assets/images/blank.gif" alt="">
+                            </a>
+                        </div>
+                        <div class="item m-t-10">
+                            <a href="#" class="image">
+                                <img data-echo="assets/images/brands/brand2.png" src="assets/images/blank.gif" alt="">
+                            </a>
+                        </div>
+                        <!-- Thêm các item brand khác tại đây -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div th:replace="~{layout/footer :: footer}"></div>
+
+    <script>
+        $(document).ready(function () {
+            $(".changecolor").switchstylesheet({
+                seperator: "color"
+            });
+            $('.show-theme-options').click(function () {
+                $(this).parent().toggleClass('open');
+                return false;
+            });
+        });
+
+        $(window).bind("load", function () {
+            $('.show-theme-options').delay(2000).trigger('click');
+        });
+    </script>
+</body>
+
+</html>

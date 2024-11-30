@@ -1,0 +1,20 @@
+.category-tabs ul li {
+    margin-right: 150px; /* Khoảng cách giữa các mục */
+    cursor: pointer; /* Thêm hiệu ứng trỏ chuột */
+  }
+  
+  .category-tabs ul li:last-child {
+    margin-right: 0; /* Xóa khoảng cách cho mục cuối */
+  }
+  .nav-tabs li {
+    margin-right: 10px; /* Tạo khoảng cách giữa các mục */
+  }
+  
+  .nav-tabs li:last-child {
+    margin-right: 0; /* Loại bỏ khoảng cách ở mục cuối cùng */
+  }
+  .nav-tabs {
+    gap: 100px; /* Tạo khoảng cách giữa các mục */
+  }
+    
+  

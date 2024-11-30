@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/head :: head}"></head>
+  <style>
+        /* Reset some default styles */
+        * {
+            box-sizing: border-box;
+        }
+        
+        /* Body styles */
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f0f0f0;
+     
+        }
+        
+        /* Table styles */
+        .table {
+            width: 100%;
+            background-color: #fff;
+            border-collapse: collapse;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        .table thead th,
+        .table tbody td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .table tbody td {
+            font-weight: normal;
+        }
+        
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .table tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        /* Responsive styles */
+        @media screen and (max-width: 600px) {
+            .table {
+                box-shadow: none;
+                border-radius: 0;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+    </style>
+
+<body class="cnt-home">
+	<!-- ============================================== HEADER ============================================== -->
+	<div  th:replace="~{layout/header :: header}"></div>
+	<!-- ============================================== HEADER : END ============================================== -->
+	<div class="breadcrumb">
+		<div class="container">
+			<div class="breadcrumb-inner">
+				
+			</div>
+			<!-- /.breadcrumb-inner -->
+		</div>
+		<!-- /.container -->
+	</div>
+	<!-- /.breadcrumb -->
+
+	<div class="body-content">
+		<div class="container">
+			<div class="my-wishlist-page">
+				<div class="row">
+					<div class="col-md-12 my-wishlist">
+						<div class="table-responsive">
+							<table class="table">
+								<thead>
+									<tr>
+										<th scope="col">STT</th>
+										<th scope="col">Ngày mua hàng</th>
+										<th scope="col">Tổng tiền</th>
+										<th scope="col">Địa chỉ</th>
+										<th scope="col">Trạng thái</th>
+									</tr>
+								</thead>
+								<tbody>
+									<c:forEach var="product" items="${orders}" varStatus="loop">
+										<tr>
+
+											<th scope="row">${loop.index + 1}</th>
+											<td>${product.date}</td>
+											<td>${product.total}</td>
+											<td>${product.address}</td>
+											<td>${product.orderStatus.status}</td>
+											<td></td>
+
+										</tr>
+									</c:forEach>
+
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				<!-- /.row -->
+			</div>
+			<!-- /.sigin-in-->
+			<!-- ============================================== BRANDS CAROUSEL ============================================== -->
+			<div id="brands-carousel" class="logo-slider wow fadeInUp">
+
+				<div class="logo-slider-inner">
+					<div id="brand-slider"
+						class="owl-carousel brand-slider custom-carousel owl-theme">
+						<div class="item m-t-15">
+							<a href="#" class="image"> <img
+								data-echo="assets/images/brands/brand1.png"
+								src="assets\images\blank.gif" alt="">
+							</a>
+						</div>
+						<!--/.item-->
+
+						<div class="item m-t-10">
+							<a href="#" class="image"> <img
+								data-echo="assets/images/brands/brand2.png"
+								src="assets\images\blank.gif" alt="">
+							</a>
+						</div>
+						<!--/.item-->
+
+						<div class="item">
+							<a href="#" class="image"> <img
+								data-echo="assets/images/brands/brand3.png"
+								src="assets\images\blank.gif" alt="">
+							</a>
+						</div>
+						<!--/.item-->
+
+						<div class="item">
+							<a href="#" class="image"> <img
+								data-echo="assets/images/brands/brand4.png"
+								src="assets\images\blank.gif" alt="">
+							</a>
+						</div>
+						<!--/.item-->
+
+						<div class="item">
+							<a href="#" class="image"> <img
+								data-echo="assets/images/brands/brand5.png"
+								src="assets\images\blank.gif" alt="">
+							</a>
+						</div>
+						<!--/.item-->
+
+						<div class="item">
+							<a href="#" class="image"> <img
+								data-echo="assets/images/brands/brand6.png"
+								src="assets\images\blank.gif" alt="">
+							</a>
+						</div>
+						<!--/.item-->
+
+						<div class="item">
+							<a href="#" class="image"> <img
+								data-echo="assets/images/brands/brand2.png"
+								src="assets\images\blank.gif" alt="">
+							</a>
+						</div>
+						<!--/.item-->
+
+						<div class="item">
+							<a href="#" class="image"> <img
+								data-echo="assets/images/brands/brand4.png"
+								src="assets\images\blank.gif" alt="">
+							</a>
+						</div>
+						<!--/.item-->
+
+						<div class="item">
+							<a href="#" class="image"> <img
+								data-echo="assets/images/brands/brand1.png"
+								src="assets\images\blank.gif" alt="">
+							</a>
+						</div>
+						<!--/.item-->
+
+						<div class="item">
+							<a href="#" class="image"> <img
+								data-echo="assets/images/brands/brand5.png"
+								src="assets\images\blank.gif" alt="">
+							</a>
+						</div>
+						<!--/.item-->
+					</div>
+					<!-- /.owl-carousel #logo-slider -->
+				</div>
+				<!-- /.logo-slider-inner -->
+
+			</div>
+			<!-- /.logo-slider -->
+			<!-- ============================================== BRANDS CAROUSEL : END ============================================== -->
+		</div>
+		<!-- /.container -->
+	</div>
+	<!-- /.body-content -->
+	<!-- ============================================================= FOOTER ============================================================= -->
+	<div  th:replace="~{layout/footer :: footer}"></div>
+	<script>
+		$(document).ready(function() {
+			$(".changecolor").switchstylesheet({
+				seperator : "color"
+			});
+			$('.show-theme-options').click(function() {
+				$(this).parent().toggleClass('open');
+				return false;
+			});
+		});
+
+		$(window).bind("load", function() {
+			$('.show-theme-options').delay(2000).trigger('click');
+		});
+	</script>
+	<!-- For demo purposes – can be removed on production : End -->
+
+
+
+</body>
+</html>

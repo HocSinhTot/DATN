@@ -1,0 +1,64 @@
+.product-info .name a {
+    white-space: nowrap; /* Không cho phép ngắt dòng */
+    overflow: hidden; /* Ẩn nội dung vượt ra ngoài kích thước container */
+    text-overflow: ellipsis; /* Thêm dấu ba chấm nếu nội dung bị cắt */
+    display: inline-block; /* Đảm bảo hoạt động chính xác với text-overflow */
+    max-width: 100%; /* Giới hạn chiều rộng container */
+}
+.product-image .image {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: 0;
+    padding-bottom: 75%; /* Tạo tỷ lệ 4:3 cho hình ảnh */
+}
+
+.product-image .image img {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Đảm bảo hình ảnh phủ đầy khu vực mà không bị méo */
+}
+
+.product-list .product {
+    margin-bottom: 20px;
+}
+
+.product-info {
+    padding: 10px;
+    text-align: left;
+}
+
+.product-price .price {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #4eaee6;  /* Màu nền khi trang đang được chọn */
+    color: white;                /* Màu chữ khi trang đang được chọn */
+    border-color: #bedaf8;       /* Màu viền khi trang đang được chọn */
+}
+
+.pagination .page-item .page-link {
+    color: #05213f;  /* Màu chữ mặc định cho các trang */
+    border: 1px solid #f3f7fa; /* Viền của các trang */
+}
+
+.pagination .page-item:hover .page-link {
+    background-color: #f1f1f1;  /* Màu nền khi hover lên một trang */
+    color: #007bff;  /* Màu chữ khi hover lên */
+}
+.filter-tabs select, .lbl-cnt input, .lbl-cnt select {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.pagination-container .page-item.active .page-link {
+    background-color: #007bff;
+    color: white;
+}
+

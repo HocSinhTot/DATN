@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<header class="header-style-1" th:fragment="header">
+	<title>FPT Shop</title>
+
+	<!-- ============================================== TOP MENU ============================================== -->
+	<div class="top-bar animate-dropdown">
+		<div class="container">
+			<div class="header-top-inner">
+				<div class="cnt-account">
+					<ul class="list-unstyled">
+						<li><a th:href="@{/account}" th:onclick="|showLoginAlert(event)|"><i
+									class="icon fa fa-user"></i>Tài khoản</a></li>
+						<li th:onclick="|showLoginAlert(event)|"><a th:href="@{/like}"><i
+									class="icon fa fa-heart"></i>Yêu thích</a></li>
+						<li><a th:href="@{/cart}" th:onclick="|showLoginAlert(event)|"><i
+									class="icon fa fa-shopping-cart"></i>Giỏ hàng</a></li>
+						<li><a th:href="@{/history}"><i class="icon fa fa-check"></i>Đơn hàng</a></li>
+
+						<li th:if="${session.username != null}" style="color: white;">
+							Xin chào, <span th:text="${session.username}"></span>!
+						</li>
+						<li th:if="${session.username != null}"><a th:href="@{/change}">Đổi mật khẩu</a></li>
+						<li th:if="${session.username != null}"><a th:href="@{/logout}">Đăng xuất</a></li>
+						<li th:unless="${session.username != null}"><a th:href="@{/login}"><i
+									class="icon fa fa-lock"></i> Đăng nhập</a></li>
+					</ul>
+
+					<!-- <script>
+        // Hiển thị thông báo yêu cầu đăng nhập khi người dùng chọn một hành động yêu cầu đăng nhập trước
+        function showLoginAlert(event) {
+            event.preventDefault(); // Ngăn chặn hành động mặc định của thẻ <a>
+            alert("Bạn cần đăng nhập để thực hiện hành động này.");
+            window.location.href = "/login";
+        }
+
+        // Đặt sự kiện click cho các liên kết yêu cầu đăng nhập
+        document.querySelectorAll('a[th\\:onclick]').forEach(function(link) {
+            link.addEventListener('click', showLoginAlert);
+        });
+    </script> -->
+
+				</div>
+				<!-- /.cnt-account -->
+
+
+				<!-- /.cnt-cart -->
+				<div class="clearfix"></div>
+			</div>
+			<!-- /.header-top-inner -->
+		</div>
+		<!-- /.container -->
+	</div>
+	<!-- /.header-top -->
+	<!-- ============================================== TOP MENU : END ============================================== -->
+	<div class="main-header">
+		<div class="container">
+			<div class="row">
+				<div class="col-xs-12 col-sm-12 col-md-3 logo-holder">
+					<!-- ============================================================= LOGO ============================================================= -->
+					<div class="logo">
+						<a href="/"> <img style="width:25%;height: auto;" src="/assets/images/lrbvsdok.jpg" alt="logo">
+						</a>
+					</div>
+					<!-- /.logo -->
+					<!-- ============================================================= LOGO : END ============================================================= -->
+				</div>
+				<!-- /.logo-holder -->
+
+				<div class="col-xs-12 col-sm-12 col-md-7 top-search-holder">
+					<!-- /.contact-row -->
+					<!-- ============================================================= SEARCH AREA ============================================================= -->
+					<div class="search-area">
+						<form>
+							<div class="control-group">
+								<ul class="categories-filter animate-dropdown">
+									<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown"
+											href="category.html">Loại hàng <b class="caret"></b></a>
+										<ul class="dropdown-menu" role="menu">
+											<li role="presentation"><a role="menuitem" tabindex="-1"
+													href="category.html">- Điện thoại di động</a></li>
+											<li role="presentation"><a role="menuitem" tabindex="-1"
+													href="category.html">- Laptop</a></li>
+											<li role="presentation"><a role="menuitem" tabindex="-1"
+													href="category.html">- Máy tính bảng</a></li>
+											<li role="presentation"><a role="menuitem" tabindex="-1"
+													href="category.html">- Phụ kiện</a></li>
+										</ul>
+									</li>
+								</ul>
+								<input class="search-field" placeholder="Tìm kiếm...">
+								<a class="search-button" href="#"></a>
+							</div>
+						</form>
+					</div>
+					<!-- /.search-area -->
+					<!-- ============================================================= SEARCH AREA : END ============================================================= -->
+				</div>
+				<!-- /.top-search-holder -->
+
+
+				<!-- /.top-cart-row -->
+			</div>
+			<!-- /.row -->
+
+		</div>
+		<!-- /.container -->
+
+	</div>
+	<!-- /.main-header -->
+
+	<!-- ============================================== NAVBAR ============================================== -->
+	<div class="header-nav animate-dropdown">
+		<div class="container">
+			<div class="yamm navbar navbar-default" role="navigation">
+				<div class="navbar-header">
+					<button data-target="#mc-horizontal-menu-collapse" data-toggle="collapse"
+						class="navbar-toggle collapsed" type="button">
+						<span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span
+							class="icon-bar"></span> <span class="icon-bar"></span>
+					</button>
+				</div>
+				<div class="nav-bg-class">
+					<div class="navbar-collapse collapse" id="mc-horizontal-menu-collapse">
+						<div class="nav-outer">
+							<ul class="nav navbar-nav">
+								<li class="active dropdown yamm-fw"><a href="/" class="dropdown-toggle">Trang chủ</a>
+								</li>
+								<li class="dropdown yamm mega-menu"><a href="#" data-hover="dropdown"
+										class="dropdown-toggle" data-toggle="dropdown">Điện thoại di động <span
+											class="menu-label hot-menu hidden-xs">hot</span></a>
+									<ul class="dropdown-menu container">
+										<li>
+											<div class="yamm-content ">
+												<div class="row">
+													<th:block th:each="product : ${phoneList}">
+														<div class="col-xs-12 col-sm-6 col-md-2 col-menu">
+
+															<h2 class="title">
+																<a href="/productdetails/${product.id }"
+																	th:text="${product.name}"></a>
+															</h2>
+
+
+														</div>
+													</th:block>
+													<!-- /.col -->
+
+
+
+													<!-- /.yamm-content -->
+												</div>
+											</div>
+										</li>
+									</ul>
+								</li>
+								<li class="dropdown mega-menu"><a href="category.html" data-hover="dropdown"
+										class="dropdown-toggle" data-toggle="dropdown">Laptop <span
+											class="menu-label hot-menu hidden-xs">hot</span>
+									</a>
+									<ul class="dropdown-menu container">
+										<li>
+											<div class="yamm-content">
+												<div class="row">
+													<th:block th:each="product : ${laptopList}">
+														<div class="col-xs-12 col-sm-6 col-md-2 col-menu">
+
+															<h2 class="title">
+																<a href="/productdetails/${product.id } "
+																	th:text="${product.name}"></a>
+															</h2>
+
+
+														</div>
+													</th:block>
+													<!-- /.col -->
+
+
+
+													<!-- /.yamm-content -->
+												</div>
+												s
+												<!-- /.row -->
+											</div> <!-- /.yamm-content -->
+										</li>
+									</ul>
+								</li>
+								<li class="dropdown mega-menu"><a href="category.html" data-hover="dropdown"
+										class="dropdown-toggle" data-toggle="dropdown">Máy tính bảng <span
+											class="menu-label hot-menu hidden-xs">hot</span>
+									</a>
+									<ul class="dropdown-menu container">
+										<li>
+											<div class="yamm-content">
+												<div class="row">
+													<th:block th:each="product : ${tabletList}">
+														<div class="col-xs-12 col-sm-6 col-md-2 col-menu">
+
+															<h2 class="title">
+																<a href="/productdetails/${product.id }"
+																	th:text="${product.name}"></a>
+															</h2>
+
+														</div>
+													</th:block>
+													<!-- /.col -->
+
+
+
+													<!-- /.yamm-content -->
+												</div>
+												<!-- /.row -->
+											</div> <!-- /.yamm-content -->
+										</li>
+									</ul>
+								</li>
+								<li class="dropdown mega-menu"><a href="category.html" data-hover="dropdown"
+										class="dropdown-toggle" data-toggle="dropdown">Phụ kiện</a>
+									<ul class="dropdown-menu container">
+										<li>
+											<div class="yamm-content">
+												<div class="row">
+													<th:block th:each="product : ${accessoryList}">
+														<div class="col-xs-12 col-sm-6 col-md-2 col-menu">
+
+															<h2 class="title">
+																<a href="/productdetails/${product.id }"
+																	th:text="${product.name}"></a>
+															</h2>
+
+
+														</div>
+													</th:block>
+													<!-- /.col -->
+
+
+
+													<!-- /.yamm-content -->
+												</div>
+												<!-- /.row -->
+											</div> <!-- /.yamm-content -->
+										</li>
+									</ul>
+								</li>
+								<li class="dropdown yamm-fw"><a href="/introduce" class="dropdown-toggle">Giới thiệu</a>
+								</li>
+								<li class="dropdown yamm-fw"><a href="/contact" class="dropdown-toggle">Liên hệ</a></li>
+								<li class="dropdown yamm-fw"><a href="/cartegorys" class="dropdown-toggle">Sản phẩm</a>
+								</li>
+								<li class="dropdown  navbar-right special-menu"><a href="#">Todays offer</a></li>
+							</ul>
+							<!-- /.navbar-nav -->
+							<div class="clearfix"></div>
+						</div>
+						<!-- /.nav-outer -->
+					</div>
+					<!-- /.navbar-collapse -->
+
+				</div>
+				<!-- /.nav-bg-class -->
+			</div>
+			<!-- /.navbar-default -->
+		</div>
+		<!-- /.container-class -->
+
+	</div>
+	<!-- /.header-nav -->
+	<!-- ============================================== NAVBAR : END ============================================== -->
+
+</header>

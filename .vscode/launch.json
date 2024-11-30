@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-DuansuaApplication<DUANSUAss>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "JAVA6.DuansuaApplication",
+            "projectName": "DUANSUAss",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout/head :: head}"></head>
+<style>
+    /* Global Styles */
+    body {
+        background-color: #f8f9fa;
+        /* Màu nền sáng */
+        font-family: 'Arial', sans-serif;
+        margin: 0;
+        padding: 0;
+        color: #333;
+        /* Màu chữ */
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+    }
+
+    th,
+    td {
+        border: 1px solid #ddd;
+        padding: 12px;
+        text-align: center;
+    }
+
+    th {
+        background-color: #007bff;
+        /* Màu nền của header */
+        color: #fff;
+        /* Màu chữ của header */
+        font-size: 16px;
+    }
+
+    tbody tr:nth-child(odd) {
+        background-color: #f9f9f9;
+        /* Màu nền cho các dòng lẻ */
+    }
+
+    tbody tr:nth-child(even) {
+        background-color: #f1f1f1;
+        /* Màu nền cho các dòng chẵn */
+    }
+
+    tbody tr:hover {
+        background-color: #d1e7dd;
+        /* Màu nền khi hover */
+    }
+
+    /* Button Styling */
+    .remove-btn,
+    .clear-cart-btn,
+    form button {
+        background-color: #dc3545;
+        /* Màu đỏ cho nút */
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        cursor: pointer;
+        border-radius: 5px;
+        font-size: 14px;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .remove-btn:hover,
+    .clear-cart-btn:hover,
+    form button:hover {
+        background-color: #c82333;
+        /* Màu đỏ đậm khi hover */
+        transform: translateY(-2px);
+        /* Nâng nút lên khi hover */
+    }
+
+    .remove-btn {
+        background-color: #e74c3c;
+        /* Màu đỏ khác cho nút xóa */
+    }
+
+    .remove-btn:hover {
+        background-color: #c0392b;
+        /* Màu đỏ đậm khi hover */
+    }
+
+    /* Cart Total Section */
+    .total-section {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-top: 20px;
+    }
+
+    .total-section h2 {
+        font-size: 24px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .total-section span {
+        font-size: 22px;
+        color: #007bff;
+    }
+
+    /* Quantity Input Styling */
+    .quant-input {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .quant-input button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 8px;
+        cursor: pointer;
+        border-radius: 5px;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+    }
+
+    .quant-input button:hover {
+        background-color: #0056b3;
+    }
+
+    .quant-input input {
+        width: 50px;
+        text-align: center;
+        border: 1px solid #ddd;
+        padding: 5px;
+        margin: 0 5px;
+        font-size: 16px;
+    }
+
+    /* Clear Cart Button */
+    .clear-cart-btn {
+        font-size: 18px;
+        font-weight: bold;
+        margin-top: 20px;
+        text-transform: uppercase;
+    }
+
+    /* Invoice Button */
+    form button {
+        background-color: #28a745;
+        /* Màu xanh cho nút thanh toán */
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 5px;
+        color: white;
+        border: none;
+        margin-top: 20px;
+        transition: background-color 0.3s ease;
+    }
+
+    form button:hover {
+        background-color: #218838;
+        /* Màu xanh đậm khi hover */
+    }
+
+    /* Product Image Styling */
+    td img {
+        max-width: 120px;
+        max-height: 120px;
+        object-fit: cover;
+        border-radius: 5px;
+    }
+</style>
+</head>
+
+<body class="cnt-home">
+    <!-- ============================================== HEADER ============================================== -->
+    <div th:replace="~{layout/header :: header}"></div>
+
+    <!-- ============================================== HEADER : END ============================================== -->
+    <div class="breadcrumb">
+        <div class="container">
+            <div class="breadcrumb-inner"></div><!-- /.breadcrumb-inner -->
+        </div><!-- /.container -->
+    </div><!-- /.breadcrumb -->
+
+    <div class="body-content outer-top-xs">
+        <div class="container">
+            <div class="row ">
+                <div class="shopping-cart">
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Sản phẩm</th>
+                                <th>Hình ảnh</th>
+                                <th>Giá</th>
+                                <th>Số lượng</th>
+                                <th>Thành tiền</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <th:block th:each="cartItem : ${cartItems}">
+                                <tr class="table-row-hover">
+                                    <td th:text="${cartItem.name}"></td>
+                                    <td>
+                                        <img style="width: 100px"
+                                            th:src="@{/assets/images/{cartItem.image}(cartItem.image=${cartItem.images[0].url})}"
+                                            alt="">
+                                    </td>
+                                    <td th:text="${cartItem.price}"></td>
+                                    <td>
+                                        <div class="quant-input">
+                                            <button
+                                                th:onclick="'updateQuantity(' + ${cartItem.id} + ', ' + (${cartItem.quantity} - 1) + ')'">-</button>
+                                            <input type="number" th:value="${cartItem.quantity}" min="1" readonly>
+                                            <button
+                                                th:onclick="'updateQuantity(' + ${cartItem.id} + ', ' + (${cartItem.quantity} + 1) + ')'">+</button>
+                                        </div>
+                                    </td>
+                                    <td th:text="${cartItem.totalPrice}"></td>
+                                    <td>
+                                        <button type="button"
+                                            th:onclick="'confirmRemoveFromCart(' + ${cartItem.id} + ')'"
+                                            class="remove-btn">Xóa</button>
+                                    </td>
+                                </tr>
+                            </th:block>
+                        </tbody>
+                    </table>
+
+                    <!-- Total Section -->
+                    <div class="total-section">
+                        <h2>Tổng cộng: <span th:text="${totalAmount}"></span> VND</h2>
+                    </div>
+
+                    <button type="submit" onclick="confirmClearCart()" class="clear-cart-btn">Xóa hết</button>
+
+                    <!-- Thanh Toán Form -->
+                    <form th:action="@{/invoice}" method="post">
+                        <button type="submit">Thanh Toán</button>
+                    </form>
+
+                </div><!-- /.shopping-cart -->
+            </div> <!-- /.row -->
+        </div><!-- /.container -->
+    </div><!-- /.body-content -->
+
+    <!-- ============================================================= FOOTER ============================================================= -->
+    <div th:replace="~{layout/footer :: footer}"></div>
+    <!-- ============================================================= FOOTER : END============================================================= -->
+
+    <script>
+        function updateQuantity(productId, quantity) {
+            if (quantity <= 0) {
+                confirmRemoveFromCart(productId);
+                return;
+            }
+
+            fetch('/updateQuantity', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    productId: productId,
+                    quantity: quantity
+                })
+            }).then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Cập nhật giỏ hàng thất bại.');
+                }
+            }).catch(error => {
+                console.error('Lỗi:', error);
+                alert('Đã xảy ra lỗi khi cập nhật giỏ hàng.');
+            });
+        }
+
+        function confirmRemoveFromCart(productId) {
+            if (confirm("Bạn chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?")) {
+                removeFromCart(productId);
+            }
+        }
+
+        function removeFromCart(productId) {
+            fetch('/removeFromCart', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    productId: productId
+                })
+            }).then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Xóa sản phẩm thất bại.');
+                }
+            }).catch(error => {
+                console.error('Lỗi:', error);
+                alert('Đã xảy ra lỗi khi xóa sản phẩm khỏi giỏ hàng.');
+            });
+        }
+
+        function confirmClearCart() {
+            if (confirm("Bạn chắc chắn muốn xóa hết sản phẩm trong giỏ hàng?")) {
+                clearCart();
+            }
+        }
+
+        function clearCart() {
+            fetch('/clearCart', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({})
+            }).then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Xóa giỏ hàng thất bại.');
+                }
+            }).catch(error => {
+                console.error('Lỗi:', error);
+                alert('Đã xảy ra lỗi khi xóa giỏ hàng.');
+            });
+        }
+    </script>
+
+</body>
+
+</html>

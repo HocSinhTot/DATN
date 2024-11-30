@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách Voucher</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid black;
+        }
+
+        th,
+        td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Danh sách Voucher</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Mã Voucher</th>
+                <th>Loại Giảm Giá</th>
+                <th>Giá trị</th>
+                <th>Ngày hết hạn</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Duyệt qua danh sách voucher và hiển thị từng dòng -->
+            <tr th:each="voucher : ${vouchers}">
+                <td th:text="${voucher.id}"></td>
+                <td th:text="${voucher.code}"></td>
+                <!-- Hiển thị loại giảm giá dựa trên discountTypeId -->
+                <td th:text="${voucher.discountTypeId == 1 ? 'Phí vận chuyển' : 'Sản phẩm'}"></td>
+                <td th:text="${voucher.discountValue}"></td>
+                <td th:text="${voucher.expirationDate}"></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+
+</html>

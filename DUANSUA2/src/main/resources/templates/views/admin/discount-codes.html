@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>Danh sách mã giảm giá</title>
+</head>
+
+<body>
+	<h1>Danh sách mã giảm giá</h1>
+	<a href="/discount-codes/add">Thêm mới mã giảm giá</a>
+	<table border="1">
+		<thead>
+			<tr>
+				<th>Mã</th>
+				<th>Loại giảm giá</th>
+				<th>Giá trị giảm giá</th>
+				<th>Ngày hết hạn</th>
+				<th>Trạng thái</th>
+				<th>Hành động</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="discountCode : ${discountCodes}">
+				<td th:text="${discountCode.code}"></td>
+				<td th:text="${discountCode.discountType.name}"></td> <!-- Sửa thành đúng thuộc tính discountType -->
+				<td th:text="${discountCode.value}"></td>
+				<td th:text="${discountCode.endDate}"></td>
+
+				<td>
+					<a th:href="@{'/discount-codes/edit/' + ${discountCode.id}}">Chỉnh sửa</a> |
+					<a th:href="@{'/discount-codes/delete/' + ${discountCode.id}}">Xóa</a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</body>
+
+</html>
