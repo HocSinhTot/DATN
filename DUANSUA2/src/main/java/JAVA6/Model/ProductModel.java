@@ -45,7 +45,6 @@ public class ProductModel {
 	private BrandModel brand;
 
 	
-	
 	@OneToMany(mappedBy = "product",fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnoreProperties({"product"})
 	private List<ProductsImagesModel> productsImages;
@@ -140,4 +139,6 @@ public class ProductModel {
 				", images=" + (images != null ? images.size() : 0) + " images" + // In ra số lượng hình ảnh
 				'}';
 	}
+
+    
 }

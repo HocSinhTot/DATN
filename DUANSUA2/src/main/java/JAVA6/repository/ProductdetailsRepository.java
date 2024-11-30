@@ -21,15 +21,15 @@ public interface ProductdetailsRepository extends JpaRepository<ProductModel, In
     // Lấy tất cả sản phẩm theo thứ tự tăng dần của giá
     List<ProductModel> findAllByOrderByPriceAsc();
 
-    // Thêm các phương thức khác nếu cần thiết, ví dụ:
-    // List<ProductModel> findByCategoryOrderByPriceAsc(String category);
-    
+    // Truy vấn tùy chỉnh: Tìm các dung lượng và giá dựa trên productId
     @Query(value = "SELECT DISTINCT pp.capacity_id AS capacityId, c.name AS capacityName, pp.price AS price " +
-    "FROM ProductsPrice pp " +
-    "JOIN Capacity c ON pp.capacity_id = c.id " +
-    "WHERE pp.product_id = :productId", nativeQuery = true)
-List<Map<String, Object>> findCapacitiesAndPricesByProductId(@Param("productId") int productId);
-@Query("SELECT p FROM ProductModel p WHERE p.category.id = :categoryId and p.brand.id = :brandId")
-public List<ProductModel> findByCategoryIdOrBrandId(@Param("categoryId") CategoryModel categoryId, @Param("brandId") BrandModel brandId);
+            "FROM ProductsPrice pp " +
+            "JOIN Capacity c ON pp.capacity_id = c.id " +
+            "WHERE pp.product_id = :productId", nativeQuery = true)
+    List<Map<String, Object>> findCapacitiesAndPricesByProductId(@Param("productId") int productId);
 
+    // Tìm sản phẩm theo Category hoặc Brand ID
+    @Query("SELECT p FROM ProductModel p WHERE p.category.id = :categoryId OR p.brand.id = :brandId")
+    List<ProductModel> findByCategoryIdOrBrandId(@Param("categoryId") CategoryModel categoryId,
+            @Param("brandId") BrandModel brandId);
 }
