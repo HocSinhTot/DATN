@@ -30,6 +30,6 @@ public interface ProductdetailsRepository extends JpaRepository<ProductModel, In
     "WHERE pp.product_id = :productId", nativeQuery = true)
 List<Map<String, Object>> findCapacitiesAndPricesByProductId(@Param("productId") int productId);
 @Query("SELECT p FROM ProductModel p WHERE p.category.id = :categoryId and p.brand.id = :brandId")
-public List<ProductModel> findByCategoryIdOrBrandId(@Param("categoryId") int categoryId, @Param("brandId") int brandId);
+public List<ProductModel> findByCategoryIdOrBrandId(@Param("categoryId") CategoryModel categoryId, @Param("brandId") BrandModel brandId);
 
 }
