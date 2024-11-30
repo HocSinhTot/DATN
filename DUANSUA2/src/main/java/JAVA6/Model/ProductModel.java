@@ -140,4 +140,14 @@ public class ProductModel {
 				", images=" + (images != null ? images.size() : 0) + " images" + // In ra số lượng hình ảnh
 				'}';
 	}
+
+    public int getCategoryId() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getCategoryId'");
+    }
+
+    public int getBrandId() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getBrandId'");
+    }
 }

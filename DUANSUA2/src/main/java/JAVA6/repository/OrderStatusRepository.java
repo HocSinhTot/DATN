@@ -7,14 +7,12 @@ import org.springframework.stereotype.Repository;
 
 import JAVA6.Model.OrderStatusModel;
 
-<<<<<<< HEAD
 @Repository
-public interface OrderStatusRepository extends JpaRepository<OrderStatusModel, Long> {
+public interface OrderStatusRepository extends JpaRepository<OrderStatusModel, Integer> {
     OrderStatusModel findByStatus(String status);
+
+    OrderStatusModel findByName(String name);
+
+   // OrderStatusModel getReferenceById(long l);
 }
 
-=======
-public interface OrderStatusRepository extends JpaRepository<OrderStatusModel, Integer> {
-    List<OrderStatusModel> findAll();
-}
->>>>>>> origin/filechuyen
