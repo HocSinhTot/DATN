@@ -66,7 +66,6 @@ function App() {
           element={
             <>
 
-              <Head />
               <Header setKeyword={setKeyword} setCategoryId={setCategoryId}/>
               <ProductDetail />
               <Footer />
@@ -78,7 +77,6 @@ function App() {
           element={
             <>
 
-              <Head />
               <Header setKeyword={setKeyword} setCategoryId={setCategoryId}/>
               <Account/>
               <Footer />
@@ -90,7 +88,6 @@ function App() {
           element={
             <>
 
-              <Head />
               <Header setKeyword={setKeyword} setCategoryId={setCategoryId}/>
               <Favorite/>
               <Footer />
@@ -102,7 +99,6 @@ function App() {
           element={
             <>
 
-              <Head />
               <Header setKeyword={setKeyword} setCategoryId={setCategoryId}/>
               <Categorys   keyword={keyword} 
                 categoryId={categoryId} 
@@ -115,7 +111,6 @@ function App() {
           path="/cart"
           element={
             <>
- <Head />
  <Header setKeyword={setKeyword} setCategoryId={setCategoryId}/>
              
               <Cart />

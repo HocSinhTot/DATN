@@ -86,25 +86,26 @@ const Header = ({ setKeyword, setCategoryId }) => {
             <div className="col-xs-12 col-sm-12 col-md-3 logo-holder">
               <div className="logo">
                 <Link to="/">
-                  <img style={{ width: '25%', height: 'auto' }} src="/assets/images/lrbvsdok.jpg" alt="logo" />
+                  <img style={{ width: '45%', height: '90%',marginTop:"-25px",marginRight:"100px" }} src="/assets/images/banners/logo1.jpg" alt="logo" />
                 </Link>
               </div>
             </div>
 
-            <div className="col-xs-12 col-sm-12 col-md-7 top-search-holder">
+            <div className="col-xs-12 col-sm-12 col-md-6 top-search-holder">
             <div className="search-area">
           <form onSubmit={handleSearch}> {/* Gọi hàm handleSearch khi người dùng nhấn Enter */}
-            <div className="control-group">
               <input
                 className="search-field"
                 placeholder="Tìm kiếm..."
                 value={localKeyword}
                 onChange={(e) => setLocalKeyword(e.target.value)} // Cập nhật giá trị từ khóa tìm kiếm
               />
-              <button className="search-button" type="submit">Tìm kiếm</button>
-            </div>
+              <button className="search-button" type="submit" style={{height:"45px"}}></button>
           </form>
         </div>
+            </div>
+            <div className="col-xs-12 col-sm-12 col-md-3 top-search">
+            <button> <Link to="/cart"><i className="icon fa fa-shopping-cart"></i>Giỏ hàng</Link></button>
             </div>
           </div>
         </div>
