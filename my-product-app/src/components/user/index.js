@@ -144,19 +144,13 @@ const Index = () => {
 
     
   return (
-    <><div className="cnt-home">
-      <div className="body-content outer-top-xs" id="top-banner-and-menu">
-        <div className="container">
+    <>
+    
+        <div className="container-fluid">
           <div className="row">
             {/* Sidebar Section */}
             <div className="col-xs-12 col-sm-12 col-md-3 sidebar">
               <SideMenu />
-
-
-              {/* Hot Products Section */}
-
-          
-
               <div className="sidebar-widget outer-bottom-small wow fadeInUp">
                 <h3 className="section-title">ƯU ĐÃI ĐẶC BIỆT</h3>
                 <div className="sidebar-widget-body outer-top-xs">
@@ -384,7 +378,7 @@ const Index = () => {
                           </div>
                         </div>
                         <h6 className="text">Vận chuyển cho các đơn đặt hàng trên
-                          999VNĐ</h6>
+                          1.000.000  VNĐ</h6>
                       </div>
                     </div>
 
@@ -395,7 +389,7 @@ const Index = () => {
                             <h4 className="info-box-heading green">Giảm giá đặc biệt</h4>
                           </div>
                         </div>
-                        <h6 className="text">Giảm thêm 100VNĐ cho tất cả các mặt hàng</h6>
+                        <h6 className="text">Giảm thêm 100.000 VNĐ cho tất cả các mặt hàng</h6>
                       </div>
                     </div>
                   </div>
@@ -529,19 +523,19 @@ const Index = () => {
               </div>
               <div className="wide-banners wow fadeInUp outer-bottom-xs">
                 <div className="row">
-                  <div className="col-md-7 col-sm-7">
+                  <div className="col-md-7 col-sm-6">
                     <div className="wide-banner cnt-strip">
                       <div className="image">
-                        <img className="img-responsive" src="\assets\\images\banners\home-banner1.jpg"
+                        <img className="img-responsive" src="\assets\\images\banners\bannerdt4.webp"
                           alt="" />
                       </div>
 
                     </div>
                   </div>
-                  <div className="col-md-5 col-sm-5">
+                  <div className="col-md-5 col-sm-6">
                     <div className="wide-banner cnt-strip">
                       <div className="image">
-                        <img className="img-responsive" src="\assets\\images\banners\home-banner2.jpg"
+                        <img className="img-responsive" src="\assets\\images\banners\bannerdt3.jpg"
                           alt="" />
                       </div>
                     </div>
@@ -652,17 +646,10 @@ const Index = () => {
                   <div className="col-md-12">
                     <div className="wide-banner cnt-strip">
                       <div className="image">
-                        <img className="img-responsive" src="\assets\\images\banners\home-banner.jpg"
+                        <img className="img-responsive" style={{width : "1500px",height:"391px"}} src="\assets\\images\banners\bannerdt2.jpg"
                           alt="" />
                       </div>
-                      <div className="strip strip-text">
-                        <div className="strip-inner">
-                          <h2 className="text-right">
-                            Sản phẩm bán chạy<br /> <span className="shopping-needs">Giảm
-                              giá lên đến 10%</span>
-                          </h2>
-                        </div>
-                      </div>
+                     
                       <div className="new-label">
                         <div className="text">NEW</div>
                       </div>
@@ -777,8 +764,7 @@ const Index = () => {
             </div>
           </div>
         </div>
-      </div>
-    </div></>
+    </>
   );
 
 };
