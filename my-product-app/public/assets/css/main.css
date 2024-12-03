@@ -1193,11 +1193,9 @@ a {
 /*===================================================================================*/
 header{background:#157ed2}
 
-.main-header {
-  padding:5px 0px 12px 0px;
-}
+
 .main-header .logo-holder {
-  margin-top: 10px;
+  margin-top: -18px;
 }
 .main-header .top-search-holder .contact-row {
   line-height: 20px;

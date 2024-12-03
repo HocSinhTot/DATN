@@ -149,161 +149,18 @@ const Index = () => {
         <div className="container-fluid">
           <div className="row">
             {/* Sidebar Section */}
-            <div className="col-xs-12 col-sm-12 col-md-3 sidebar">
+            <div className="col-xs-12 col-sm-12 col-md-3 sidebar" style={{        width: '8%'}}>
               <SideMenu />
-              <div className="sidebar-widget outer-bottom-small wow fadeInUp">
-                <h3 className="section-title">ƯU ĐÃI ĐẶC BIỆT</h3>
-                <div className="sidebar-widget-body outer-top-xs">
-                  <Swiper
-        slidesPerView={1}
-        spaceBetween={30}
-        loop={true}
-        pagination={{
-          clickable: true,
-        }}
-        navigation={true}
-        modules={[Pagination, Navigation]}
-        className="mySwiper">
-                  {Array.isArray(products.phonesCheap) && products.phonesCheap.length > 0 ? (
-  products.phonesCheap.map((product) => {
-    const firstImageUrl = product.productsImages && product.productsImages.length > 0
-    ? `/assets/images/${product.productsImages[0].image.url}`
-    : 'default-image.jpg';
-  
-    
-                        return (
-                          <SwiperSlide key={product.id} className="item">
-                            <div className="products special-product">
-                              <div className="product">
-                                <div className="product-micro">
-                                  <div className="row product-micro-row">
-                                    <div className="col col-xs-5">
-                                      <div className="product-image">
-                                        <div className="image">
-                                          <a href={`/product/${product.id}`}>
-                                            <img
-                                              src={firstImageUrl}
-                                              alt={product.name}
-                                              className="img-responsive" />
-                                          </a>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="col col-xs-7">
-                                      <div className="product-info">
-                                        <h3 className="name">
-                                          <a href={`/product/${product.id}`}>
-                                            {product.name}
-                                          </a>
-                                        </h3>
-                                        <div className="product-price">
-                                          <span className="price">
-                                            {product.price.toLocaleString()} VND
-                                          </span>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </SwiperSlide>
-                        );
-                      })
-                    ) : (
-                      <p>Không có sản phẩm nào.</p>
-                    )}
-                  </Swiper>
-                </div>
-              </div>
+            
 
+            
 
-              <div className="sidebar-widget product-tag wow fadeInUp">
-                <h3 className="section-title">THẺ SẢN PHẨM</h3>
-                <div className="sidebar-widget-body outer-top-xs">
-                  <div className="tag-list">
-                    <a className="item" title="Phone" href="#">Phone</a> <a className="item active"
-                      title="Điện thoại di động" href="#">Điện
-                      thoại di động</a> <a className="item" title="Laptop" href="#">Laptop</a>
-                    <a className="item" title="Máy tính bảng" href="#">Máy tính bảng</a>
-                    <a className="item" title="Phụ kiện" href="#">Phụ kiện</a>
-                  </div>
-
-                </div>
-
-              </div>
-
-              <div className="sidebar-widget newsletter wow fadeInUp outer-bottom-small">
-                <h3 className="section-title">BẢN TIN</h3>
-                <div className="sidebar-widget-body outer-top-xs">
-                  <p>Đăng ký nhận bản tin của chúng tôi!</p>
-                  <form>
-                    <div className="form-group">
-                      <label className="sr-only" htmlFor="exampleInputEmail1"> Địa
-                        chỉ Email</label> <input type="email" className="form-control"
-                          id="exampleInputEmail1" placeholder="Đăng ký vào bản tin của chúng tôi" />
-                    </div>
-                    <button className="btn btn-primary">Đăng ký</button>
-                  </form>
-                </div>
-              </div>
-
-
-              <div className="sidebar-widget wow fadeInUp outer-top-vs">
-                <div id="advertisement" className="advertisement">
-                  <div className="item">
-                    <div className="avatar">
-                      <img src="\assets\images\testimonials\member1.png" alt="Image" />
-
-
-
-                    </div>
-                    <div className="testimonials">
-                      <em>"</em> Sản phẩm chất lượng và đội ngũ nhân viên vô cùng thân thiện. Mình sẽ ủng hộ cửa hàng trong tương lai!<em>"</em>
-                    </div>
-                    <div className="clients_author">
-                      Nguyễn Văn Ba <span>Khách hàng</span>
-                    </div>
-                  </div>
-
-                  <div className="item">
-                    <div className="avatar">
-                      <img src="\assets\images\testimonials\member3.png" alt="Image" />
-                    </div>
-                    <div className="testimonials">
-                      <em>"</em> Chất lượng sản phẩm rất tuyệt vời, dịch vụ chăm sóc khách hàng rất chu đáo! Rất hài lòng!<em>"</em>
-                    </div>
-                    <div className="clients_author">
-                      Trần Minh Tuấn <span>Khách hàng</span>
-                    </div>
-                  </div>
-
-                  <div className="item">
-                    <div className="avatar">
-                      <img src="\assets\images\testimonials\member2.png" alt="Image" />
-                    </div>
-                    <div className="testimonials">
-                      <em>"</em> Cửa hàng rất chuyên nghiệp, tôi nhận được sự tư vấn rất nhiệt tình và đã chọn được sản phẩm phù hợp.<em>"</em>
-                    </div>
-                    <div className="clients_author">
-                      Lê Hoài Phúc <span>Khách hàng</span>
-                    </div>
-                  </div>
-
-
-
-
-                </div>
-
-
-
-              </div>
 
             </div>
 
-            <div className="col-xs-12 col-sm-12 col-md-9 homebanner-holder">
+            <div className="col-xs-12 col-sm-12 col-md-9 homebanner-holder" style={{        width: '87%'}}>
 
-      <div id="hero">
+      <div id="hero" style={{paddingTop:'16px'}}>
         <Swiper
         autoplay={{
           delay: 2500,
@@ -316,7 +173,7 @@ const Index = () => {
         modules={[Autoplay, Pagination, Navigation]}
         className="mySwiper">
           <SwiperSlide
-            className="item"
+            className=" "
             style={{
               backgroundImage: "url(/assets/images/sliders/1.jpg)",
               height: "450px",

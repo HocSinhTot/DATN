@@ -48,8 +48,8 @@ const Header = ({ setKeyword, setCategoryId }) => {
     navigate(`/categorys`);
   };
   return (
-    <header className="header-style-1">
-      <div className="top-bar animate-dropdown">
+    <header className="header-style-1" style={{width: '1701px'}}>
+      <div className="top-bar animate-dropdown" style={{paddingLeft: '371px'}}>
         <div className="container">
           <div className="header-top-inner">
             <div className="cnt-account">
@@ -66,12 +66,7 @@ const Header = ({ setKeyword, setCategoryId }) => {
       Yêu thích
     </Link>
   </li>
-  <li style={{ marginBottom: '10px' ,fontSize:'14px',padding:'5px 20px 0px 20px'}}>
-    <Link to="/cart" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
-      <i className="icon fa fa-shopping-cart" style={{ marginRight: '8px', fontSize: '1.5rem' }}></i>
-      Giỏ hàng
-    </Link>
-  </li>
+
   <li style={{ marginBottom: '10px',fontSize:'14px',padding:'5px 20px 0px 20px' }}>
     <Link to="/history" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
       <i className="icon fa fa-check" style={{ marginRight: '8px', fontSize: '1.5rem' }}></i>
@@ -107,13 +102,15 @@ const Header = ({ setKeyword, setCategoryId }) => {
         </div>
       </div>
 
-      <div className="main-header">
+      <div className="main-header" style={{
+    width: '1410px'}}>
         <div className="container">
           <div className="row" style={{width: '1330px'}}>
             <div className="col-xs-12 col-sm-12 col-md-3 logo-holder">
               <div className="logo">
                 <Link to="/">
-                  <img style={{ width: '45%', height: '90%',marginTop:"-25px",marginRight:"100px" }} src="/assets/images/banners/logo1.jpg" alt="logo" />
+                  <img style={{ width: '120px',
+    height: '111px',marginRight:"100px" }} src="/assets/images/banners/logo1.jpg" alt="logo" />
                 </Link>
               </div>
             </div>
@@ -129,7 +126,7 @@ const Header = ({ setKeyword, setCategoryId }) => {
     justifyContent: "center",
     width: "100%",  // Form chiếm toàn bộ chiều rộng
     maxWidth: "100%",
-    margin: "50px auto",
+
     height: "56px",
     background: "transparent",  // Không có nền
     border: "none",
@@ -142,7 +139,7 @@ const Header = ({ setKeyword, setCategoryId }) => {
     onChange={(e) => setLocalKeyword(e.target.value)}
     style={{
       flex: 1,
-      backgroundColor: "#05071b",
+ 
       border: "none",  // Không có viền
       height: "100%",
       paddingLeft: "20px",
@@ -267,11 +264,23 @@ const Header = ({ setKeyword, setCategoryId }) => {
 
         </div>
             </div>
-            <div className="col-xs-12 col-sm-12 col-md-3 top-search" style={{ paddingTop: '58px' }}>
-  <Link to="/cart">
-    <i className="icon fa fa-shopping-cart" style={{ fontSize: '42px', color: 'white' }}></i>
+            <div className="col-xs-12 col-sm-12 col-md-3 top-search" style={{ paddingTop: '9px', paddingLeft: '79px' }}>
+  <Link to="/cart" style={{
+    display: 'flex',
+    alignItems: 'center',
+    textDecoration: 'none',
+    backgroundColor: '#0f6cb2',  // Màu nền của ô vuông
+    padding: '10px 20px',      // Khoảng cách bên trong ô vuông
+    borderRadius: '5px',       // Bo tròn các góc của ô vuông
+    color: 'white',            // Màu chữ
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    width: '158px',  // Đổ bóng nhẹ cho ô vuông
+  }}>
+    <i className="icon fa fa-shopping-cart" style={{ fontSize: '36px', marginRight: '10px' }}></i>
+    <span style={{ fontSize: '12px', fontWeight: '500' }}>Xem giỏ hàng</span>
   </Link>
 </div>
+
 
 
           </div>
@@ -292,15 +301,15 @@ const Header = ({ setKeyword, setCategoryId }) => {
             <div className="nav-bg-class">
               <div className="navbar-collapse collapse" id="mc-horizontal-menu-collapse">
                 <div className="nav-outer">
-                  <ul className="nav navbar-nav">
-                    <li className="active dropdown yamm-fw"><Link to="/" className="dropdown-toggle">Trang chủ</Link></li>
-                    <li className="dropdown yamm mega-menu"><Link to="/categorys" onClick={() => handleCategoryClick(1)} className="dropdown-toggle" data-toggle="dropdown">Điện thoại di động</Link></li>
-                    <li className="dropdown mega-menu"><Link to="/categorys" onClick={() => handleCategoryClick(2)} className="dropdown-toggle" data-toggle="dropdown">Laptop</Link></li>
-                    <li className="dropdown mega-menu"><Link to="/categorys"  onClick={() => handleCategoryClick(3)} className="dropdown-toggle" data-toggle="dropdown">Máy tính bảng</Link></li>
-                    <li className="dropdown mega-menu"><Link to="/categorys" onClick={() => handleCategoryClick(4)} className="dropdown-toggle" data-toggle="dropdown">Phụ kiện</Link></li>
-                    <li className="dropdown yamm-fw"><Link to="/introduce" className="dropdown-toggle">Giới thiệu</Link></li>
-                    <li className="dropdown yamm-fw"><Link to="/contact" className="dropdown-toggle">Liên hệ</Link></li>
-                    <li className="dropdown yamm-fw"><Link to="/categorys" onClick={() => handleCategoryClick()} className="dropdown-toggle">Sản phẩm</Link></li>
+                  <ul className="nav navbar-nav" style={{height:'55px'}}>
+                    <li className="active dropdown yamm-fw"><Link style={{    padding: '15px 20px 0 20px', height: '54px'}} to="/" className="dropdown-toggle">Trang chủ</Link></li>
+                    <li className="dropdown yamm mega-menu"><Link style={{    padding: '15px 20px 0 20px',height: '54px'}} to="/categorys" onClick={() => handleCategoryClick(1)} className="dropdown-toggle" data-toggle="dropdown">Điện thoại di động</Link></li>
+                    <li className="dropdown mega-menu"><Link style={{    padding: '15px 20px 0 20px',height: '54px'}} to="/categorys" onClick={() => handleCategoryClick(2)} className="dropdown-toggle" data-toggle="dropdown">Laptop</Link></li>
+                    <li className="dropdown mega-menu"><Link style={{    padding: '15px 20px 0 20px',height: '54px'}} to="/categorys"  onClick={() => handleCategoryClick(3)} className="dropdown-toggle" data-toggle="dropdown">Máy tính bảng</Link></li>
+                    <li className="dropdown mega-menu"><Link style={{    padding: '15px 20px 0 20px',height: '54px'}} to="/categorys" onClick={() => handleCategoryClick(4)} className="dropdown-toggle" data-toggle="dropdown">Phụ kiện</Link></li>
+                    <li className="dropdown yamm-fw"><Link style={{    padding: '15px 20px 0 20px',height: '54px'}} to="/introduce" className="dropdown-toggle">Giới thiệu</Link></li>
+                    <li className="dropdown yamm-fw"><Link style={{    padding: '15px 20px 0 20px',height: '54px'}}  to="/contact" className="dropdown-toggle">Liên hệ</Link></li>
+                    <li className="dropdown yamm-fw"><Link style={{    padding: '15px 20px 0 20px',height: '54px'}} to="/categorys" onClick={() => handleCategoryClick()} className="dropdown-toggle">Sản phẩm</Link></li>
                   </ul>
                 </div>
               </div>

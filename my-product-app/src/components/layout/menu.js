@@ -18,37 +18,7 @@ const SideMenu = () => {
 
   return (
     <div className="side-menu animate-dropdown outer-bottom-xs">
-      <div className="head">
-        <i className="icon fa fa-align-justify fa-fw"></i> Danh mục
-      </div>
-      <nav className="yamm megamenu-horizontal">
-        <ul className="nav">
-          {/* Lặp qua các category */}
-          {categories.map((category, index) => (
-            <li className="dropdown menu-item" key={index}>
-              <a href="#" className="dropdown-toggle" data-toggle="dropdown">
-                {category.name}
-              </a>
-              <ul className="dropdown-menu mega-menu">
-                <li className="yamm-content">
-                  <div className="row">
-                    {/* Hiển thị các sản phẩm của mỗi category */}
-                    <div className="col-sm-12 col-md-3">
-                      <ul className="links list-unstyled">
-                        {category.products.map((product, idx) => (
-                          <li key={idx}>
-                            <a href="#">{product}</a>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                </li> {/* /.yamm-content */}
-              </ul> {/* /.dropdown-menu */}
-            </li>
-          ))}
-        </ul> {/* /.nav */}
-      </nav> {/* /.megamenu-horizontal */}
+    
     </div>
   );
 };
