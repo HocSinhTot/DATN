@@ -60,6 +60,7 @@ function App() {
 
         <Route path="/nguoidung/add" element={<AddUserAmin />} />
         <Route path="/nguoidung/edit/:id" element={<EditUserAmin />} />
+        
 
         <Route
           path="/product/:id"

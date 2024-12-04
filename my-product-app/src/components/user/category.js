@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-
+import Notification from './Notification';
 
 const Category = ({ keyword, categoryId: headerCategoryId, setCategoryId }) => {
     const [products, setProducts] = useState([]); // Danh sách tất cả sản phẩm
@@ -133,7 +133,11 @@ const Category = ({ keyword, categoryId: headerCategoryId, setCategoryId }) => {
         setCategoryId(id); // Cập nhật danh mục trong Header nếu cần
     };
 // Thêm sản phẩm vào danh sách yêu thích
-const addToWishlist = async (productId) => {
+
+  // Thêm sản phẩm vào danh sách yêu thích
+  const [isFavorited, setIsFavorited] = useState(false); // Trạng thái ban đầu là chưa yêu thích
+
+  const addToWishlist = async (productId) => {
     const username = sessionStorage.getItem('username');
     if (!username) {
       console.error('User not logged in');
@@ -141,7 +145,7 @@ const addToWishlist = async (productId) => {
     }
 
     try {
-      const response = await axios.post('http://localhost:8080/api/likes/add', null, {
+      await axios.post('http://localhost:8080/api/likes/add', null, {
         params: { productId },
         headers: {
           'Authorization': `Bearer ${username}`, // Gửi thông tin username trong header
@@ -149,6 +153,7 @@ const addToWishlist = async (productId) => {
         withCredentials: true,
       });
       console.log('Sản phẩm đã được thêm vào danh sách yêu thích');
+      setIsFavorited(true); // Cập nhật trạng thái sau khi thêm thành công
     } catch (error) {
       console.error('Lỗi khi thêm vào danh sách yêu thích:', error);
     }
@@ -179,6 +184,31 @@ const addToWishlist = async (productId) => {
       .then((data) => setLikedProducts(data))
       .catch((error) => console.error('Error fetching liked products:', error));
   }, []);
+
+
+  const [showNotification, setShowNotification] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState('');
+  const [notificationType, setNotificationType] = useState('success');
+
+  const handlePurchase = () => {
+    // Logic mua hàng
+    setNotificationMessage('Đã thêm vào giỏ hàng');
+    setNotificationType('success');
+    setShowNotification(true);
+
+    setTimeout(() => setShowNotification(false), 3000); // Ẩn sau 3 giây
+  };
+
+  const thich = () => {
+    // Logic mua hàng
+    setNotificationMessage('Đã thích sản phẩm');
+    setNotificationType('success');
+    setShowNotification(true);
+
+    setTimeout(() => setShowNotification(false), 3000); // Ẩn sau 3 giây
+  };
+
+
 
     return (
 <div className="body-content outer-top-xs">
@@ -271,6 +301,13 @@ const addToWishlist = async (productId) => {
           ))}
         </select>
       </div>
+      {/* Thông báo */}
+      <Notification
+        message={notificationMessage}
+        type={notificationType}
+        show={showNotification}
+        onClose={() => setShowNotification(false)}
+      />
 
       <div style={{ flex: '1', minWidth: '200px' }}>
         <label style={{ fontWeight: 'bold', marginBottom: '5px', display: 'block' }}>
@@ -324,103 +361,123 @@ const addToWishlist = async (productId) => {
                             : 'default-image.jpg';
 
                         return (
-                          <div className="col-md-3 product" key={product.id}>
-                            <div className={`product ${likedProducts.some(like => like.product.id === product.id) ? 'liked' : ''}`}> 
-                            <div className="product-image">
-                              <div className="image">
-                                <a href={`/product/${product.id}`}>
-                                  <img
-                                    src={firstImageUrl}
-                                    alt={product.name}
-                                    className="card-img-top img-responsive"
-                                  />
-                                </a>
+                          <div className="col-md-3 product" key={product.id} style={{
+                            transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out'
+                          }}>
+                            <div className={`product ${likedProducts.some(like => like.product.id === product.id) ? 'liked' : ''}`} 
+                                 style={{
+                                   transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
+                                   cursor: 'pointer'
+                                 }}
+                            > 
+                              <div className="product-image">
+                                <div className="image">
+                                  <a href={`/product/${product.id}`}>
+                                    <img
+                                      src={firstImageUrl}
+                                      alt={product.name}
+                                      className="card-img-top img-responsive"
+                                      style={{
+                                        transition: 'transform 0.3s ease-in-out',
+                                        transform: 'translateX(-50%)'
+                                      }}
+                                    />
+                                  </a>
+                                </div>
                               </div>
-                            </div>
-
-                            <div className="product-info text-left">
-                              <h3 className="name">
-                                <a href={`/product/${product.id}`}>{product.name}</a>
-                              </h3>
-                              <div className="rating rateit-small"></div>
-                              <div className="description"></div>
-                              <div className="product-price">
-                                <span className="price">
-                                  {product.price.toLocaleString()} VND
-                                </span>
+                          
+                              <div className="product-info text-left">
+                                <h3 className="name">
+                                  <a href={`/product/${product.id}`}>{product.name}</a>
+                                </h3>
+                                <div className="rating rateit-small"></div>
+                                <div className="description"></div>
+                                <div className="product-price">
+                                  <span className="price">
+                                    {product.price.toLocaleString()} VND
+                                  </span>
+                                </div>
                               </div>
-                            </div>
-
-                            <div className="cart clearfix animate-effect">
-                              <div className="action">
-                              <ul className="list-unstyled">
-                          <li className="add-cart-button btn-group">
-
-                            <button
-                              className="btn btn-primary"
-                              onClick={() => addToCart(product.id)}
-                            >
-                              <i className="fa fa-shopping-cart"></i>
-                            </button>
-
-                          </li>
-                          <li className="add-cart-button btn-group">
-                            <button
-                              className="btn btn-primary"
-                              onClick={() => addToWishlist(product.id)}
-                            >
-                              <i className="icon fa fa-heart"></i>
-                            </button>
-
-
-                          </li>
-                          <li className="add-cart-button btn-group">
-                            <button
-                              className="btn btn-primary"
-                              onClick={() => window.location.href = `/product/${product.id}`}
-                            >
-                              <i className="fa fa-signal" aria-hidden="true"></i>
-                            </button>
-
-                          </li>
-                        </ul>
+                          
+                              <div className="cart clearfix animate-effect">
+                                <div className="action">
+                                  <ul className="list-unstyled">
+                                    <li className="add-cart-button btn-group">
+                                      <button
+                                        className="btn btn-primary"
+                                        onClick={() => { handlePurchase(); addToCart(product.id); }}
+                                      >
+                                        <i className="fa fa-shopping-cart"></i>
+                                      </button>
+                                    </li>
+                                    <li className="add-cart-button btn-group">
+                                      <button
+                                        className="btn btn-primary"
+                                        onClick={() => { addToWishlist(product.id); thich(); }}
+                                        style={{
+                                          color: isFavorited ? 'red' : 'white',
+                                        }}
+                                      >
+                                        <i className={`icon fa fa-heart ${isFavorited ? 'favorited' : ''}`}></i>
+                                      </button>
+                                    </li>
+                                    <li className="add-cart-button btn-group">
+                                      <button
+                                        className="btn btn-primary"
+                                        onClick={() => window.location.href = `/product/${product.id}`}
+                                      >
+                                        <i className="fa fa-signal" aria-hidden="true"></i>
+                                      </button>
+                                    </li>
+                                  </ul>
+                                </div>
                               </div>
+                              <hr />
                             </div>
-                            <hr />
+                          
+                            <style jsx>{`
+                              .product:hover {
+                                transform: translateY(-10px);
+                                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                              }
+                              .product:hover .product-image img {
+                                transform: scale(1.1);
+                              }
+                            `}</style>
                           </div>
-                          </div>
+                          
                         );
                       })
                     ) : (
                       <p className="text-center">Không có sản phẩm nào.</p>
                     )}
                   </div>
-
                   <div className="row justify-content-center mt-4">
-                    <nav>
-                    <div className="lbl-cnt d-flex justify-content-center align-items-center">
-    <span className="lbl">Hiển thị trang</span>
-    <div className="pagination-container">
-        <ul className="pagination">
-            {
-                totalPages > 0 ? (
-                    [...Array(totalPages)].map((_, index) => (
-                        <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
-                            <button className="page-link" onClick={() => handlePageChange(index + 1)}>
-                                {index + 1}
-                            </button>
-                        </li>
-                    ))
-                ) : (
-                    <li><span className="page-link">Không có trang nào</span></li> // Thêm thông báo nếu không có trang
-                )
-            }
+  <nav>
+    <div className="lbl-cnt d-flex justify-content-center align-items-center"style={{ textAlign: 'center' }}>
+
+      <div className="pagination-container">
+        <ul className="pagination justify-content-center"> {/* Added justify-content-center here */}
+          {
+            totalPages > 0 ? (
+              [...Array(totalPages)].map((_, index) => (
+                <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
+                  <button style={{    height: '40px',
+    width: '40px'}} className="page-link" onClick={() => handlePageChange(index + 1)}>
+                    {index + 1}
+                  </button>
+                </li>
+              ))
+            ) : (
+              <li><span className="page-link">Không có trang nào</span></li> // Thêm thông báo nếu không có trang
+            )
+          }
         </ul>
+      </div>
     </div>
+  </nav>
 </div>
 
-                    </nav>
-                  </div>
                 </div>
               </div>
             </div>
