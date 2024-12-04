@@ -262,59 +262,114 @@ public class CartController {
     
         return ResponseEntity.ok(invoiceData);
     }
-    @PostMapping("/order/vnpayReturn")
-    public ResponseEntity<Map<String, Object>> handleVNPayReturn(HttpServletRequest request,@RequestParam Integer userId) {
-        // Lấy các tham số từ VNPay trả về
-        Map<String, String> vnp_Params = new HashMap<>();
-        request.getParameterMap().forEach((key, value) -> vnp_Params.put(key, value[0]));
-    
-        // Kiểm tra mã checksum (vnp_SecureHash) để xác minh tính toàn vẹn dữ liệu
-        String vnp_SecureHash = vnp_Params.remove("vnp_SecureHash");
-        String hashData = VnPayConfig.hashAllFields(vnp_Params); // Tạo chuỗi hash từ tham số
-        String calculatedHash = VnPayConfig.hmacSHA512(VnPayConfig.secretKey, hashData);
-    
-        if (!calculatedHash.equals(vnp_SecureHash)) {
-            return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Checksum không hợp lệ"));
-        }
-    
-        // Kiểm tra trạng thái giao dịch
-        String vnp_ResponseCode = vnp_Params.get("vnp_ResponseCode");
-        if (!"00".equals(vnp_ResponseCode)) {
-            return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Giao dịch không thành công"));
-        }
-    
-        // Lưu đơn hàng sau khi xác minh giao dịch thành công
-        String orderInfo = vnp_Params.get("vnp_OrderInfo"); // Thông tin đơn hàng
-        UserModel user = userService.getUserById(userId);      
+    @PostMapping("/order/redirectPayment")
+    public ResponseEntity<Map<String, Object>> processOrder(@RequestBody @Valid PaymentRequest paymentRequest) {
+        UserModel user = userService.getUserById(paymentRequest.getUserId());
         if (user == null) {
-            return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Người dùng không hợp lệ"));
+            throw new RuntimeException("Không tìm thấy người dùng với ID: " + paymentRequest.getUserId());
         }
     
-        // Lấy thông tin phương thức thanh toán VNPay
-        PaymentMethodModel paymentMethod = paymentMethodRepository.findById(2)
-                .orElseThrow(() -> new RuntimeException("Phương thức thanh toán VNPay không hợp lệ"));
+        PaymentMethodModel paymentMethod = paymentMethodRepository.findById(paymentRequest.getPayMethod())
+                .orElseThrow(() -> new RuntimeException("Phương thức thanh toán không hợp lệ: " + paymentRequest.getPayMethod()));
     
-        // Tạo đơn hàng
-        OrderModel order = handleVNPayOrder(user, paymentMethod, vnp_Params);
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", "Đặt hàng thành công qua VNPay.");
-        response.put("orderId", order.getId());
-        return ResponseEntity.ok(response);
-       
-
-
+        // Tạo đơn hàng tạm thời mà chưa lưu vào CSDL
+        OrderModel order = createTempOrder(paymentRequest, user, paymentMethod);
+    
+        // Nếu phương thức thanh toán là VNPay
+        if (paymentRequest.getPayMethod() == 2) {
+            // Gọi API của PaymentController để lấy URL thanh toán VNPay
+            ResponseEntity<Map> response = restTemplate.getForEntity("http://localhost:8080/api/payment/vnpay?amount=" + paymentRequest.getTotalAmount(), Map.class);
+            String paymentUrl = (String) response.getBody().get("data");
+    
+            // Trả về URL thanh toán cho frontend
+            return ResponseEntity.ok(Collections.singletonMap("paymentUrl", paymentUrl));
+        } else {
+            // Xử lý thanh toán COD
+            OrderModel savedOrder = handleCodPayment(paymentRequest, user, paymentMethod);
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Đặt hàng thành công.");
+            response.put("orderId", savedOrder.getId());
+            return ResponseEntity.ok(response);
+        }
     }
-    private OrderModel handleVNPayOrder(UserModel user, PaymentMethodModel paymentMethod, Map<String, String> vnp_Params) {
+    
+    private OrderModel createTempOrder(PaymentRequest paymentRequest, UserModel user, PaymentMethodModel paymentMethod) {
+        // Tạo đơn hàng tạm thời
         OrderModel order = new OrderModel();
         order.setDate(new Timestamp(System.currentTimeMillis()));
-        order.setAddress(vnp_Params.get("vnp_Bill_Address")); // Hoặc lấy từ cơ sở dữ liệu nếu không có
+        order.setAddress(paymentRequest.getAddress());
+        order.setUser(user);
+        order.setTotal(paymentRequest.getTotalAmount());
+        order.setPaymentMethod(paymentMethod);
+        order.setOrderStatus(orderStatusRepository.getReferenceById(1)); // Trạng thái "Chờ xử lý"
+    
+        // Lấy giỏ hàng tạm thời của người dùng
+        List<CartModel> cartItems = cartRepository.findByUser(user);
+        if (cartItems.isEmpty()) {
+            throw new RuntimeException("Giỏ hàng rỗng, không thể tạo đơn hàng");
+        }
+    
+        // Không lưu vào CSDL ngay, chỉ trả về order để sau này lưu sau khi thanh toán thành công
+        return order;
+    }
+    @PostMapping("/order/vnpayReturn")
+public ResponseEntity<Map<String, Object>> handleVNPayReturn(HttpServletRequest request, @RequestParam Integer userId) {
+    // Lấy các tham số từ VNPay trả về
+    Map<String, String> vnp_Params = new HashMap<>();
+    request.getParameterMap().forEach((key, value) -> vnp_Params.put(key, value[0]));
+
+    // Kiểm tra mã checksum (vnp_SecureHash) để xác minh tính toàn vẹn dữ liệu
+    String vnp_SecureHash = vnp_Params.remove("vnp_SecureHash");
+    String hashData = VnPayConfig.hashAllFields(vnp_Params); // Tạo chuỗi hash từ tham số
+    String calculatedHash = VnPayConfig.hmacSHA512(VnPayConfig.secretKey, hashData);
+
+    // Kiểm tra nếu mã checksum không hợp lệ
+    if (!calculatedHash.equals(vnp_SecureHash)) {
+        return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Checksum không hợp lệ"));
+    }
+
+    // Kiểm tra trạng thái giao dịch
+    String vnp_ResponseCode = vnp_Params.get("vnp_ResponseCode");
+    if (!"00".equals(vnp_ResponseCode)) {
+        return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Giao dịch không thành công"));
+    }
+
+    // Lưu đơn hàng sau khi xác minh giao dịch thành công
+    UserModel user = userService.getUserById(userId);
+    if (user == null) {
+        return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Người dùng không hợp lệ"));
+    }
+
+    // Lấy thông tin phương thức thanh toán VNPay
+    PaymentMethodModel paymentMethod = paymentMethodRepository.findById(2)
+            .orElseThrow(() -> new RuntimeException("Phương thức thanh toán VNPay không hợp lệ"));
+
+    // Tạo đơn hàng sau khi thanh toán thành công
+    OrderModel order = handleVNPayOrder(user, paymentMethod, vnp_Params);
+
+    // Cập nhật trạng thái đơn hàng sau khi thanh toán thành công
+    order.setOrderStatus(orderStatusRepository.getReferenceById(3));
+    orderRepository.save(order);
+
+    // Trả về kết quả
+    Map<String, Object> response = new HashMap<>();
+    response.put("message", "Đặt hàng thành công qua VNPay.");
+    response.put("orderId", order.getId());
+    return ResponseEntity.ok(response);
+}
+
+    private OrderModel handleVNPayOrder(UserModel user, PaymentMethodModel paymentMethod, Map<String, String> vnp_Params) {
+        // Tạo đơn hàng sau khi thanh toán thành công
+        OrderModel order = new OrderModel();
+        order.setDate(new Timestamp(System.currentTimeMillis()));
+        order.setAddress(vnp_Params.get("vnp_Bill_Address"));
         order.setUser(user);
         BigDecimal amount = new BigDecimal(vnp_Params.get("vnp_Amount"));
         BigDecimal total = amount.divide(BigDecimal.valueOf(100), 0, RoundingMode.HALF_UP); // Chia và làm tròn 2 chữ số thập phân
         order.setTotal(total); // Giá trị từ VNPay là nhân 100
         order.setPaymentMethod(paymentMethod);
         order.setOrderStatus(orderStatusRepository.getReferenceById(1)); // Trạng thái mặc định là "Chờ xử lý"
-        
+    
         // Lấy sản phẩm trong giỏ hàng
         List<CartModel> cartItems = cartRepository.findByUser(user);
         if (cartItems.isEmpty()) {
@@ -336,35 +391,6 @@ public class CartController {
         cartRepository.deleteAll(cartItems);
         return order;
     }
-    
-    
-    @PostMapping("/order/redirectPayment")
-    public ResponseEntity<Map<String, Object>> processOrder(@RequestBody @Valid PaymentRequest paymentRequest) {
-        UserModel user = userService.getUserById(paymentRequest.getUserId());
-        if (user == null) {
-            throw new RuntimeException("Không tìm thấy người dùng với ID: " + paymentRequest.getUserId());
-        }
-
-        PaymentMethodModel paymentMethod = paymentMethodRepository.findById(paymentRequest.getPayMethod())
-                .orElseThrow(() -> new RuntimeException("Phương thức thanh toán không hợp lệ: " + paymentRequest.getPayMethod()));
-
-        // Nếu phương thức thanh toán là VNPay
-        if (paymentRequest.getPayMethod() == 2) {
-            // Gọi API của PaymentController để lấy URL thanh toán VNPay
-            ResponseEntity<Map> response = restTemplate.getForEntity("http://localhost:8080/api/payment/vnpay?amount=" + paymentRequest.getTotalAmount(), Map.class);
-            String paymentUrl = (String) response.getBody().get("data");
-
-            return ResponseEntity.ok(Collections.singletonMap("paymentUrl", paymentUrl));
-        } else {
-            // Xử lý thanh toán COD
-            OrderModel order = handleCodPayment(paymentRequest, user, paymentMethod);
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", "Đặt hàng thành công.");
-            response.put("orderId", order.getId());
-            return ResponseEntity.ok(response);
-        }
-    }
-
     private OrderModel handleCodPayment(PaymentRequest paymentRequest, UserModel user, PaymentMethodModel paymentMethod) {
         // Logic tạo đơn hàng COD
         OrderModel order = new OrderModel();
@@ -394,4 +420,4 @@ public class CartController {
         cartRepository.deleteAll(cartItems);
         return order;
     }
-}
+}    

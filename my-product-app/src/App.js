@@ -38,12 +38,9 @@ import FavouriteAmin from './components/admin/favourite';
 import EvaluaesAmin from './components/admin/evaluaes';
 
 import OrderAmin from './components/admin/order';
-
-
-
-
 import EditUserAmin from './components/admin/editUser';
 import AddUserAmin from './components/admin/addUser';
+import OrderHistory from './components/user/order';
 function App() {
   const [keyword, setKeyword] = useState('');
   const [ categoryId, setCategoryId] = useState('');
@@ -79,6 +76,17 @@ function App() {
 
               <Header setKeyword={setKeyword} setCategoryId={setCategoryId}/>
               <Account/>
+              <Footer />
+            </>
+          }
+        />
+        <Route
+          path="/history"
+          element={
+            <>
+
+              <Header setKeyword={setKeyword} setCategoryId={setCategoryId}/>
+              <OrderHistory/>
               <Footer />
             </>
           }

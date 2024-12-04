@@ -1,36 +1,48 @@
 package JAVA6.users.controller;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
+import JAVA6.service.HistoryService;
+import JAVA6.service.OrderDetailService;
 import JAVA6.Model.OrderDetailModel;
 import JAVA6.Model.OrderModel;
-import JAVA6.repository.OrderStatusRepository;
-import JAVA6.service.HistoryService;
-import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
 
-@Controller
+@RestController
 public class HistoryController {
-	 @Autowired
-	    private HistoryService historyService;
-	    
-	    @Autowired
-	    private OrderStatusRepository orderStatusRepository;
 
+    @Autowired
+    private HistoryService historyService;
 
-	    @RequestMapping("/history")
-	    public String orderHistory(Model model,@RequestParam(value = "userId", required = false) Integer id, HttpSession session,
-                RedirectAttributes redirectAttributes) {
-	    	Integer userId = (Integer) session.getAttribute("userId");
-	    	id = userId;
-	        List<OrderModel> orders = historyService.getbyIdOrders(id);
-	        model.addAttribute("orders", orders);
-	        return "user/historyorder"; 
-	    }
+    // Xử lý POST request và lấy userId từ body request
+    @PostMapping("/api/history")
+    public List<OrderModel> getOrdersByUserId(@RequestBody UserRequest userRequest) {
+        return historyService.getbyIdOrders(userRequest.getUserId());
+    }
+	@Autowired
+    private OrderDetailService orderDetailService;
+
+    // Xử lý GET request và lấy thông tin chi tiết đơn hàng theo orderId
+    @GetMapping("/api/history/{orderId}")
+    public List<OrderDetailModel> getOrderDetails(@PathVariable int orderId) {
+        // Trả về danh sách chi tiết của đơn hàng
+        return orderDetailService.getOrderDetailsByOrderId(orderId);
+    }
+}
+
+// Định nghĩa lớp UserRequest để nhận userId từ body
+class UserRequest {
+    private int userId;
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
 }

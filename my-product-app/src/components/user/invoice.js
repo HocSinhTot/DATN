@@ -4,13 +4,10 @@ import { useLocation } from "react-router-dom";
 const InvoicePage = () => {
   const [cartItems, setCartItems] = useState([]);
   const [userId, setUserId] = useState(null);
-  const [discountCodes, setDiscountCodes] = useState([]);
-  const [finalTotalAmount, setFinalTotalAmount] = useState(0);
-  const [totalAmount, setTotalAmount] = useState(0);
-  const [discountAmount, setDiscountAmount] = useState(0);
   const [errorMessage, setErrorMessage] = useState("");
   const [address, setAddress] = useState("");
   const [payMethod, setPayMethod] = useState("1");
+  const [totalAmount, setTotalAmount] = useState(0);
 
   // Lấy dữ liệu từ location state
   const location = useLocation();
@@ -18,13 +15,11 @@ const InvoicePage = () => {
 
   useEffect(() => {
     if (invoiceData) {
-        console.log("User ID: ", invoiceData.userId);
-        console.log("User ID: ", invoiceData.totalAmount);
-        setUserId(invoiceData.userId);
+      console.log("User ID: ", invoiceData.userId);
+      console.log("Total Amount: ", invoiceData.totalAmount);
+      setUserId(invoiceData.userId);
       setCartItems(invoiceData.cartItems);
-      setDiscountCodes(invoiceData.discountCodes);
       setTotalAmount(invoiceData.totalAmount);
-      setDiscountAmount(invoiceData.discountAmount);
     } else {
       setErrorMessage("Không có dữ liệu hóa đơn.");
     }
@@ -32,7 +27,12 @@ const InvoicePage = () => {
 
   const handleSubmitPayment = async (event) => {
     event.preventDefault();
-  
+
+    if (!address) {
+      alert("Vui lòng nhập địa chỉ giao hàng.");
+      return;
+    }
+
     if (payMethod === "2") {
       // Gửi yêu cầu thanh toán qua VNPay
       try {
@@ -41,13 +41,11 @@ const InvoicePage = () => {
           {
             method: "GET",
           }
-          
         );
-  
+
         if (response.ok) {
           const data = await response.json();
           if (data.code === "00" && data.data) {
-            
             // Chuyển hướng người dùng đến URL thanh toán VNPay
             window.location.href = data.data;
           } else {
@@ -60,7 +58,7 @@ const InvoicePage = () => {
         alert("Đã xảy ra lỗi: " + error.message);
       }
     } else {
-      // Xử lý thanh toán COD như hiện tại
+      // Xử lý thanh toán COD
       const paymentData = { userId, address, payMethod, totalAmount };
       try {
         const response = await fetch(
@@ -71,7 +69,7 @@ const InvoicePage = () => {
             body: JSON.stringify(paymentData),
           }
         );
-  
+
         if (response.ok) {
           alert("Thanh toán COD thành công!");
         } else {
@@ -82,8 +80,7 @@ const InvoicePage = () => {
       }
     }
   };
-  
-  
+
   
   return (
     <div style={{ margin: "20px" }}>
@@ -138,9 +135,9 @@ const InvoicePage = () => {
 
           <div>
             <p>Tổng cộng: {totalAmount} VND</p>
-            <p>Giảm giá: {discountAmount} VND</p>
+            {/* <p>Giảm giá: {discountAmount} VND</p> */}
             <p>
-              <strong>Tổng tiền sau giảm giá: {finalTotalAmount} VND</strong>
+              {/* <strong>Tổng tiền sau giảm giá: {finalTotalAmount} VND</strong> */}
             </p>
           </div>
 
