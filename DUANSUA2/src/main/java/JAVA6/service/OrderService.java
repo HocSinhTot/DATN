@@ -42,7 +42,9 @@ public class OrderService {
             orderRepository.save(order);
         }
     }
-
+     public List<OrderStatusModel> getAllOrderStatuses() {
+        return orderStatusRepository.findAll(); // Giả sử bạn có một phương thức findAll trong repository
+    }
 
     public void deleteOrder(int orderId) {
         orderRepository.deleteById(orderId);

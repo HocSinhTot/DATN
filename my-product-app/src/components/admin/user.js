@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
+
 const UserManagement = () => {
     const [userList, setUserList] = useState([]);
 
@@ -79,7 +80,7 @@ const UserManagement = () => {
                                     <thead>
                                         <tr>
                                             <th>STT</th>
-                                            <th>Tên người dùng</th>
+                                            <th>Tên</th>
                                             <th>Email</th>
                                             <th>Tên</th>
                                             <th>Ngày sinh</th>
@@ -139,4 +140,4 @@ const UserManagement = () => {
     );
 };
 
-export default UserManagement;
+export default UserManagement;  

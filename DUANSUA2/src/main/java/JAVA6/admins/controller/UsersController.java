@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import JAVA6.Model.UserModel;
 import JAVA6.repository.UsersRepository;
 import JAVA6.service.UserService;
@@ -52,58 +54,64 @@ public class UsersController {
     }
 
     // Thêm người dùng mới hoặc khách hàng
-    @PostMapping
-    public ResponseEntity<String> createUser(@RequestPart("user") UserModel user,
-            @RequestPart(value = "file", required = false) MultipartFile file) {
-        try {
-            // Kiểm tra nếu tất cả dữ liệu người dùng là hợp lệ (validate dữ liệu)
-            if (user.getUsername() == null || user.getUsername().isEmpty()) {
-                return ResponseEntity.badRequest().body("Username is required.");
-            }
-            if (user.getPassword() == null || user.getPassword().isEmpty()) {
-                return ResponseEntity.badRequest().body("Password is required.");
-            }
-            if (user.getEmail() == null || user.getEmail().isEmpty()) {
-                return ResponseEntity.badRequest().body("Email is required.");
-            }
+@PostMapping
+public ResponseEntity<String> createUser(
+        @RequestPart("user") String userJson,
+        @RequestPart(value = "file", required = false) MultipartFile file) {
+    try {
+        ObjectMapper mapper = new ObjectMapper();
+        UserModel user = mapper.readValue(userJson, UserModel.class);
 
-            // Xử lý upload ảnh nếu có
-            if (file != null && !file.isEmpty()) {
-                String uploadDir = "src/main/resources/static/assets/images/uploads/";
-                Path uploadPath = Paths.get(uploadDir);
-
-                if (!Files.exists(uploadPath)) {
-                    Files.createDirectories(uploadPath);
-                }
-
-                Path filePath = uploadPath.resolve(file.getOriginalFilename());
-                Files.copy(file.getInputStream(), filePath);
-
-                // Lưu đường dẫn ảnh vào user
-                user.setImage("uploads/" + file.getOriginalFilename());
-            } else {
-                user.setImage("default_user_image.jpg"); // Nếu không upload ảnh
-            }
-
-            // Set default role to "customer" (false) if not specified
-            if (user.isRole() == false) {
-                user.setRole(false); // Default to "customer" (inactive)
-            }
-
-            usersRepository.save(user);
-            return ResponseEntity.ok("User (or customer) created successfully.");
-        } catch (IOException e) {
-            logger.error("Error uploading file: ", e);
-            return ResponseEntity.status(500).body("Error creating user: " + e.getMessage());
+        // Kiểm tra dữ liệu hợp lệ
+        if (user.getUsername() == null || user.getUsername().isEmpty()) {
+            return ResponseEntity.badRequest().body("Username is required.");
         }
-    }
+        if (user.getPassword() == null || user.getPassword().isEmpty()) {
+            return ResponseEntity.badRequest().body("Password is required.");
+        }
+        if (user.getEmail() == null || user.getEmail().isEmpty()) {
+            return ResponseEntity.badRequest().body("Email is required.");
+        }
 
-    // Cập nhật thông tin người dùng
-    @PutMapping("/{id}")
-    public ResponseEntity<String> updateUser(@PathVariable("id") int id,
-            @RequestPart("user") UserModel user,
-            @RequestPart(value = "file", required = false) MultipartFile file) {
-        logger.info("Updating user with ID: {}", id);
+        // Xử lý upload file nếu có
+        if (file != null && !file.isEmpty()) {
+            String uploadDir = "src/main/resources/static/assets/images/uploads/";
+            Path uploadPath = Paths.get(uploadDir);
+
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            Path filePath = uploadPath.resolve(file.getOriginalFilename());
+            Files.copy(file.getInputStream(), filePath);
+
+            user.setImage("uploads/" + file.getOriginalFilename());
+        } else {
+            user.setImage("default_user_image.jpg"); // Sử dụng ảnh mặc định nếu không tải lên
+        }
+
+        // Mặc định vai trò là người dùng nếu không được chỉ định
+        user.setRole(user.isRole() != false && user.isRole());
+
+        usersRepository.save(user);
+        return ResponseEntity.ok("User (or customer) created successfully.");
+    } catch (IOException e) {
+        logger.error("Error processing request: ", e);
+        return ResponseEntity.status(500).body("Error creating user: " + e.getMessage());
+    }
+}
+
+@PutMapping("/{id}")
+public ResponseEntity<String> updateUser(
+        @PathVariable("id") int id,
+        @RequestPart("user") String userJson,
+        @RequestPart(value = "file", required = false) MultipartFile file) {
+    logger.info("Updating user with ID: {}", id);
+
+    try {
+        // Chuyển đổi JSON thành đối tượng UserModel
+        ObjectMapper mapper = new ObjectMapper();
+        UserModel user = mapper.readValue(userJson, UserModel.class);
 
         return usersRepository.findById(id)
                 .map(existingUser -> {
@@ -122,24 +130,34 @@ public class UsersController {
                                 Files.createDirectories(uploadPath);
                             }
 
-                            Path filePath = uploadPath.resolve(file.getOriginalFilename());
+                            // Sử dụng tên file độc nhất
+                            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+                            Path filePath = uploadPath.resolve(fileName);
                             Files.copy(file.getInputStream(), filePath);
 
-                            user.setImage("uploads/" + file.getOriginalFilename());
+                            // Cập nhật đường dẫn ảnh
+                            user.setImage("assets/images/uploads/" + fileName);
                         } catch (IOException e) {
                             logger.error("Error uploading file: ", e);
                             return ResponseEntity.status(500).body("Error uploading file: " + e.getMessage());
                         }
                     } else {
-                        user.setImage(existingUser.getImage()); // Keep the old image if none is uploaded
+                        user.setImage(existingUser.getImage()); // Giữ ảnh cũ nếu không tải lên
                     }
 
-                    user.setId(id);
+                    // Cập nhật thông tin khác
+                    user.setId(id); // Đảm bảo ID được giữ nguyên
                     usersRepository.save(user);
                     return ResponseEntity.ok("User updated successfully.");
                 })
                 .orElse(ResponseEntity.notFound().build()); // Trả về 404 nếu không tìm thấy user
+    } catch (IOException e) {
+        logger.error("Error processing request: ", e);
+        return ResponseEntity.status(500).body("Error updating user: " + e.getMessage());
     }
+}
+
+
 
     // Xóa người dùng
     @DeleteMapping("/{id}")

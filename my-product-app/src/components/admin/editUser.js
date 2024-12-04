@@ -14,13 +14,13 @@ const EditUserPage = () => {
     image: null,
   });
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");  // Trạng thái thành công
-  const [file, setFile] = useState(null);
+  const [success, setSuccess] = useState(""); // Success state for the update
+  const [file, setFile] = useState(null); // For file upload
   const navigate = useNavigate();
-  const { id } = useParams(); // Lấy id từ URL
+  const { id } = useParams(); // Get the user ID from URL
 
   useEffect(() => {
-    // Lấy dữ liệu người dùng từ API theo ID người dùng
+    // Fetch user data by user ID
     const fetchUserData = async () => {
       try {
         const response = await axios.get(`http://localhost:8080/api/users/${id}`);
@@ -37,36 +37,46 @@ const EditUserPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-    // Append từng trường của user vào formData
-    formData.append("username", user.username);
-    formData.append("email", user.email);
-    formData.append("name", user.name);
-    formData.append("birthday", user.birthday);
-    formData.append("phone", user.phone);
-    formData.append("role", user.role.toString()); // Đảm bảo gửi dưới dạng chuỗi
-    formData.append("gender", user.gender.toString()); // Đảm bảo gửi dưới dạng chuỗi
-    if (file) formData.append("file", file);
-
+  
+    // Thêm dữ liệu user vào formData
+    formData.append("user", JSON.stringify({
+      username: user.username,
+      email: user.email,
+      name: user.name,
+      birthday: user.birthday,
+      phone: user.phone,
+      role: user.role.toString(),
+      gender: user.gender.toString()
+    }));
+  
+    // Chỉ thêm file nếu có
+    if (file) {
+      formData.append("file", file);
+    }
+  
     try {
-      // Sử dụng PUT để cập nhật người dùng
       const response = await axios.put(`http://localhost:8080/api/users/${id}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-
+  
       if (response.data === "User updated successfully.") {
         setSuccess("Người dùng đã được cập nhật thành công.");
         setTimeout(() => {
           navigate(`/user/${id}`);
-        }, 2000); // Chuyển trang sau 2 giây
+        }, 2000);
       } else {
         setError("Lỗi khi cập nhật người dùng.");
       }
     } catch (err) {
       setError("Đã xảy ra lỗi khi cập nhật người dùng.");
+      console.error(err);
     }
   };
+  
+  
+  
 
   return (
     <div className="container">
@@ -137,7 +147,7 @@ const EditUserPage = () => {
           <select
             className="form-control"
             id="role"
-            value={user.role}
+            value={user.role.toString()}
             onChange={(e) => setUser({ ...user, role: e.target.value === 'true' })}
           >
             <option value="true">Admin</option>
@@ -187,7 +197,7 @@ const EditUserPage = () => {
           )}
         </div>
 
-        {/* Hiển thị lỗi hoặc thành công */}
+        {/* Show error or success messages */}
         {error && <div className="alert alert-danger">{error}</div>}
         {success && <div className="alert alert-success">{success}</div>}
 

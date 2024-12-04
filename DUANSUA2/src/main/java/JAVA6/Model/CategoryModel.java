@@ -40,5 +40,7 @@ public class CategoryModel {
 	public void setName(String name) {
 		this.name = name;
 	} 
-	
+	public CategoryModel(int id) {
+        this.id = id;
+    }
 }
