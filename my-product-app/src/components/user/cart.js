@@ -126,9 +126,8 @@ const CartPage = () => {
     
         axios.post('http://localhost:8080/api/cart/invoice', cartData)
             .then(response => {
-                // Lấy dữ liệu hóa đơn trả về từ API
                 const invoiceData = response.data;
-                navigate('/invoice', { state: { invoiceData } });
+                navigate('/invoice', { state: { invoiceData } }); // Đảm bảo truyền đúng dữ liệu
             })
             .catch(error => {
                 console.error("Error creating invoice:", error);
