@@ -25,8 +25,9 @@ public class VnPayConfig {
     // public static String vnp_ReturnUrl = "http://localhost:8080/vnpay_jsp/vnpay_return.jsp";
     public static String vnp_Version = "2.1.0";
     public static String vnp_Command = "pay";
+    
     public static String vnp_TmnCode = "IFWBY6H3";
-    public static String secretKey = "NBWJYLZAEKWDIG9N1BAWUQ9J88PJ56E5";
+    public static String secretKey = "PB3V3SEW3E253Y6O20CJMY22T3JB1XJ6";
     public static String vnp_ApiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
 
     // public static String md5(String message) {
@@ -109,7 +110,7 @@ public class VnPayConfig {
         }
     }
     
-    public static String getIpAddress(HttpServletRequest request) {
+    public static String getIpAddress(jakarta.servlet.http.HttpServletRequest request) {
         String ipAdress;
         try {
             ipAdress = request.getHeader("X-FORWARDED-FOR");

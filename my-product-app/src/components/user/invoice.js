@@ -37,15 +37,17 @@ const InvoicePage = () => {
       // Gửi yêu cầu thanh toán qua VNPay
       try {
         const response = await fetch(
-          `http://localhost:8080/api/payment/vnpay?amount=${totalAmount}&bankCode=NCB&language=vn`,
+          `http://localhost:8080/api/payment/vnpay?amount=${totalAmount}`,
           {
             method: "GET",
           }
+          
         );
   
         if (response.ok) {
           const data = await response.json();
           if (data.code === "00" && data.data) {
+            
             // Chuyển hướng người dùng đến URL thanh toán VNPay
             window.location.href = data.data;
           } else {

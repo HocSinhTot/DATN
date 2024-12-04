@@ -1,6 +1,8 @@
 package JAVA6.config;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
@@ -14,6 +16,9 @@ public class WebConfig implements WebMvcConfigurer {
             .allowedHeaders("*") // Các headers cho phép
             .allowCredentials(true);
     }
-    
+     @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
     
 }
