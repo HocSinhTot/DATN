@@ -122,7 +122,10 @@ function App() {
           path="/invoice"
           element={
             <>
+             <Header setKeyword={setKeyword} setCategoryId={setCategoryId}/>
+
               <Invoice />
+              <Footer />
             </>
           }
         />

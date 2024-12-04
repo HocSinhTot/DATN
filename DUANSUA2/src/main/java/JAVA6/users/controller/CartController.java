@@ -2,6 +2,7 @@ package JAVA6.users.controller;
 
 import JAVA6.Model.CartModel;
 import JAVA6.Model.CartRequest;
+import JAVA6.Model.ImageModel;
 import JAVA6.Model.OrderDetailModel;
 import JAVA6.Model.OrderModel;
 import JAVA6.Model.OrderStatusModel;
@@ -16,10 +17,12 @@ import JAVA6.repository.OrderStatusRepository;
 import JAVA6.repository.PaymentMethodRepository;
 import JAVA6.service.ProductService;
 import JAVA6.service.UserService;
+import jakarta.validation.Valid;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +40,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 // import java.util.*;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/cart")
 public class CartController {
 
@@ -216,73 +220,100 @@ public class CartController {
     // Xử lý đơn hàng và thanh toán
     @PostMapping("/invoice")
     public ResponseEntity<Map<String, Object>> generateInvoice(@RequestBody CartRequest cartRequest) {
-        List<ProductModel> cartItems = new ArrayList<>();
+        List<Map<String, Object>> cartItems = new ArrayList<>();
         BigDecimal totalAmount = BigDecimal.ZERO;
-    
+        System.out.println("Received CartRequest: " + cartRequest);
+        Integer userId = cartRequest.getUserId();
+        if (userId == null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "User ID is required"));
+        }
+        // Duyệt qua các sản phẩm trong giỏ hàng từ CartRequest
         for (Map.Entry<Integer, Integer> entry : cartRequest.getCart().entrySet()) {
             ProductModel product = productService.getProductById(entry.getKey());
+            List<ImageModel> images = product.getImages();
+            String firstImageUrl = images.get(0).getUrl();
             if (product != null) {
-                product.setQuantity(entry.getValue());
-                cartItems.add(product);
-                totalAmount = totalAmount.add(product.getTotalPrice());
+                int quantity = entry.getValue();
+                BigDecimal productTotalPrice = product.getPrice().multiply(BigDecimal.valueOf(quantity));
+    
+                Map<String, Object> productData = new HashMap<>();
+                productData.put("id", product.getId());
+                productData.put("name", product.getName());
+                productData.put("price", product.getPrice());
+                productData.put("quantity", quantity);
+                productData.put("totalPrice", productTotalPrice);
+                productData.put("image", firstImageUrl);
+                cartItems.add(productData);
+                totalAmount = totalAmount.add(productTotalPrice);
             }
         }
     
-        // Tạo dữ liệu hóa đơn để trả về client
+        // Trả lại dữ liệu hóa đơn
         Map<String, Object> invoiceData = new HashMap<>();
+        invoiceData.put("userId", userId);
         invoiceData.put("cartItems", cartItems);
         invoiceData.put("totalAmount", totalAmount);
-        invoiceData.put("currentTime", new Date());
+        invoiceData.put("currentTime", new Date()); // Thời gian hiện tại
     
-        return ResponseEntity.ok(invoiceData); // Trả về dữ liệu hóa đơn cho client
+        return ResponseEntity.ok(invoiceData);
     }
-  // Xử lý đơn hàng và thanh toán
-  @PostMapping("/order/redirectPayment")
-  public ResponseEntity<Map<String, Object>> processOrder(
-          @RequestBody PaymentRequest paymentRequest, RedirectAttributes redirectAttributes) {
-  
-      // Lấy thông tin người dùng từ database
-      UserModel user = userService.getUserById(paymentRequest.getUserId());  // Sử dụng paymentRequest.getUserId()
-     
 
-      // Lấy đối tượng PaymentMethod từ database theo payMethodId
-      PaymentMethodModel paymentMethod = paymentMethodRepository.findById(paymentRequest.getPayMethod())
-              .orElseThrow(() -> new RuntimeException("Phương thức thanh toán không hợp lệ"));
-  
-      // Xử lý thanh toán VNPay
-      if (paymentRequest.getPayMethod() == 2) {
-          Map<String, Object> response = new HashMap<>();
-          response.put("paymentUrl", "http://vnPayUrl.com"); // URL thanh toán VNPay
-          return ResponseEntity.ok(response);
-      }
-  
-      // Thanh toán COD, lưu đơn hàng
-      OrderModel order = new OrderModel();
-      order.setDate(new Timestamp(System.currentTimeMillis())); // Set thời gian
-      order.setAddress(paymentRequest.getAddress()); // Địa chỉ giao hàng
-      order.setUser(user); // Người mua
-      order.setTotal(paymentRequest.getTotalAmount()); // Tổng giá trị
-      order.setPaymentMethod(paymentMethod); // Phương thức thanh toán
-      order.setOrderStatus(orderStatusRepository.getReferenceById( 1)); // Đơn hàng mới tạo
-  
-      orderRepository.save(order);
-  
-      // Lưu chi tiết đơn hàng
-      List<CartModel> cartItems = cartRepository.findByUser(user);
-      for (CartModel cartItem : cartItems) {
-          OrderDetailModel orderDetail = new OrderDetailModel();
-          orderDetail.setProduct(cartItem.getProduct());
-          orderDetail.setOrder(order);
-          orderDetail.setTotalQuantity(cartItem.getTotalQuantity());
-          orderDetail.setTotalPrice(cartItem.getTotalPrice());
-          orderDetailRepository.save(orderDetail);
-      }
-  
-      // Xóa giỏ hàng sau khi đặt hàng
-      cartRepository.deleteAll(cartItems);
-  
-      Map<String, Object> response = new HashMap<>();
-      response.put("message", "Đặt hàng thành công.");
-      return ResponseEntity.ok(response);
-  }
-}  
+    
+    @PostMapping("/order/redirectPayment")
+    public ResponseEntity<Map<String, Object>> processOrder(
+            @RequestBody @Valid PaymentRequest paymentRequest) {
+    
+        UserModel user = userService.getUserById(paymentRequest.getUserId());
+        if (user == null) {
+            throw new RuntimeException("Không tìm thấy người dùng với ID: " + paymentRequest.getUserId());
+        }
+    
+        PaymentMethodModel paymentMethod = paymentMethodRepository.findById(paymentRequest.getPayMethod())
+                .orElseThrow(() -> new RuntimeException("Phương thức thanh toán không hợp lệ: " + paymentRequest.getPayMethod()));
+    
+        if (paymentRequest.getPayMethod() == 2) {
+            String paymentUrl = handleVnPayPayment(paymentRequest);
+            return ResponseEntity.ok(Collections.singletonMap("paymentUrl", paymentUrl));
+        } else {
+            OrderModel order = handleCodPayment(paymentRequest, user, paymentMethod);
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Đặt hàng thành công.");
+            response.put("orderId", order.getId());
+            return ResponseEntity.ok(response);
+        }
+    }
+    
+    private String handleVnPayPayment(PaymentRequest paymentRequest) {
+        // Logic xử lý VNPay
+        return "http://vnPayUrl.com";
+    }
+    
+    private OrderModel handleCodPayment(PaymentRequest paymentRequest, UserModel user, PaymentMethodModel paymentMethod) {
+        OrderModel order = new OrderModel();
+        order.setDate(new Timestamp(System.currentTimeMillis()));
+        order.setAddress(paymentRequest.getAddress());
+        order.setUser(user);
+        order.setTotal(paymentRequest.getTotalAmount());
+        order.setPaymentMethod(paymentMethod);
+        order.setOrderStatus(orderStatusRepository.getReferenceById(1));
+    
+        List<CartModel> cartItems = cartRepository.findByUser(user);
+        if (cartItems.isEmpty()) {
+            throw new RuntimeException("Giỏ hàng rỗng, không thể tạo đơn hàng");
+        }
+    
+        orderRepository.save(order);
+    
+        for (CartModel cartItem : cartItems) {
+            OrderDetailModel orderDetail = new OrderDetailModel();
+            orderDetail.setProduct(cartItem.getProduct());
+            orderDetail.setOrder(order);
+            orderDetail.setTotalQuantity(cartItem.getTotalQuantity());
+            orderDetail.setTotalPrice(cartItem.getTotalPrice());
+            orderDetailRepository.save(orderDetail);
+        }
+    
+        cartRepository.deleteAll(cartItems);
+        return order;
+    }
+}
