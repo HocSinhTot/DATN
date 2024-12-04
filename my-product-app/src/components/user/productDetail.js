@@ -80,13 +80,13 @@ const ProductDetail = () => {
 
     // Gọi API để lấy sản phẩm tương tự
     axios
-      .get(`http://localhost:8080/api/product/${id}/similar`)
-      .then((response) => {
-        setSimilarProducts(response.data); // Giả sử API trả về danh sách sản phẩm tương tự
-        console.log(similarProducts)
-      })
-      .catch((error) => console.error("Error fetching similar products", error));
-  }, [id]);
+    .get(`http://localhost:8080/api/product/${id}/similar`)
+    .then((response) => {
+      setSimilarProducts(response.data); // Giả sử API trả về danh sách sản phẩm tương tự
+      console.log(response.data); // In dữ liệu thay vì sử dụng similarProducts
+    })
+    .catch((error) => console.error("Error fetching similar products", error));
+}, [id]);
 
   const handleColorChange = (color) => {
     setSelectedColor(color);

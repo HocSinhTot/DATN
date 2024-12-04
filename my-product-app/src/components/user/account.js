@@ -10,7 +10,7 @@ const Account = () => {
 
   // Lấy thông tin người dùng từ API khi component được tải
   useEffect(() => {
-    const username = localStorage.getItem("username"); // Lấy username từ localStorage
+    const username = sessionStorage.getItem("username"); // Lấy username từ localStorage
     if (username) {
       axios
         .get("http://localhost:8080/api/users/profile", {

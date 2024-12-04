@@ -18,7 +18,7 @@ const Index = () => {
     phonesCheap: [],
     accessoriesDiscount: [],
   });
-
+  const [likedProducts, setLikedProducts] = useState([]); // Giả sử bạn đã có danh sách sản phẩm yêu thích của người dùng
   const [categoryId, setCategoryId] = useState(null); // Danh mục được chọn
   const userId = sessionStorage.getItem('userId'); // Lấy userId từ sessionStorage
   const navigate = useNavigate();  // Dùng `useNavigate` thay vì `useHistory`
@@ -84,6 +84,11 @@ const Index = () => {
 
   // Hàm thêm sản phẩm vào giỏ hàng
   const addToCart = async (productId, quantity = 1) => {
+    const userId = sessionStorage.getItem("userId"); // Lấy userId từ sessionStorage
+    if (!userId) {
+      alert("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.");
+      return;
+    }
     try {
       const response = await axios.post('http://localhost:8080/api/cart/addToCart', null, {
         params: { userId, productId, quantity },
@@ -107,42 +112,58 @@ const Index = () => {
     e.preventDefault();
     const productId = e.target.productId.value;
     const quantity = e.target.quantity.value;
+
     addToCart(productId, quantity); // Gọi hàm addToCart với tham số
   };
 
-  const options = {
-    loop: true,
-    margin: 10,
-    items: 1, // Chỉ 1 item mỗi lần hiển thị
-    dots: false,
-    autoplay: true,
-    autoplayTimeout: 5000,
-    autoplayHoverPause: true,
-  };
-
-  const optionsProduct = {
-    loop: true,
-    margin: 10,
-    nav: true,
-    items: 4,
-    dots: false,
-    autoplay: false,
-    navText: ['<', '>'],
-  };
-
+  // Thêm sản phẩm vào danh sách yêu thích
   const addToWishlist = async (productId) => {
-    try {
-        const response = await axios.post('http://localhost:8080/api/likes/add', null, {
-            params: { productId },
-            withCredentials: true,
-        });
-        console.log('Sản phẩm đã được thêm vào danh sách yêu thích');
-    } catch (error) {
-        console.error('Lỗi khi thêm vào danh sách yêu thích:', error);
+    const username = sessionStorage.getItem('username');
+    if (!username) {
+      console.error('User not logged in');
+      return;
     }
-};
 
-    
+    try {
+      const response = await axios.post('http://localhost:8080/api/likes/add', null, {
+        params: { productId },
+        headers: {
+          'Authorization': `Bearer ${username}`, // Gửi thông tin username trong header
+        },
+        withCredentials: true,
+      });
+      console.log('Sản phẩm đã được thêm vào danh sách yêu thích');
+    } catch (error) {
+      console.error('Lỗi khi thêm vào danh sách yêu thích:', error);
+    }
+  };
+
+  // Lấy sản phẩm yêu thích từ API
+  useEffect(() => {
+    const username = sessionStorage.getItem('username');
+    if (!username) {
+      console.error('User not logged in');
+      return;
+    }
+
+    fetch('http://localhost:8080/api/likes/like-products', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${username}`,
+      },
+      credentials: 'include',
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch liked products');
+        }
+        return response.json();
+      })
+      .then((data) => setLikedProducts(data))
+      .catch((error) => console.error('Error fetching liked products:', error));
+  }, []);
+
   return (
     <>
     
@@ -621,9 +642,10 @@ const Index = () => {
             </div>
           </div>
         </div>
+    
     </>
   );
 
 };
-  
+
 export default Index;

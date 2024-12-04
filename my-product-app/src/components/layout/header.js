@@ -9,7 +9,7 @@ const Header = ({ setKeyword, setCategoryId }) => {
   const navigate = useNavigate();
   // Get the username from localStorage when the component mounts
   useEffect(() => {
-    const storedUsername = localStorage.getItem("username");
+    const storedUsername = sessionStorage.getItem("username");
     if (storedUsername) {
       setUsername(storedUsername);
       setIsLoggedIn(true);
@@ -30,7 +30,7 @@ const Header = ({ setKeyword, setCategoryId }) => {
       const response = await axios.post("http://localhost:8080/api/auth/logout");
       if (response.data.success) {
         // Clear the localStorage and update state
-        localStorage.removeItem("username");
+        sessionStorage.removeItem("username");
         setIsLoggedIn(false);
         setUsername('');
         // Redirect to login page

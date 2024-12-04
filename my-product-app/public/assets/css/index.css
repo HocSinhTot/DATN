@@ -55,3 +55,10 @@
     height: 100%; /* Chiếm hết chiều cao container */
     object-fit: cover; /* Duy trì tỉ lệ ảnh nhưng cắt phần thừa */
 }
+
+/* Đánh dấu sản phẩm yêu thích */
+
+
+.liked .fa-heart {
+  color: red; /* Đổi màu icon yêu thích */
+}

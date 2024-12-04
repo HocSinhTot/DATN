@@ -56,7 +56,6 @@ const LoginPage = () => {
 
         // Lưu thông tin vào sessionStorage nếu đăng nhập thành công
         if (response.data.success) {
-          localStorage.setItem("username", username); // Lưu tên đăng nhập vào localStorage
 
           sessionStorage.setItem("username", username); // Lưu tên đăng nhập vào sessionStorage
           sessionStorage.setItem("password", password); // Lưu mật khẩu vào sessionStorage

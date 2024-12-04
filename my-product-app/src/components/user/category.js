@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
-import { useNavigate,useLocation  } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 
 
@@ -16,7 +16,8 @@ const Category = ({ keyword, categoryId: headerCategoryId, setCategoryId }) => {
     const [pageSize, setPageSize] = useState(100); // Mặc định là 20 sản phẩm mỗi trang
     const [brands, setBrands] = useState([]); // Danh sách thương hiệu
     const [selectedBrand, setSelectedBrand] = useState(''); // Thương hiệu được chọn
-    
+    const [likedProducts, setLikedProducts] = useState([]); // Giả sử bạn đã có danh sách sản phẩm yêu thích của người dùng
+
     const navigate = useNavigate();
     const location = useLocation();
     // Lấy danh sách thương hiệu từ API
@@ -39,36 +40,36 @@ const Category = ({ keyword, categoryId: headerCategoryId, setCategoryId }) => {
                     ...filters, // Thêm các tham số bộ lọc
                 },
             });
-    
-            setTotalPages(Math.ceil(response.data.length/ itemsPerPage)); // Dùng `totalCount` thay vì `length`
+
+            setTotalPages(Math.ceil(response.data.length / itemsPerPage)); // Dùng `totalCount` thay vì `length`
             setProducts(response.data); // Cập nhật danh sách sản phẩm
         } catch (error) {
             console.error('Lỗi khi tải sản phẩm:', error);
             setProducts([]); // Trả về danh sách sản phẩm rỗng nếu có lỗi
         }
     };
-    
+
 
     // Hàm áp dụng các bộ lọc và gọi lại API
     const applyFilters = () => {
         const filters = {};
         const currentCategoryId = categoryId || headerCategoryId; // Nếu không có categoryId trong trang thì sử dụng categoryId từ Header
-        if (currentCategoryId  !== null) filters.categoryId = currentCategoryId;
+        if (currentCategoryId !== null) filters.categoryId = currentCategoryId;
         if (minPrice !== null) filters.minPrice = minPrice;
         if (maxPrice !== null) filters.maxPrice = maxPrice;
         if (keyword !== '') filters.keyword = keyword;
         if (selectedBrand !== '') filters.brandId = selectedBrand;
         if (sort !== null) filters.sort = sort;
-    
+
         console.log("Đang áp dụng bộ lọc: ", filters); // Kiểm tra các bộ lọc đang được áp dụng
         getProducts(filters); // Gọi API để lấy sản phẩm với các bộ lọc
     };
-    
+
     const currentProducts = products.slice(
         (currentPage - 1) * itemsPerPage,
         currentPage * itemsPerPage
     );
-    
+
     useEffect(() => {
         console.log("Đang gọi lại API với các bộ lọc", {
             categoryId,
@@ -83,36 +84,102 @@ const Category = ({ keyword, categoryId: headerCategoryId, setCategoryId }) => {
         applyFilters(); // Gọi API để lấy sản phẩm mới
         fetchBrands(); // Lấy danh sách thương hiệu
     }, [categoryId, minPrice, maxPrice, keyword, sort, selectedBrand, pageSize, currentPage]);
-    
+
     // Chuyển trang
     const handlePageChange = (page) => {
         setCurrentPage(page); // Cập nhật trang hiện tại
         console.log("Chuyển trang sang:", page);  // Kiểm tra xem có vào được không
         applyFilters(); // Gọi lại hàm applyFilters để lấy sản phẩm mới từ API
     };
-  
+
     // Lấy sản phẩm của trang hiện tại
-  
+
     // Hàm thêm sản phẩm vào giỏ hàng
     const addToCart = async (productId, quantity = 1) => {
-        try {
-            const response = await axios.post(
-                'http://localhost:8080/api/cart/addToCart',
-                null,
-                { params: { productId, quantity }, withCredentials: true }
-            );
-            const redirectUrl = response.data.redirectUrl;
-            if (redirectUrl) navigate(redirectUrl);
-        } catch (error) {
-            console.error('Lỗi khi thêm vào giỏ hàng:', error);
+        const userId = sessionStorage.getItem("userId"); // Lấy userId từ sessionStorage
+        if (!userId) {
+          alert("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.");
+          return;
         }
+        try {
+          const response = await axios.post('http://localhost:8080/api/cart/addToCart', null, {
+            params: { userId, productId, quantity },
+            withCredentials: true, // Đảm bảo gửi cookie session
+          });
+    
+          // Lấy URL chuyển hướng từ response
+          const redirectUrl = response.data.redirectUrl;
+    
+          // Nếu có URL chuyển hướng, điều hướng người dùng đến trang giỏ hàng
+          if (redirectUrl) {
+            navigate(redirectUrl);  // Dùng navigate thay vì history.push
+          }
+        } catch (error) {
+          console.error("Lỗi khi thêm vào giỏ hàng:", error);
+        }
+      };
+    
+      // Xử lý khi người dùng nhấn nút "Add to Cart"
+      const handleAddToCart = (e) => {
+        e.preventDefault();
+        const productId = e.target.productId.value;
+        const quantity = e.target.quantity.value;
+    
+        addToCart(productId, quantity); // Gọi hàm addToCart với tham số
+      };
+    
+    const handleCategoryClick = (id) => {
+        setCategoryIdLocal(id); // Cập nhật danh mục riêng trong trang
+        setCategoryId(id); // Cập nhật danh mục trong Header nếu cần
     };
-   const handleCategoryClick = (id) => {
-    setCategoryIdLocal(id); // Cập nhật danh mục riêng trong trang
-    setCategoryId(id); // Cập nhật danh mục trong Header nếu cần
-    };
-   
-   
+// Thêm sản phẩm vào danh sách yêu thích
+const addToWishlist = async (productId) => {
+    const username = sessionStorage.getItem('username');
+    if (!username) {
+      console.error('User not logged in');
+      return;
+    }
+
+    try {
+      const response = await axios.post('http://localhost:8080/api/likes/add', null, {
+        params: { productId },
+        headers: {
+          'Authorization': `Bearer ${username}`, // Gửi thông tin username trong header
+        },
+        withCredentials: true,
+      });
+      console.log('Sản phẩm đã được thêm vào danh sách yêu thích');
+    } catch (error) {
+      console.error('Lỗi khi thêm vào danh sách yêu thích:', error);
+    }
+  };
+
+  // Lấy sản phẩm yêu thích từ API
+  useEffect(() => {
+    const username = sessionStorage.getItem('username');
+    if (!username) {
+      console.error('User not logged in');
+      return;
+    }
+
+    fetch('http://localhost:8080/api/likes/like-products', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${username}`,
+      },
+      credentials: 'include',
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch liked products');
+        }
+        return response.json();
+      })
+      .then((data) => setLikedProducts(data))
+      .catch((error) => console.error('Error fetching liked products:', error));
+  }, []);
+
     return (
 <div className="body-content outer-top-xs">
 <div
