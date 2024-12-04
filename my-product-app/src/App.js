@@ -43,7 +43,9 @@ import OrderAmin from './components/admin/order';
 
 
 import EditUserAmin from './components/admin/editUser';
+import EditProductAmin from './components/admin/editProduct';
 import AddUserAmin from './components/admin/addUser';
+import AddProductAmin from './components/admin/addProduct';
 function App() {
   const [keyword, setKeyword] = useState('');
   const [ categoryId, setCategoryId] = useState('');
@@ -60,7 +62,8 @@ function App() {
 
         <Route path="/nguoidung/add" element={<AddUserAmin />} />
         <Route path="/nguoidung/edit/:id" element={<EditUserAmin />} />
-
+        <Route path="/products/add" element={<AddProductAmin />} />
+        <Route path="/products/edit/:id" element={<EditProductAmin />} />
         <Route
           path="/product/:id"
           element={

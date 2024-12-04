@@ -34,27 +34,38 @@ const AddUserForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Create a new FormData object to send multipart data
+      // Tạo FormData và thêm dữ liệu
       const formDataToSend = new FormData();
-      for (const key in formData) {
-        formDataToSend.append(key, formData[key]);
+      const userPayload = {
+        username: formData.username,
+        password: formData.password,
+        email: formData.email,
+        name: formData.name,
+        birthday: formData.birthday,
+        phone: formData.phone,
+        role: formData.role === 'true',
+        gender: formData.gender === 'true',
+      };
+  
+      formDataToSend.append('user', JSON.stringify(userPayload));
+      if (formData.file) {
+        formDataToSend.append('file', formData.file);
       }
-
-      // Send the data to the backend (adjust the URL as needed)
+  
+      // Gửi dữ liệu đến backend
       const response = await axios.post('http://localhost:8080/api/users', formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-
-      // Handle success
+  
       if (response.status === 200) {
         alert('User added successfully!');
       }
     } catch (error) {
       if (error.response) {
         console.error('Error response:', error.response);
-        setErrors(error.response.data.errors || {});  // Handle validation errors from backend
+        setErrors(error.response.data.errors || {});
       } else {
         console.error('Unexpected error:', error);
       }
