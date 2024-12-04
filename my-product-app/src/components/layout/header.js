@@ -48,8 +48,8 @@ const Header = ({ setKeyword, setCategoryId }) => {
     navigate(`/categorys`);
   };
   return (
-    <header className="header-style-1" style={{width: '1701px'}}>
-      <div className="top-bar animate-dropdown" style={{paddingLeft: '371px'}}>
+    <header className="header-style-1 container-fluid bg-light py-3" >
+      <div className="top-bar animate-dropdown " style={{paddingLeft: '371px'}}>
         <div className="container">
           <div className="header-top-inner">
             <div className="cnt-account">

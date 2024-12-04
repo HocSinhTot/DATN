@@ -136,58 +136,227 @@ const CartPage = () => {
     };
     
     return (
-        <div className="cart-page">
-            <h2>Giỏ Hàng</h2>
-            {message && <p>{message}</p>}
-            <table>
-                <thead>
-                    <tr>
-                        <th>Sản phẩm</th>
-                        <th>Hình ảnh</th>
-                        <th>Giá</th>
-                        <th>Số lượng</th>
-                        <th>Thành tiền</th>
-                        <th>Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {cartItems.map((item) => (
-                        <tr key={item.product.id}>
-                            <td>{item.product.name}</td>
-                            <td>
-                                <a href={`/product/${item.product.id}`}>
-                                    <img
-                                        src={`/assets/images/${item.product.productsImages[0].image.url}`}
-                                        alt={item.product.name}
-                                        className="img-responsive"
-                                    />
-                                </a>
-                            </td>
-                            <td>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.product.price)}</td>
-                            <td>
-                                <div className="quant-input">
-                                    <button onClick={() => updateQuantity(item.product.id, item.totalQuantity - 1)}>-</button>
-                                    <input type="number" value={item.totalQuantity} min="1" readOnly />
-                                    <button onClick={() => updateQuantity(item.product.id, item.totalQuantity + 1)}>+</button>
-                                </div>
-                            </td>
-                            <td>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.product.price * item.totalQuantity)}</td>
-                            <td>
-                                <button onClick={() => removeFromCart(item.product.id)} className="remove-btn">Xóa</button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-
-            <div className="total-section">
-                <h2>Tổng cộng: <span>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalAmount)}</span></h2>
-            </div>
-
-            <button onClick={clearCart} className="clear-cart-btn">Xóa hết</button>
-
-            <button onClick={handlePayment} className="payment-btn">Thanh Toán</button>
+        <div
+        className="cart-page"
+        style={{
+          maxWidth: '1350px',
+          margin: '20px auto',
+          padding: '20px',
+          background: '#fff',
+          borderRadius: '10px',
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+        }}
+      >
+        <h2
+          style={{
+            fontSize: '2.5rem',
+            textAlign: 'center',
+            color: '#333',
+            marginBottom: '20px',
+          }}
+        >
+          Giỏ Hàng
+        </h2>
+      
+        {message && (
+          <p style={{ textAlign: 'center', color: '#ff6f61', marginBottom: '20px' }}>
+            {message}
+          </p>
+        )}
+      
+        <table
+          style={{
+            width: '100%',
+            borderCollapse: 'collapse',
+            marginBottom: '20px',
+            fontSize: '1.2rem',
+          }}
+        >
+          <thead>
+            <tr>
+              <th style={{ border: '1px solid #ddd', padding: '15px', textAlign: 'center' }}>
+                Sản phẩm
+              </th>
+              <th style={{ border: '1px solid #ddd', padding: '15px', textAlign: 'center' }}>
+                Hình ảnh
+              </th>
+              <th style={{ border: '1px solid #ddd', padding: '15px', textAlign: 'center' }}>
+                Giá
+              </th>
+              <th style={{ border: '1px solid #ddd', padding: '15px', textAlign: 'center' }}>
+                Số lượng
+              </th>
+              <th style={{ border: '1px solid #ddd', padding: '15px', textAlign: 'center' }}>
+                Thành tiền
+              </th>
+              <th style={{ border: '1px solid #ddd', padding: '15px', textAlign: 'center' }}>
+                Thao tác
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {cartItems.map((item) => (
+              <tr key={item.product.id}>
+                <td style={{ textAlign: 'center', padding: '15px' }}>
+                  {item.product.name}
+                </td>
+                <td style={{ textAlign: 'center', padding: '15px' }}>
+                  <a href={`/product/${item.product.id}`}>
+                    <img
+                      src={`/assets/images/${item.product.productsImages[0].image.url}`}
+                      alt={item.product.name}
+                      style={{
+                        width: '150px',
+                        height: 'auto',
+                        objectFit: 'cover',
+                        borderRadius: '10px',
+                      }}
+                    />
+                  </a>
+                </td>
+                <td style={{ textAlign: 'center', padding: '15px' }}>
+                  {new Intl.NumberFormat('vi-VN', {
+                    style: 'currency',
+                    currency: 'VND',
+                  }).format(item.product.price)}
+                </td>
+                <td style={{ textAlign: 'center', padding: '15px' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <button
+                      onClick={() =>
+                        updateQuantity(item.product.id, item.totalQuantity - 1)
+                      }
+                      style={{
+                        backgroundColor: '#f0f0f0',
+                        border: 'none',
+                        padding: '10px 15px',
+                        cursor: 'pointer',
+                        fontSize: '1rem',
+                      }}
+                    >
+                      -
+                    </button>
+                    <input
+                      type="number"
+                      value={item.totalQuantity}
+                      readOnly
+                      style={{
+                        width: '60px',
+                        textAlign: 'center',
+                        margin: '0 10px',
+                        border: '1px solid #ddd',
+                        borderRadius: '5px',
+                      }}
+                    />
+                    <button
+                      onClick={() =>
+                        updateQuantity(item.product.id, item.totalQuantity + 1)
+                      }
+                      style={{
+                        backgroundColor: '#f0f0f0',
+                        border: 'none',
+                        padding: '10px 15px',
+                        cursor: 'pointer',
+                        fontSize: '1rem',
+                      }}
+                    >
+                      +
+                    </button>
+                  </div>
+                </td>
+                <td style={{ textAlign: 'center', padding: '15px' }}>
+                  {new Intl.NumberFormat('vi-VN', {
+                    style: 'currency',
+                    currency: 'VND',
+                  }).format(item.product.price * item.totalQuantity)}
+                </td>
+                <td style={{ textAlign: 'center', padding: '15px' }}>
+                  <button
+                    onClick={() => removeFromCart(item.product.id)}
+                    style={{
+                      backgroundColor: '#ff6f61',
+                      color: '#fff',
+                      border: 'none',
+                      padding: '10px 20px',
+                      cursor: 'pointer',
+                      borderRadius: '5px',
+                    }}
+                  >
+                    Xóa
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      
+        <div
+          style={{
+            textAlign: 'right',
+            marginBottom: '20px',
+            fontSize: '1.5rem',
+          }}
+        >
+          Tổng cộng:{' '}
+          <span
+            style={{
+              color: '#ff6f61',
+              fontWeight: 'bold',
+            }}
+          >
+            {new Intl.NumberFormat('vi-VN', {
+              style: 'currency',
+              currency: 'VND',
+            }).format(totalAmount)}
+          </span>
         </div>
+      
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: '20px',
+            marginTop: '20px',
+          }}
+        >
+          <button
+            onClick={() => navigate('/')}
+            style={{
+              padding: '15px 30px',
+              backgroundColor: '#007bff',
+              color: '#fff',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '1.2rem',
+              borderRadius: '5px',
+            }}
+          >
+            Mua thêm sản phẩm
+          </button>
+          <button
+            onClick={handlePayment}
+            style={{
+              padding: '15px 30px',
+              backgroundColor: '#28a745',
+              color: '#fff',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '1.2rem',
+              borderRadius: '5px',
+            }}
+          >
+            Thanh Toán
+          </button>
+        </div>
+      </div>
+      
+      
     );
 };
 

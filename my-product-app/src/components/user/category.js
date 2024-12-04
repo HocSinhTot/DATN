@@ -2,6 +2,8 @@ import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { useNavigate,useLocation  } from 'react-router-dom';
 
+
+
 const Category = ({ keyword, categoryId: headerCategoryId, setCategoryId }) => {
     const [products, setProducts] = useState([]); // Danh sách tất cả sản phẩm
     const [currentPage, setCurrentPage] = useState(1); // Trang hiện tại
@@ -112,114 +114,221 @@ const Category = ({ keyword, categoryId: headerCategoryId, setCategoryId }) => {
    
    
     return (
+<div className="body-content outer-top-xs">
+<div
+  style={{
+    width: '100%',
+    maxWidth: '1400px', // Tùy chỉnh chiều rộng tối đa nếu cần
+    margin: '0 auto', // Căn giữa
+    paddingLeft: '15px', // Khoảng cách bên trái
+    paddingRight: '15px', // Khoảng cách bên phải
+  }}
+>
+ 
 
-        <div class="body-content outer-top-xs">
-            <div class='container'>
-                <div class='row'>
-                    <div class='col-md-3 sidebar'>
-                        <div class="sidebar-module-container">
-                            <div class="sidebar-filter">
-                        
-                                <div class="sidebar-widget wow fadeInUp">
-                                    <div class="head">
-                                        <h4 class="widget-title">Danh mục</h4>
-                                    </div>
-                                    <div class="sidebar-widget-body">
-                                        <ul className="list" id="new-products-1">
-                                            <li className={`me-3 ${categoryId === null ? 'active' : ''}`} onClick={() => handleCategoryClick(null)}>
-                                                <span>Tất cả</span>
-                                            </li>
-                                            <li className={`me-3 ${categoryId === 1 ? 'active' : ''}`} onClick={() => handleCategoryClick(1)}>
-                                                <span>Điện thoại di động</span>
-                                            </li>
-                                            <li className={`me-3 ${categoryId === 2 ? 'active' : ''}`} onClick={() => handleCategoryClick(2)}>
-                                                <span>Laptop</span>
-                                            </li>
-                                            <li className={`me-3 ${categoryId === 3 ? 'active' : ''}`} onClick={() => handleCategoryClick(3)}>
-                                                <span>Máy tính bảng</span>
-                                            </li>
-                                            <li className={categoryId === 4 ? 'active' : ''} onClick={() => handleCategoryClick(4)}>
-                                                <span>Phụ kiện</span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
+    <div className="row">
+     
+    <div
+  className="col-md-12"
+  style={{
+    width: '100%', // Đảm bảo chiều rộng của div chiếm toàn bộ chiều rộng
+    maxWidth: '1500px', // Bạn có thể thay đổi maxWidth theo ý muốn
+    margin: '0 auto', // Căn giữa phần tử
+  }}
 
 
+
+
+
+
+
+
+
+  
+>
+        <div id="category" className="category-carousel hidden-xs">
+          <div className="item">
+            <div className="image">
+              <img
+                src="assets/images/banners/cat-banner-1.jpg"
+                alt=""
+                className="img-responsive"
+              />
+            </div>
+          </div>
+        </div>
+        <div
+      className="clearfix filters-container"
+      style={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: '15px',
+        marginBottom: '20px',
+        padding: '15px',
+        backgroundColor: '#f1f1f1',
+        borderRadius: '8px',
+      }}
+    >
+      <div style={{ flex: '1', minWidth: '200px' }}>
+        <label style={{ fontWeight: 'bold', marginBottom: '5px', display: 'block' }}>
+          Danh mục
+        </label>
+        <select
+          className="form-control"
+          value={categoryId || ''}
+          onChange={(e) => handleCategoryClick(e.target.value)}
+          style={{ padding: '8px', borderRadius: '4px', width: '100%' }}
+        >
+          <option value="">Tất cả</option>
+          <option value="1">Điện thoại di động</option>
+          <option value="2">Laptop</option>
+          <option value="3">Máy tính bảng</option>
+          <option value="4">Phụ kiện</option>
+        </select>
+      </div>
+
+      <div style={{ flex: '1', minWidth: '200px' }}>
+        <label style={{ fontWeight: 'bold', marginBottom: '5px', display: 'block' }}>
+          Thương hiệu
+        </label>
+        <select
+          className="form-control"
+          onChange={(e) => setSelectedBrand(e.target.value)}
+          style={{ padding: '8px', borderRadius: '4px', width: '100%' }}
+        >
+          <option value="">Tất cả</option>
+          {brands.map((brand) => (
+            <option key={brand.id} value={brand.id}>
+              {brand.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div style={{ flex: '1', minWidth: '200px' }}>
+        <label style={{ fontWeight: 'bold', marginBottom: '5px', display: 'block' }}>
+          Giá
+        </label>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <input
+            type="number"
+            className="form-control"
+            placeholder="Thấp nhất"
+            onChange={(e) => setMinPrice(e.target.value)}
+            style={{ flex: '1', padding: '8px', borderRadius: '4px' }}
+          />
+          <input
+            type="number"
+            className="form-control"
+            placeholder="Cao nhất"
+            onChange={(e) => setMaxPrice(e.target.value)}
+            style={{ flex: '1', padding: '8px', borderRadius: '4px' }}
+          />
+        </div>
+      </div>
+
+      <div style={{ flex: '1', minWidth: '200px' }}>
+        <label style={{ fontWeight: 'bold', marginBottom: '5px', display: 'block' }}>
+          Sắp xếp
+        </label>
+        <select
+          className="form-control"
+          onChange={(e) => setSort(e.target.value)}
+          style={{ padding: '8px', borderRadius: '4px', width: '100%' }}
+        >
+          <option value="">Sắp xếp theo</option>
+          <option value="asc">Giá thấp đến cao</option>
+          <option value="desc">Giá cao đến thấp</option>
+        </select>
+      </div>
+    </div>
+
+        <div className="search-result-container">
+          <div id="myTabContent" className="tab-content category-list">
+            <div className="tab-pane active" id="grid-container">
+              <div className="category-product">
+                <div className="row">
+                  <div className="product-list row">
+                    {currentProducts.length > 0 ? (
+                      currentProducts.map((product) => {
+                        const firstImageUrl =
+                          product.productsImages.length > 0
+                            ? `/assets/images/${product.productsImages[0].image.url}`
+                            : 'default-image.jpg';
+
+                        return (
+                          <div className="col-md-3 product" key={product.id}>
+                            <div className="product-image">
+                              <div className="image">
+                                <a href={`/product/${product.id}`}>
+                                  <img
+                                    src={firstImageUrl}
+                                    alt={product.name}
+                                    className="card-img-top img-responsive"
+                                  />
+                                </a>
+                              </div>
                             </div>
 
-
-                        </div>
-                    </div>
-                    <div class='col-md-9'>
-                        <div id="category" class="category-carousel hidden-xs">
-                            <div class="item">
-                                <div class="image"> <img src="assets\images\banners\cat-banner-1.jpg" alt="" class="img-responsive" /> </div>
-                                <div class="container-fluid">
-                                   
-                                </div>
+                            <div className="product-info text-left">
+                              <h3 className="name">
+                                <a href={`/product/${product.id}`}>{product.name}</a>
+                              </h3>
+                              <div className="rating rateit-small"></div>
+                              <div className="description"></div>
+                              <div className="product-price">
+                                <span className="price">
+                                  {product.price.toLocaleString()} VND
+                                </span>
+                              </div>
                             </div>
-                        </div>
-                        <div class="clearfix filters-container m-t-10">
-    <div class="row">
-    <div class="col col-sm-8 col-md-4">
-            <div class="filter-tabs">
-                <label  class="lbl">Thương hiệu</label>
-                <select
-                                            className="form-control"
-                                            onChange={(e) => setSelectedBrand(e.target.value)}
-                                        >
-                                            <option value="">Tất cả</option>
-                                            {brands.map((brand) => (
-                                                <option key={brand.id} value={brand.id}>
-                                                    {brand.name}
-                                                </option>
-                                            ))}
-                                        </select>
-            </div>
-        </div>
 
-        <div class="col col-sm-12 col-md-4">
-            <div class="lbl-cnt"> <span class="lbl">Giá</span>
-            <div className="flex">
-                                            <input
-                                                type="number"
-                                                className="form-control"
-                                                placeholder="Giá thấp nhất"
-                                                onChange={(e) => setMinPrice(e.target.value)}
-                                            />
-                                            <input
-                                                type="number"
-                                                className="form-control"
-                                                placeholder="Giá cao nhất"
-                                                onChange={(e) => setMaxPrice(e.target.value)}
-                                            />
-                                        </div>
-            </div>
-        </div>
+                            <div className="cart clearfix animate-effect">
+                              <div className="action">
+                                <ul className="list-unstyled">
+                                  <li className="add-cart-button btn-group">
+                                    <button
+                                      className="btn btn-primary"
+                                      onClick={() => addToCart(product.id)}
+                                    >
+                                      <i className="fa fa-shopping-cart"></i>
+                                    </button>
+                                  </li>
+                                  <li className="lnk wishlist">
+                                    <a
+                                      data-toggle="tooltip"
+                                      className="add-to-cart"
+                                      href={`/addlike/${product.id}`}
+                                      title="Wishlist"
+                                    >
+                                      <i className="icon fa fa-heart"></i>
+                                    </a>
+                                  </li>
+                                  <li className="lnk">
+                                    <a
+                                      data-toggle="tooltip"
+                                      className="add-to-cart"
+                                      href={`/product/${product.id}`}
+                                      title="Compare"
+                                    >
+                                      <i className="fa fa-signal" aria-hidden="true"></i>
+                                    </a>
+                                  </li>
+                                </ul>
+                              </div>
+                            </div>
+                            <hr />
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <p className="text-center">Không có sản phẩm nào.</p>
+                    )}
+                  </div>
 
-      
-
-        <div class="col col-sm-12 col-md-2">
-            <div class="lbl-cnt"> <span class="lbl">Sắp xếp</span>
-                <div class="fld inline">
-                    <div class="dropdown dropdown-small dropdown-med dropdown-white inline">
-                        
-                        <select
-                                            className="form-control"
-                                            onChange={(e) => setSort(e.target.value)}
-                                        >
-                                            <option value="">Sắp xếp theo</option>
-                                            <option value="asc">Giá thấp đến cao</option>
-                                            <option value="desc">Giá cao đến thấp</option>
-                                        </select>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col col-sm-3 col-md-2">
-        <div className="lbl-cnt">
+                  <div className="row justify-content-center mt-4">
+                    <nav>
+                    <div className="lbl-cnt d-flex justify-content-center align-items-center">
     <span className="lbl">Hiển thị trang</span>
     <div className="pagination-container">
         <ul className="pagination">
@@ -238,112 +347,22 @@ const Category = ({ keyword, categoryId: headerCategoryId, setCategoryId }) => {
             }
         </ul>
     </div>
-
-            </div>
-        </div>
-
-        <div class="col col-sm-6 col-md-4 text-right">
-           
-        </div>
-    </div>
 </div>
 
-                        <div class="search-result-container ">
-                            <div id="myTabContent" class="tab-content category-list">
-                                <div class="tab-pane active " id="grid-container">
-                                    <div class="category-product">
-                                        <div class="row">
-                                            <div className="product-list row">
-                                                {currentProducts.length > 0 ? (
-                                                    currentProducts.map((product) => {
-                                                        const firstImageUrl =
-                                                            product.productsImages.length > 0
-                                                                ? `/assets/images/${product.productsImages[0].image.url}`
-                                                                : 'default-image.jpg';
-
-                                                        return (
-                                                            <div className="col-md-3 product" key={product.id}>
-
-                                                                <div class="product-image">
-                                                                    <div class="image">  <a href={`/product/${product.id}`}>
-                                                                        <img
-                                                                            src={firstImageUrl}
-                                                                            alt={product.name}
-                                                                            className="card-img-top img-responsive"
-                                                                        />
-                                                                    </a> </div>
-
-                                                                </div>
-
-                                                                <div class="product-info text-left">
-                                                                    <h3 class="name"><a href={`/product/${product.id}`}>{product.name}</a></h3>
-                                                                    <div class="rating rateit-small"></div>
-                                                                    <div class="description"></div>
-                                                                    <div class="product-price"> <span class="price">{product.price.toLocaleString()} VND </span> </div>
-
-                                                                </div>
-                                                                <div className="cart clearfix animate-effect">
-                                                                    <div className="action">
-                                                                        <ul className="list-unstyled">
-                                                                            <li className="add-cart-button btn-group">
-
-                                                                                <button
-                                                                                    className="btn btn-primary"
-                                                                                    onClick={() => addToCart(product.id)}
-                                                                                >
-                                                                                    <i className="fa fa-shopping-cart"></i>
-                                                                                </button>
-
-                                                                            </li>
-                                                                            <li className="lnk wishlist">
-                                                                                <a
-                                                                                    data-toggle="tooltip"
-                                                                                    className="add-to-cart"
-                                                                                    href={`/addlike/${product.id}`}
-                                                                                    title="Wishlist"
-                                                                                >
-                                                                                    <i className="icon fa fa-heart"></i>
-                                                                                </a>
-                                                                            </li>
-                                                                            <li className="lnk">
-                                                                                <a
-                                                                                    data-toggle="tooltip"
-                                                                                    className="add-to-cart"
-                                                                                    href={`/product/${product.id}`}
-                                                                                    title="Compare"
-                                                                                >
-                                                                                    <i className="fa fa-signal" aria-hidden="true"></i>
-                                                                                </a>
-                                                                            </li>
-                                                                        </ul>
-                                                                    </div>
-                                                                </div>
-                                                                <hr />
-                                                            </div>
-
-                                                        );
-                                                    })
-                                                ) : (
-                                                    <p className="text-center">Không có sản phẩm nào.</p>
-                                                )}
-                                            </div>
-
-                                            <div className="row justify-content-center mt-4">
-                                                <nav>
-
-                                                </nav>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    </nav>
+                  </div>
                 </div>
+              </div>
             </div>
+          </div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 
     );
 };
 
-export default Category;
+export default Category; 
