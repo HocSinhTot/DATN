@@ -38,17 +38,14 @@ import FavouriteAmin from './components/admin/favourite';
 import EvaluaesAmin from './components/admin/evaluaes';
 
 import OrderAmin from './components/admin/order';
-
-
-
-
 import EditUserAmin from './components/admin/editUser';
 import EditProductAmin from './components/admin/editProduct';
 import AddUserAmin from './components/admin/addUser';
 import AddProductAmin from './components/admin/addProduct';
+import OrderHistory from './components/user/order';
 function App() {
   const [keyword, setKeyword] = useState('');
-  const [ categoryId, setCategoryId] = useState('');
+  const [categoryId, setCategoryId] = useState('');
   return (
     <div className="App">
       <Routes>
@@ -58,11 +55,11 @@ function App() {
         <Route path="/change" element={<Change />} />
 
 
-    
+
 
         <Route path="/nguoidung/add" element={<AddUserAmin />} />
         <Route path="/nguoidung/edit/:id" element={<EditUserAmin />} />
-        
+
 
         <Route path="/products/add" element={<AddProductAmin />} />
         <Route path="/products/edit/:id" element={<EditProductAmin />} />
@@ -71,7 +68,7 @@ function App() {
           element={
             <>
 
-              <Header setKeyword={setKeyword} setCategoryId={setCategoryId}/>
+              <Header setKeyword={setKeyword} setCategoryId={setCategoryId} />
               <ProductDetail />
               <Footer />
             </>
@@ -82,19 +79,30 @@ function App() {
           element={
             <>
 
-              <Header setKeyword={setKeyword} setCategoryId={setCategoryId}/>
-              <Account/>
+              <Header setKeyword={setKeyword} setCategoryId={setCategoryId} />
+              <Account />
               <Footer />
             </>
           }
         />
-         <Route
+        <Route
+          path="/history"
+          element={
+            <>
+
+              <Header setKeyword={setKeyword} setCategoryId={setCategoryId} />
+              <OrderHistory />
+              <Footer />
+            </>
+          }
+        />
+        <Route
           path="/like"
           element={
             <>
 
-              <Header setKeyword={setKeyword} setCategoryId={setCategoryId}/>
-              <Favorite/>
+              <Header setKeyword={setKeyword} setCategoryId={setCategoryId} />
+              <Favorite />
               <Footer />
             </>
           }
@@ -104,10 +112,10 @@ function App() {
           element={
             <>
 
-              <Header setKeyword={setKeyword} setCategoryId={setCategoryId}/>
-              <Categorys   keyword={keyword} 
-                categoryId={categoryId} 
-                setCategoryId={setCategoryId}/>
+              <Header setKeyword={setKeyword} setCategoryId={setCategoryId} />
+              <Categorys keyword={keyword}
+                categoryId={categoryId}
+                setCategoryId={setCategoryId} />
               <Footer />
             </>
           }
@@ -116,22 +124,25 @@ function App() {
           path="/cart"
           element={
             <>
- <Header setKeyword={setKeyword} setCategoryId={setCategoryId}/>
-             
+              <Header setKeyword={setKeyword} setCategoryId={setCategoryId} />
+
               <Cart />
               <Footer />
             </>
           }
         />
-         <Route
+        <Route
           path="/invoice"
           element={
             <>
+              <Header setKeyword={setKeyword} setCategoryId={setCategoryId} />
+
               <Invoice />
+              <Footer />
             </>
           }
         />
-         <Route
+        <Route
           path="/vnPay"
           element={
             <>
@@ -143,7 +154,7 @@ function App() {
           path="/"
           element={
             <>
-                <Header setKeyword={setKeyword} setCategoryId={setCategoryId}/>
+              <Header setKeyword={setKeyword} setCategoryId={setCategoryId} />
               <Index />
               <Footer />
             </>
@@ -152,7 +163,7 @@ function App() {
 
 
 
-<Route
+        <Route
           path="/admin"
           element={
             <>
@@ -171,7 +182,7 @@ function App() {
           }
         />
 
-<Route
+        <Route
           path="/products"
           element={
             <>
@@ -181,7 +192,7 @@ function App() {
           }
         />
 
-<Route
+        <Route
           path="/category"
           element={
             <>
@@ -191,7 +202,7 @@ function App() {
           }
         />
 
-<Route
+        <Route
           path="/brands"
           element={
             <>
@@ -203,7 +214,7 @@ function App() {
 
 
 
-<Route
+        <Route
           path="/color"
           element={
             <>
@@ -213,7 +224,7 @@ function App() {
           }
         />
 
-<Route
+        <Route
           path="/capacity"
           element={
             <>
@@ -224,7 +235,7 @@ function App() {
         />
 
 
-<Route
+        <Route
           path="/images"
           element={
             <>
@@ -233,7 +244,7 @@ function App() {
             </>
           }
         />
-        
+
         <Route
           path="/order"
           element={
@@ -266,7 +277,7 @@ function App() {
 
       </Routes>
 
-      
+
     </div>
   );
 }

@@ -117,22 +117,26 @@ const CartPage = () => {
             calculateTotal(cartItems);
         }
     }, [cartItems]);
-
     const handlePayment = () => {
-        const cartData = {
-            userId,
-            cartItems
-        };
-    
-        axios.post('http://localhost:8080/api/cart/invoice', cartData)
-            .then(response => {
-                const invoiceData = response.data;
-                navigate('/invoice', { state: { invoiceData } }); // Đảm bảo truyền đúng dữ liệu
-            })
-            .catch(error => {
-                console.error("Error creating invoice:", error);
-            });
-    };
+      const cartData = {
+          userId,
+          cart: cartItems.reduce((acc, item) => {
+              acc[item.product.id] = item.totalQuantity;
+              return acc;
+          }, {}),
+      };
+  
+      // Gửi yêu cầu POST thay vì GET
+      axios.post('http://localhost:8080/api/cart/invoice', cartData)
+          .then(response => {
+              const invoiceData = response.data;
+              navigate('/invoice', { state: { invoiceData } });
+          })
+          .catch(error => {
+              console.error("Error creating invoice:", error);
+          });
+  };
+  
     
     return (
         <div
