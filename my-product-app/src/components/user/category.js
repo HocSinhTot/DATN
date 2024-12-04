@@ -245,7 +245,7 @@ const Category = ({ keyword, categoryId: headerCategoryId, setCategoryId }) => {
           >
             <div id="category" className="category-carousel hidden-xs">
               <div className="item">
-                <div className="image" style={{ height: "100%" }}>
+                <div className="image" style={{ height: "100% " }}>
                   <img
                     src="assets/images/banners/cmm.webp"
                     alt=""

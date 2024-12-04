@@ -8,7 +8,11 @@ const Notification = ({ message, type, show, onClose }) => {
         position: "fixed",
         top: "30px",
         right: "50px",
-        background: type === "success" ? "linear-gradient(45deg, #4caf50, #8bc34a)" : "linear-gradient(45deg, #e53935, #e35d5b)",
+        background: type === "success"
+          ? "linear-gradient(45deg, #4caf50, #8bc34a)"
+          : (type === "error"
+            ? "linear-gradient(45deg, #e53935, #e35d5b)"
+            : "linear-gradient(45deg, #ff9800, #f57c00)"), // Thêm màu cho loại cảnh báo
         color: "white",
         padding: "10px 20px",
         borderRadius: "8px",
@@ -29,7 +33,11 @@ const Notification = ({ message, type, show, onClose }) => {
           borderRadius: "50%",
           height: "30px",
           width: "30px",
-          backgroundImage: type === "success" ? "linear-gradient(#9b59b6, #84cdfa, #5ad1cd)" : "linear-gradient(#f44336, #ff6f61, #ff8a65)",
+          backgroundImage: type === "success"
+            ? "linear-gradient(#9b59b6, #84cdfa, #5ad1cd)"
+            : (type === "error"
+              ? "linear-gradient(#f44336, #ff6f61, #ff8a65)"
+              : "linear-gradient(#ff9800, #f57c00)"), // Thêm màu cho loại cảnh báo
           animation: "rotate_3922 1.2s linear infinite",
         }}
       >
@@ -45,13 +53,13 @@ const Notification = ({ message, type, show, onClose }) => {
           }}
         ></div>
       </div>
-      <p style={{ marginLeft: "30px", marginBottom: 0,paddingRight:'13px' }}>{message}</p>
+      <p style={{ marginLeft: "30px", marginBottom: 0, paddingRight: '13px' }}>{message}</p>
       <button
         onClick={onClose}
         style={{
           position: "absolute",
-          top: "5px",
-          right: "10px",
+          top: "-3px",
+          right: "-2px",
           background: "transparent",
           border: "none",
           color: "white",

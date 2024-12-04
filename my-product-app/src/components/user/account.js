@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-
+import Notification from './Notification';
 const Account = () => {
   const [user, setUser] = useState(null); // State lưu trữ thông tin người dùng
   const [showPopup, setShowPopup] = useState(false);
@@ -60,7 +60,7 @@ const Account = () => {
 
   const handlePasswordConfirm = () => {
     const formData = new FormData();
-    formData.append("user", new Blob([JSON.stringify(user)], {type: 'application/json'}));
+    formData.append("user", new Blob([JSON.stringify(user)], { type: 'application/json' }));
     formData.append("image", user.imageFile);  // Gửi hình ảnh nếu có
 
     axios
@@ -70,16 +70,24 @@ const Account = () => {
         },
       })
       .then(() => {
-        alert("Cập nhật thành công!");
+        setNotificationMessage('Cập nhật thành công người dung');
+        setNotificationType('success');
+        setShowNotification(true);
+
+        setTimeout(() => setShowNotification(false), 3000); // Ẩn sau 3 giây
         setShowPopup(false);
       })
       .catch((error) => {
-        console.error("Lỗi khi cập nhật thông tin:", error.response ? error.response.data : error.message);
+        setNotificationMessage("Đã xảy ra lỗi khi cập nhật thông tin");
+        setNotificationType("error");
+        setShowNotification(true);
+
+        setTimeout(() => setShowNotification(false), 3000); // Ẩn sau 3 giây
         alert("Đã xảy ra lỗi khi cập nhật thông tin");
       });
-};
+  };
 
-  
+
   const handleImageChange = (e) => {
     const file = e.target.files[0]; // Lấy tệp từ input
     if (file) {
@@ -87,6 +95,22 @@ const Account = () => {
       const previewURL = URL.createObjectURL(file);
       setUser({ ...user, previewImage: previewURL, imageFile: file });
     }
+  };
+
+
+  //
+  ///thông báo
+  const [showNotification, setShowNotification] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState('');
+  const [notificationType, setNotificationType] = useState('success');
+
+  const handlePurchase = () => {
+    // Logic mua hàng
+    setNotificationMessage('Cập nhật thành công');
+    setNotificationType('success');
+    setShowNotification(true);
+
+    setTimeout(() => setShowNotification(false), 3000); // Ẩn sau 3 giây
   };
 
 
@@ -115,40 +139,47 @@ const Account = () => {
           borderRadius: "10px",
           boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
         }}
-      >
+      >    {/* Thông báo */}
+        <Notification
+          message={notificationMessage}
+          type={notificationType}
+          show={showNotification}
+          onClose={() => setShowNotification(false)}
+        />
+
         <div className="row gutters">
-        <div className="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12" style={{ paddingTop: '70px' }}>
-  <div className="card h-100">
-    <div className="card-body">
-      <div className="account-settings">
-        <div className="user-profile">
-          <div className="user-avatar">
-            <img
-              src={user.previewImage || `http://localhost:8080/assets/images/${user.image}`}
-              alt="User Avatar"
-              style={{
-                width: "120px",
-                height: "120px",
-                borderRadius: "50%",
-                objectFit: "cover",
-                border: "2px solid #ddd",
-                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-              }}
-            />
+          <div className="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12" style={{ paddingTop: '70px' }}>
+            <div className="card h-100">
+              <div className="card-body">
+                <div className="account-settings">
+                  <div className="user-profile">
+                    <div className="user-avatar" style={{ paddingLeft: '42px' }}>
+                      <img
+                        src={user.previewImage || `http://localhost:8080/assets/images/${user.image}`}
+                        alt="User Avatar"
+                        style={{
+                          width: "120px",
+                          height: "120px",
+                          borderRadius: "50%",
+                          objectFit: "cover",
+                          border: "2px solid #ddd",
+                          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                        }}
+                      />
+                    </div>
+                    <input style={{ marginTop: '15px' }}
+                      type="file"
+                      accept="image/*"
+                      className="form-control"
+                      name="image"
+                      onChange={(e) => handleImageChange(e)}
+                    />
+                    <input type="hidden" name="id" value={user.id} />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <input
-            type="file"
-            accept="image/*"
-            className="form-control"
-            name="image"
-            onChange={(e) => handleImageChange(e)}
-          />
-          <input type="hidden" name="id" value={user.id} />
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
 
 
           <div
@@ -291,7 +322,7 @@ const Account = () => {
                         onClick={handleUpdate}
                         className="btn btn-success"
                       >
-                        Update
+                        Cập nhật
                       </button>
                     </div>
                   </div>
@@ -301,8 +332,6 @@ const Account = () => {
           </div>
         </div>
       </form>
-
-
       {/* Popup xác nhận mật khẩu */}
       {showPopup && (
         <div
@@ -317,18 +346,20 @@ const Account = () => {
             justifyContent: "center",
             alignItems: "center",
             zIndex: 1000,
+            animation: "fadeInBackdrop 0.3s ease-out",
           }}
         >
           <div
             style={{
-              backgroundColor: "#ffffff",
-              borderRadius: "10px",
-              padding: "20px",
-              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.3)",
-              width: "300px",
+              backgroundColor: "#fff",
+              borderRadius: "20px",
+              padding: "30px",
+              boxShadow: "0 20px 50px rgba(0, 0, 0, 0.2)",
+              width: "380px",
               maxWidth: "90%",
               textAlign: "center",
               position: "relative",
+              animation: "fadeInPopup 0.3s ease-out",
             }}
           >
             <button
@@ -339,19 +370,20 @@ const Account = () => {
                 right: "10px",
                 background: "none",
                 border: "none",
-                fontSize: "18px",
+                fontSize: "24px",
                 cursor: "pointer",
-                color: "#999",
+                color: "#888",
               }}
             >
               &times;
             </button>
             <h5
               style={{
-                marginBottom: "15px",
+                marginBottom: "20px",
                 color: "#333",
-                fontSize: "18px",
-                fontWeight: "bold",
+                fontSize: "22px",
+                fontWeight: "600",
+                textTransform: "uppercase",
               }}
             >
               Xác nhận mật khẩu
@@ -362,21 +394,23 @@ const Account = () => {
               value={passwordInput}
               onChange={(e) => setPasswordInput(e.target.value)}
               style={{
-                width: "90%",
-                padding: "8px",
-                marginBottom: "15px",
+                width: "100%",
+                padding: "12px",
+                marginBottom: "20px",
                 border: "1px solid #ccc",
-                borderRadius: "5px",
-                fontSize: "14px",
+                borderRadius: "8px",
+                fontSize: "16px",
+                outline: "none",
+                transition: "border-color 0.3s ease",
               }}
             />
             {errorMessage && (
               <p
                 style={{
-                  color: "#ff0000",
-                  fontSize: "12px",
-                  marginTop: "-5px",
-                  marginBottom: "10px",
+                  color: "#f44336",
+                  fontSize: "14px",
+                  marginTop: "-10px",
+                  marginBottom: "20px",
                 }}
               >
                 {errorMessage}
@@ -385,36 +419,46 @@ const Account = () => {
             <button
               onClick={handlePasswordConfirm}
               style={{
-                padding: "10px 20px",
-                margin: "5px",
+                padding: "12px 30px",
+                margin: "10px 5px",
                 border: "none",
-                borderRadius: "5px",
-                fontSize: "14px",
+                borderRadius: "8px",
+                fontSize: "16px",
                 cursor: "pointer",
                 color: "#fff",
-                backgroundColor: "#28a745",
+                backgroundColor: "#4CAF50",
+                transition: "background-color 0.3s ease",
               }}
+              onMouseOver={(e) => (e.target.style.backgroundColor = "#45a049")}
+              onMouseOut={(e) => (e.target.style.backgroundColor = "#4CAF50")}
             >
               Xác nhận
             </button>
             <button
               onClick={() => setShowPopup(false)}
               style={{
-                padding: "10px 20px",
-                margin: "5px",
+                padding: "12px 30px",
+                margin: "10px 5px",
                 border: "none",
-                borderRadius: "5px",
-                fontSize: "14px",
+                borderRadius: "8px",
+                fontSize: "16px",
                 cursor: "pointer",
                 color: "#fff",
-                backgroundColor: "#dc3545",
+                backgroundColor: "#f44336",
+                transition: "background-color 0.3s ease",
               }}
+              onMouseOver={(e) => (e.target.style.backgroundColor = "#e53935")}
+              onMouseOut={(e) => (e.target.style.backgroundColor = "#f44336")}
             >
               Hủy
             </button>
           </div>
         </div>
       )}
+
+
+
+
     </div>
   );
 };

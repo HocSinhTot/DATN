@@ -1,39 +1,50 @@
 import React, { useState, useEffect } from 'react';
-
+import Popup from './Popupuser';
+import Notification from './Notification';
 const WishlistPage = () => {
     const [listLike, setListLike] = useState([]);
+    const [popup, setPopup] = useState({ show: false, message: '', onConfirm: null });
 
     useEffect(() => {
-        const username = sessionStorage.getItem('username'); // Lấy thông tin người dùng từ sessionStorage
+        const username = sessionStorage.getItem('username');
 
         if (!username) {
-            console.error('User not logged in');
-            return; // Ngừng thực thi nếu chưa đăng nhập
+            console.error('Người dùng chưa đăng nhập');
+            return;
         }
 
         fetch('http://localhost:8080/api/likes/like-products', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${username}` // Gửi username hoặc token nếu cần
+                'Authorization': `Bearer ${username}`,
             },
             credentials: 'include',
         })
             .then((response) => {
                 if (!response.ok) {
-                    throw new Error('Failed to fetch liked products');
+                    throw new Error('Không thể lấy danh sách yêu thích');
                 }
                 return response.json();
             })
             .then((data) => setListLike(data))
-            .catch((error) => console.error('Error fetching liked products:', error));
+            .catch((error) => console.error('Lỗi khi lấy danh sách yêu thích:', error));
     }, []);
+    const handleShowPopup = (id) => {
+        setPopup({
+            show: true,
+            message: 'Bạn có chắc muốn xóa sản phẩm này khỏi danh sách yêu thích?',
+            onConfirm: () => {
+                handleDeleteLike(id); // Gọi hàm xóa
+            },
+        });
+    };
 
     const handleDeleteLike = (id) => {
         const username = sessionStorage.getItem('username');
 
         if (!username) {
-            console.error('User not logged in');
+            console.error('Người dùng chưa đăng nhập');
             return;
         }
 
@@ -44,22 +55,45 @@ const WishlistPage = () => {
             },
             credentials: 'include',
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Error deleting liked product');
-            }
-            return response.text();  // Dùng .text() thay vì .json() vì phản hồi không phải JSON
-        })
-        .then(message => {
-            console.log(message);  // In thông báo từ server
-            if (message === 'Favourite deleted') {
-                setListLike(listLike.filter(item => item.id !== id));
-            }
-        })
-        .catch(error => {
-            console.error('Error deleting liked product:', error);
-        });
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Lỗi khi xóa sản phẩm yêu thích');
+                }
+                return response.text();
+            })
+            .then((message) => {
+                console.log(message);
+                if (message === 'Favourite deleted') {
+                    setListLike((prevList) => prevList.filter((item) => item.id !== id));
+                    setNotificationMessage('Đã xóa khỏi yêu thích');
+                    setNotificationType('success');
+                    setShowNotification(true);
+
+                    setTimeout(() => setShowNotification(false), 3000); // Ẩn thông báo sau 3 giây
+                }
+                setPopup({ show: false }); // Đóng popup sau khi xóa
+            })
+            .catch((error) => {
+                console.error('Lỗi khi xóa sản phẩm yêu thích:', error);
+            });
     };
+
+
+
+    ///thông báo
+    const [showNotification, setShowNotification] = useState(false);
+    const [notificationMessage, setNotificationMessage] = useState('');
+    const [notificationType, setNotificationType] = useState('success');
+
+    const handlePurchase = () => {
+        // Logic mua hàng
+        setNotificationMessage('Đã xóa khỏi yêu thích');
+        setNotificationType('success');
+        setShowNotification(true);
+
+        setTimeout(() => setShowNotification(false), 3000); // Ẩn sau 3 giây
+    };
+
 
     return (
         <div
@@ -91,7 +125,7 @@ const WishlistPage = () => {
                         borderCollapse: 'collapse',
                         marginBottom: '20px',
                         fontSize: '1.2rem',
-                        height: 'auto', // Tăng chiều cao cho bảng
+                        height: 'auto',
                     }}
                 >
                     <thead>
@@ -100,13 +134,21 @@ const WishlistPage = () => {
                                 colSpan="3"
                                 style={{
                                     border: '1px solid #ddd',
-                                    padding: '20px', // Tăng padding
+                                    padding: '20px',
                                     textAlign: 'center',
                                     fontSize: '1.5rem',
                                     fontWeight: 'bold',
                                 }}
                             >
                                 Danh Sách Sản Phẩm Yêu Thích
+                                {/* Thông báo */}
+                                <Notification
+                                    message={notificationMessage}
+                                    type={notificationType}
+                                    show={showNotification}
+                                    onClose={() => setShowNotification(false)}
+                                />
+
                             </th>
                         </tr>
                     </thead>
@@ -116,7 +158,7 @@ const WishlistPage = () => {
                                 <td
                                     style={{
                                         textAlign: 'center',
-                                        padding: '20px', // Tăng padding cho mỗi ô
+                                        padding: '20px',
                                     }}
                                 >
                                     {like.product.images.length > 0 && (
@@ -135,7 +177,7 @@ const WishlistPage = () => {
                                 <td
                                     style={{
                                         textAlign: 'center',
-                                        padding: '20px', // Tăng padding cho mỗi ô
+                                        padding: '20px',
                                     }}
                                 >
                                     <div className="product-name">
@@ -150,16 +192,16 @@ const WishlistPage = () => {
                                 <td
                                     style={{
                                         textAlign: 'center',
-                                        padding: '20px', // Tăng padding cho mỗi ô
+                                        padding: '20px',
                                     }}
                                 >
                                     <button
-                                        onClick={() => handleDeleteLike(like.id)}
+                                        onClick={() => handleShowPopup(like.id)}
                                         style={{
                                             backgroundColor: '#ff6f61',
                                             color: '#fff',
                                             border: 'none',
-                                            padding: '12px 24px', // Tăng kích thước nút
+                                            padding: '12px 24px',
                                             cursor: 'pointer',
                                             borderRadius: '5px',
                                         }}
@@ -172,6 +214,14 @@ const WishlistPage = () => {
                     </tbody>
                 </table>
             </div>
+
+            {popup.show && (
+                <Popup
+                    message={popup.message}
+                    onClose={() => setPopup({ show: false, message: '', onConfirm: null })}
+                    onConfirm={popup.onConfirm}
+                />
+            )}
         </div>
     );
 };

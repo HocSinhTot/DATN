@@ -46,6 +46,13 @@ public class UserModel {
 	private boolean gender;
 
 	// Các getter và setter khác...
+	public boolean isRole() {
+		return role;
+	}
+
+	public void setRole(boolean role) {
+		this.role = role;
+	}
 
 	// Phương thức khóa tài khoản
 	public void blockAccount() {

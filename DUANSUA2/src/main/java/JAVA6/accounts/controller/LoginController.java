@@ -37,7 +37,7 @@ public class LoginController {
             // Kiểm tra trạng thái tài khoản
             if (!user.isStatus()) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                        .body(new ApiResponse(false, "Tài khoản đã bị khóa.", false,0));
+                        .body(new ApiResponse(false, "Tài khoản đã bị khóa.", false, 0));
             }
 
             // Kiểm tra mật khẩu
@@ -45,14 +45,15 @@ public class LoginController {
                 // Trả về thông tin người dùng dưới dạng API Response
                 boolean isAdmin = user.isRole(); // Kiểm tra quyền admin
                 int userId = user.getId();
-                return ResponseEntity.ok(new ApiResponse(true, "Đăng nhập thành công!",  isAdmin,userId));
+                return ResponseEntity.ok(new ApiResponse(true, "Đăng nhập thành công!", isAdmin, userId));
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ApiResponse(false, "Sai mật khẩu.", false,0));
+                    .body(new ApiResponse(false, "Sai mật khẩu.", false, 0));
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ApiResponse(false, "Tài khoản không tồn tại.", false,0));
+                .body(new ApiResponse(false, "Tài khoản không tồn tại.", false, 0));
     }
+
     @RequestMapping("/logout")
     public ResponseEntity<ApiResponse> logout(HttpSession session, HttpServletResponse response) {
         // Ghi lại thông tin phiên người dùng trước khi hủy
@@ -64,13 +65,14 @@ public class LoginController {
         // Ghi lại thông tin phiên người dùng sau khi hủy
         System.out.println("Session sau khi hủy: " + session.getId());
 
-        // Tùy chọn: xóa cookie (nếu bạn đang sử dụng cookie để lưu trữ phiên hoặc dữ liệu remember-me)
+        // Tùy chọn: xóa cookie (nếu bạn đang sử dụng cookie để lưu trữ phiên hoặc dữ
+        // liệu remember-me)
         Cookie logoutCookie = new Cookie("JSESSIONID", null);
         logoutCookie.setMaxAge(0); // Đặt cookie hết hạn ngay lập tức
         logoutCookie.setPath("/"); // Đảm bảo cookie áp dụng cho toàn bộ domain
         response.addCookie(logoutCookie);
 
         // Trả về phản hồi xác nhận đăng xuất thành công
-        return ResponseEntity.ok(new ApiResponse(true, "Đăng xuất thành công!", true,0));
+        return ResponseEntity.ok(new ApiResponse(true, "Đăng xuất thành công!", true, 0));
     }
 }
