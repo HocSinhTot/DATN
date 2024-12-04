@@ -2,32 +2,69 @@ import React, { useState, useEffect } from 'react';
 
 const WishlistPage = () => {
     const [listLike, setListLike] = useState([]);
-    
+
     useEffect(() => {
-        // Giả sử có một API để lấy danh sách yêu thích
-        fetch('/api/like-products')
-            .then(response => response.json())
-            .then(data => setListLike(data))
-            .catch(error => console.error('Error fetching liked products:', error));
-    }, []);
-    
-    const handleDeleteLike = (id) => {
-        // Hàm để xóa sản phẩm khỏi danh sách yêu thích
-        fetch(`/api/dellike/${id}`, { method: 'DELETE' })
-            .then(() => {
-                // Xóa sản phẩm khỏi listLike sau khi thành công
-                setListLike(listLike.filter(item => item.id !== id));
+        const username = sessionStorage.getItem('username'); // Lấy thông tin người dùng từ sessionStorage
+
+        if (!username) {
+            console.error('User not logged in');
+            return; // Ngừng thực thi nếu chưa đăng nhập
+        }
+
+        fetch('http://localhost:8080/api/likes/like-products', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${username}` // Gửi username hoặc token nếu cần
+            },
+            credentials: 'include',
+            
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch liked products');
+                }
+                return response.json();
             })
-            .catch(error => console.error('Error deleting liked product:', error));
-    };
+            .then((data) => setListLike(data))
+            .catch((error) => console.error('Error fetching liked products:', error));
+    }, []);
+
+    const handleDeleteLike = (id) => {
+    const username = sessionStorage.getItem('username');
+    
+    if (!username) {
+        console.error('User not logged in');
+        return;
+    }
+    
+    fetch(`http://localhost:8080/api/likes/delete?id=${id}`, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${username}`,
+        },
+        credentials: 'include',
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error deleting liked product');
+        }
+        return response.text();  // Dùng .text() thay vì .json() vì phản hồi không phải JSON
+    })
+    .then(message => {
+        console.log(message);  // In thông báo từ server
+        if (message === 'Favourite deleted') {
+            setListLike(listLike.filter(item => item.id !== id));
+        }
+    })
+    .catch(error => {
+        console.error('Error deleting liked product:', error);
+    });
+};
+
 
     return (
         <div className="cnt-home">
-            {/* Header Component */}
-
-            {/* Breadcrumb */}
-            
-
             <div className="body-content">
                 <div className="container">
                     <div className="my-wishlist-page">
@@ -41,14 +78,13 @@ const WishlistPage = () => {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {/* Lặp qua danh sách sản phẩm yêu thích */}
-                                            {listLike.map(like => (
+                                            {listLike.map((like) => (
                                                 <tr key={like.id}>
                                                     <td className="col-md-2">
                                                         {like.product.images.length > 0 && (
-                                                            <img 
-                                                                src={`/assets/images/${like.product.images[0].url}`} 
-                                                                className="img-responsive" 
+                                                            <img
+                                                                src={`/assets/images/${like.product.images[0].url}`}
+                                                                className="img-responsive"
                                                                 alt="Product Image"
                                                             />
                                                         )}
@@ -59,18 +95,10 @@ const WishlistPage = () => {
                                                                 {like.product.name}
                                                             </a>
                                                         </div>
-                                                        <div className="rating">
-                                                            {/* Hiển thị đánh giá sao */}
-                                                            <i className="fa fa-star rate"></i>
-                                                            <i className="fa fa-star rate"></i>
-                                                            <i className="fa fa-star rate"></i>
-                                                            <i className="fa fa-star rate"></i>
-                                                            <i className="fa fa-star non-rate"></i>
-                                                            <span className="review">(06 Đánh giá)</span>
-                                                        </div>
-                                                        <div className="pric">
+                                                        
+                                                        <div className="">
                                                             <span style={{ fontWeight: 'bold', fontSize: 'medium' }}>
-                                                                {like.product.price} VNĐ
+                                                                {like.product.price.toLocaleString()} VNĐ
                                                             </span>
                                                         </div>
                                                     </td>
@@ -87,29 +115,8 @@ const WishlistPage = () => {
                             </div>
                         </div>
                     </div>
-
-                    {/* Brands Carousel */}
-                    <div id="brands-carousel" className="logo-slider wow fadeInUp">
-                        <div className="logo-slider-inner">
-                            <div id="brand-slider" className="owl-carousel brand-slider custom-carousel owl-theme">
-                                <div className="item m-t-15">
-                                    <a href="#" className="image">
-                                        <img src="assets/images/brands/brand1.png" alt="Brand 1" />
-                                    </a>
-                                </div>
-                                <div className="item m-t-10">
-                                    <a href="#" className="image">
-                                        <img src="assets/images/brands/brand2.png" alt="Brand 2" />
-                                    </a>
-                                </div>
-                                {/* Các thương hiệu khác */}
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
-
-            {/* Footer Component */}
         </div>
     );
 };
