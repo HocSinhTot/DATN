@@ -62,13 +62,10 @@ function App() {
 
         <Route path="/nguoidung/add" element={<AddUserAmin />} />
         <Route path="/nguoidung/edit/:id" element={<EditUserAmin />} />
-<<<<<<< HEAD
         
 
-=======
         <Route path="/products/add" element={<AddProductAmin />} />
         <Route path="/products/edit/:id" element={<EditProductAmin />} />
->>>>>>> origin/sang2
         <Route
           path="/product/:id"
           element={

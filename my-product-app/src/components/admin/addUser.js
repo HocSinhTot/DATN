@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const AddUserForm = () => {
@@ -15,6 +15,17 @@ const AddUserForm = () => {
   });
 
   const [errors, setErrors] = useState({});
+  const [stars, setStars] = useState([]);
+
+  useEffect(() => {
+    const newStars = Array.from({ length: 10 }).map((_, index) => ({
+      id: index,
+      top: `${Math.random() * 100}%`,
+      left: `${Math.random() * 100}%`,
+      animationDelay: `${Math.random() * 3}s`,
+    }));
+    setStars(newStars);
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -34,7 +45,6 @@ const AddUserForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Tạo FormData và thêm dữ liệu
       const formDataToSend = new FormData();
       const userPayload = {
         username: formData.username,
@@ -46,19 +56,18 @@ const AddUserForm = () => {
         role: formData.role === 'true',
         gender: formData.gender === 'true',
       };
-  
+
       formDataToSend.append('user', JSON.stringify(userPayload));
       if (formData.file) {
         formDataToSend.append('file', formData.file);
       }
-  
-      // Gửi dữ liệu đến backend
+
       const response = await axios.post('http://localhost:8080/api/users', formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-  
+
       if (response.status === 200) {
         alert('User added successfully!');
       }
@@ -72,140 +81,141 @@ const AddUserForm = () => {
     }
   };
 
+  const styles = {
+    body: {
+      background: 'radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%)',
+      height: '100vh',
+      overflow: 'hidden',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      color: '#fff',
+      margin: 0,
+    },
+    stars: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      overflow: 'hidden',
+    },
+    star: {
+      position: 'absolute',
+      width: '3px',
+      height: '3px',
+      background: 'rgba(255, 255, 255, 0.8)',
+      borderRadius: '50%',
+      animation: 'starAnimation 2s infinite',
+    },
+    container: {
+      position: 'relative',
+      background: 'rgba(255, 255, 255, 0.1)',
+      padding: '30px',
+      borderRadius: '8px',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+      maxWidth: '500px',
+      width: '100%',
+      zIndex: 10,
+    },
+  };
+
   return (
-    <div className="container" style={{ maxWidth: '600px', marginTop: '50px' }}>
-      <h1 className="text-center mb-4">Thêm Người Dùng</h1>
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="username">Tên người dùng</label>
-          <input
-            type="text"
-            className="form-control"
-            id="username"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-          />
-          {errors.username && <div className="text-danger">{errors.username}</div>}
-        </div>
+    <div style={styles.body}>
+      <div style={styles.stars}>
+        {stars.map(star => (
+          <div
+            key={star.id}
+            style={{
+              ...styles.star,
+              top: star.top,
+              left: star.left,
+              animationDelay: star.animationDelay,
+            }}
+          ></div>
+        ))}
+      </div>
 
-        <div className="form-group">
-          <label htmlFor="password">Mật khẩu</label>
-          <input
-            type="password"
-            className="form-control"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-          />
-          {errors.password && <div className="text-danger">{errors.password}</div>}
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            className="form-control"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-          />
-          {errors.email && <div className="text-danger">{errors.email}</div>}
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="name">Tên</label>
-          <input
-            type="text"
-            className="form-control"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-          />
-          {errors.name && <div className="text-danger">{errors.name}</div>}
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="birthday">Ngày sinh</label>
-          <input
-            type="date"
-            className="form-control"
-            id="birthday"
-            name="birthday"
-            value={formData.birthday}
-            onChange={handleChange}
-          />
-          {errors.birthday && <div className="text-danger">{errors.birthday}</div>}
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="phone">Số điện thoại</label>
-          <input
-            type="text"
-            className="form-control"
-            id="phone"
-            name="phone"
-            value={formData.phone}
-            onChange={handleChange}
-          />
-          {errors.phone && <div className="text-danger">{errors.phone}</div>}
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="role">Vai trò</label>
-          <select
-            className="form-control"
-            id="role"
-            name="role"
-            value={formData.role}
-            onChange={handleChange}
-          >
-            <option value="true">Admin</option>
-            <option value="false">User</option>
-          </select>
-        </div>
-
-        <div className="form-group">
-          <label>Giới tính</label>
-          <div>
+      <div style={styles.container}>
+        <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>Thêm Người Dùng</h1>
+        <form onSubmit={handleSubmit}>
+          <div className="form-group" style={{ marginBottom: '15px' }}>
+            <label htmlFor="username" style={{ fontSize: '16px', fontWeight: '600', color: '#555', marginBottom: '8px' }}>
+              Tên người dùng
+            </label>
             <input
-              type="radio"
-              id="male"
-              name="gender"
-              value="true"
-              checked={formData.gender === 'true'}
+              type="text"
+              className="form-control"
+              id="username"
+              name="username"
+              value={formData.username}
               onChange={handleChange}
-            /> Nam
-            <input
-              type="radio"
-              id="female"
-              name="gender"
-              value="false"
-              checked={formData.gender === 'false'}
-              onChange={handleChange}
-            /> Nữ
+              style={{
+                borderRadius: '5px',
+                border: '1px solid #ccc',
+                padding: '10px',
+                width: '100%',
+                transition: 'border-color 0.3s ease',
+              }}
+            />
+            {errors.username && <div style={{ color: '#dc3545', fontSize: '14px' }}>{errors.username}</div>}
           </div>
-        </div>
 
-        <div className="form-group">
-          <label htmlFor="file">Hình ảnh</label>
-          <input
-            type="file"
-            className="form-control"
-            id="file"
-            name="file"
-            onChange={handleFileChange}
-          />
-        </div>
+          <div className="form-group" style={{ marginBottom: '15px' }}>
+            <label htmlFor="password" style={{ fontSize: '16px', fontWeight: '600', color: '#555', marginBottom: '8px' }}>
+              Mật khẩu
+            </label>
+            <input
+              type="password"
+              className="form-control"
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              style={{
+                borderRadius: '5px',
+                border: '1px solid #ccc',
+                padding: '10px',
+                width: '100%',
+                transition: 'border-color 0.3s ease',
+              }}
+            />
+            {errors.password && <div style={{ color: '#dc3545', fontSize: '14px' }}>{errors.password}</div>}
+          </div>
 
-        <div className="d-flex justify-content-between">
-          <a href="/nguoidung" className="btn btn-danger">Quay lại</a>
-          <button type="submit" className="btn btn-primary">Thêm</button>
-        </div>
-      </form>
+          {/* Add other input fields here */}
+
+          <div className="d-flex" style={{ justifyContent: 'space-between' }}>
+            <button
+              type="button"
+              className="btn btn-danger"
+              onClick={() => alert('Chức năng quay lại')}
+              style={{
+                padding: '10px 20px',
+                fontSize: '16px',
+                fontWeight: '600',
+                borderRadius: '5px',
+              }}
+            >
+              Quay lại
+            </button>
+
+            <button
+              type="submit"
+              className="btn btn-primary"
+              style={{
+                padding: '13px 23px',
+                fontSize: '16px',
+                fontWeight: '600',
+                borderRadius: '5px',
+                marginLeft: '20px',
+              }}
+            >
+              Thêm
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

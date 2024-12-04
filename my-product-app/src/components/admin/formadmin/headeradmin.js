@@ -176,7 +176,14 @@ export default function App() {
 			<div class="container-fluid">
 				<div class="be-navbar-header">
 					<a class="navbar-brand" href="/admin"></a>
-				</div>
+
+              <div className="logo">
+           
+                  <img style={{ width: '120px',
+    height: '111px',marginRight:"100px" }} src="/assets/images/banners/logo1.jpg" alt="logo" />
+            
+              </div>
+            				</div>
 				<div class="page-title">
 					<a class="navbar-brand" href="/admin">Bảng Thống Kê</a>
 				</div>
