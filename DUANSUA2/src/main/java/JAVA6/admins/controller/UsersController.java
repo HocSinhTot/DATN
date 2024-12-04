@@ -123,7 +123,7 @@ public ResponseEntity<String> updateUser(
                     // Xử lý upload ảnh mới
                     if (file != null && !file.isEmpty()) {
                         try {
-                            String uploadDir = "src/main/resources/static/assets/images/uploads/";
+                            String uploadDir = "assets/images/U/";
                             Path uploadPath = Paths.get(uploadDir);
 
                             if (!Files.exists(uploadPath)) {
@@ -136,7 +136,7 @@ public ResponseEntity<String> updateUser(
                             Files.copy(file.getInputStream(), filePath);
 
                             // Cập nhật đường dẫn ảnh
-                            user.setImage("assets/images/uploads/" + fileName);
+                            user.setImage("" + fileName);
                         } catch (IOException e) {
                             logger.error("Error uploading file: ", e);
                             return ResponseEntity.status(500).body("Error uploading file: " + e.getMessage());
