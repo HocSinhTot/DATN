@@ -9,7 +9,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination, Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
-
+import Notification from './Notification';
 const Index = () => {
   const [products, setProducts] = useState({
     all: [],
@@ -18,7 +18,7 @@ const Index = () => {
     phonesCheap: [],
     accessoriesDiscount: [],
   });
-
+  const [likedProducts, setLikedProducts] = useState([]); // Giả sử bạn đã có danh sách sản phẩm yêu thích của người dùng
   const [categoryId, setCategoryId] = useState(null); // Danh mục được chọn
   const userId = sessionStorage.getItem('userId'); // Lấy userId từ sessionStorage
   const navigate = useNavigate();  // Dùng `useNavigate` thay vì `useHistory`
@@ -84,6 +84,13 @@ const Index = () => {
 
   // Hàm thêm sản phẩm vào giỏ hàng
   const addToCart = async (productId, quantity = 1) => {
+    const userId = sessionStorage.getItem("userId"); // Lấy userId từ sessionStorage
+    if (!userId) {
+      alert("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.");
+      return;
+    }
+
+    
     try {
       const response = await axios.post('http://localhost:8080/api/cart/addToCart', null, {
         params: { userId, productId, quantity },
@@ -93,10 +100,7 @@ const Index = () => {
       // Lấy URL chuyển hướng từ response
       const redirectUrl = response.data.redirectUrl;
 
-      // Nếu có URL chuyển hướng, điều hướng người dùng đến trang giỏ hàng
-      if (redirectUrl) {
-        navigate(redirectUrl);  // Dùng navigate thay vì history.push
-      }
+ 
     } catch (error) {
       console.error("Lỗi khi thêm vào giỏ hàng:", error);
     }
@@ -107,209 +111,120 @@ const Index = () => {
     e.preventDefault();
     const productId = e.target.productId.value;
     const quantity = e.target.quantity.value;
+
     addToCart(productId, quantity); // Gọi hàm addToCart với tham số
   };
 
-  const options = {
-    loop: true,
-    margin: 10,
-    items: 1, // Chỉ 1 item mỗi lần hiển thị
-    dots: false,
-    autoplay: true,
-    autoplayTimeout: 5000,
-    autoplayHoverPause: true,
-  };
-
-  const optionsProduct = {
-    loop: true,
-    margin: 10,
-    nav: true,
-    items: 4,
-    dots: false,
-    autoplay: false,
-    navText: ['<', '>'],
-  };
+  // Thêm sản phẩm vào danh sách yêu thích
+  const [isFavorited, setIsFavorited] = useState(false); // Trạng thái ban đầu là chưa yêu thích
 
   const addToWishlist = async (productId) => {
-    try {
-        const response = await axios.post('http://localhost:8080/api/likes/add', null, {
-            params: { productId },
-            withCredentials: true,
-        });
-        console.log('Sản phẩm đã được thêm vào danh sách yêu thích');
-    } catch (error) {
-        console.error('Lỗi khi thêm vào danh sách yêu thích:', error);
+    const username = sessionStorage.getItem('username');
+    if (!username) {
+      console.error('User not logged in');
+      return;
     }
-};
 
-    
+    try {
+      await axios.post('http://localhost:8080/api/likes/add', null, {
+        params: { productId },
+        headers: {
+          'Authorization': `Bearer ${username}`, // Gửi thông tin username trong header
+        },
+        withCredentials: true,
+      });
+      console.log('Sản phẩm đã được thêm vào danh sách yêu thích');
+      setIsFavorited(true); // Cập nhật trạng thái sau khi thêm thành công
+    } catch (error) {
+      console.error('Lỗi khi thêm vào danh sách yêu thích:', error);
+    }
+  };
+
+  // Lấy sản phẩm yêu thích từ API
+  useEffect(() => {
+    const username = sessionStorage.getItem('username');
+    if (!username) {
+      console.error('User not logged in');
+      return;
+    }
+
+    fetch('http://localhost:8080/api/likes/like-products', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${username}`,
+      },
+      credentials: 'include',
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch liked products');
+        }
+        return response.json();
+      })
+      .then((data) => setLikedProducts(data))
+      .catch((error) => console.error('Error fetching liked products:', error));
+  }, []);
+
+///thông báo
+  const [showNotification, setShowNotification] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState('');
+  const [notificationType, setNotificationType] = useState('success');
+
+  const handlePurchase = () => {
+    // Logic mua hàng
+    setNotificationMessage('Đã thêm vào giỏ hàng');
+    setNotificationType('success');
+    setShowNotification(true);
+
+    setTimeout(() => setShowNotification(false), 3000); // Ẩn sau 3 giây
+  };
+
+  const thich = () => {
+    // Logic mua hàng
+    setNotificationMessage('Đã thích sản phẩm');
+    setNotificationType('success');
+    setShowNotification(true);
+
+    setTimeout(() => setShowNotification(false), 3000); // Ẩn sau 3 giây
+  };
+
+  const [hoverIndex, setHoverIndex] = useState(null);
+
+  const handleMouseEnter = (index) => {
+    setHoverIndex(index);
+  };
+
+  const handleMouseLeave = () => {
+    setHoverIndex(null);
+  };
+
+
   return (
-    <><div className="cnt-home">
-      <div className="body-content outer-top-xs" id="top-banner-and-menu">
-        <div className="container">
+    <>
+    
+        <div className="container-fluid">
           <div className="row">
             {/* Sidebar Section */}
-            <div className="col-xs-12 col-sm-12 col-md-3 sidebar">
+            <div className="col-xs-12 col-sm-12 col-md-3 sidebar" style={{        width: '8%'}}>
               <SideMenu />
+            
+      {/* Thông báo */}
+      <Notification
+        message={notificationMessage}
+        type={notificationType}
+        show={showNotification}
+        onClose={() => setShowNotification(false)}
+      />
 
+            
 
-              {/* Hot Products Section */}
-
-          
-
-              <div className="sidebar-widget outer-bottom-small wow fadeInUp">
-                <h3 className="section-title">ƯU ĐÃI ĐẶC BIỆT</h3>
-                <div className="sidebar-widget-body outer-top-xs">
-                  <Swiper
-        slidesPerView={1}
-        spaceBetween={30}
-        loop={true}
-        pagination={{
-          clickable: true,
-        }}
-        navigation={true}
-        modules={[Pagination, Navigation]}
-        className="mySwiper">
-                  {Array.isArray(products.phonesCheap) && products.phonesCheap.length > 0 ? (
-  products.phonesCheap.map((product) => {
-    const firstImageUrl = product.productsImages && product.productsImages.length > 0
-    ? `/assets/images/${product.productsImages[0].image.url}`
-    : 'default-image.jpg';
-  
-    
-                        return (
-                          <SwiperSlide key={product.id} className="item">
-                            <div className="products special-product">
-                              <div className="product">
-                                <div className="product-micro">
-                                  <div className="row product-micro-row">
-                                    <div className="col col-xs-5">
-                                      <div className="product-image">
-                                        <div className="image">
-                                          <a href={`/product/${product.id}`}>
-                                            <img
-                                              src={firstImageUrl}
-                                              alt={product.name}
-                                              className="img-responsive" />
-                                          </a>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="col col-xs-7">
-                                      <div className="product-info">
-                                        <h3 className="name">
-                                          <a href={`/product/${product.id}`}>
-                                            {product.name}
-                                          </a>
-                                        </h3>
-                                        <div className="product-price">
-                                          <span className="price">
-                                            {product.price.toLocaleString()} VND
-                                          </span>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </SwiperSlide>
-                        );
-                      })
-                    ) : (
-                      <p>Không có sản phẩm nào.</p>
-                    )}
-                  </Swiper>
-                </div>
-              </div>
-
-
-              <div className="sidebar-widget product-tag wow fadeInUp">
-                <h3 className="section-title">THẺ SẢN PHẨM</h3>
-                <div className="sidebar-widget-body outer-top-xs">
-                  <div className="tag-list">
-                    <a className="item" title="Phone" href="#">Phone</a> <a className="item active"
-                      title="Điện thoại di động" href="#">Điện
-                      thoại di động</a> <a className="item" title="Laptop" href="#">Laptop</a>
-                    <a className="item" title="Máy tính bảng" href="#">Máy tính bảng</a>
-                    <a className="item" title="Phụ kiện" href="#">Phụ kiện</a>
-                  </div>
-
-                </div>
-
-              </div>
-
-              <div className="sidebar-widget newsletter wow fadeInUp outer-bottom-small">
-                <h3 className="section-title">BẢN TIN</h3>
-                <div className="sidebar-widget-body outer-top-xs">
-                  <p>Đăng ký nhận bản tin của chúng tôi!</p>
-                  <form>
-                    <div className="form-group">
-                      <label className="sr-only" htmlFor="exampleInputEmail1"> Địa
-                        chỉ Email</label> <input type="email" className="form-control"
-                          id="exampleInputEmail1" placeholder="Đăng ký vào bản tin của chúng tôi" />
-                    </div>
-                    <button className="btn btn-primary">Đăng ký</button>
-                  </form>
-                </div>
-              </div>
-
-
-              <div className="sidebar-widget wow fadeInUp outer-top-vs">
-                <div id="advertisement" className="advertisement">
-                  <div className="item">
-                    <div className="avatar">
-                      <img src="\assets\images\testimonials\member1.png" alt="Image" />
-
-
-
-                    </div>
-                    <div className="testimonials">
-                      <em>"</em> Sản phẩm chất lượng và đội ngũ nhân viên vô cùng thân thiện. Mình sẽ ủng hộ cửa hàng trong tương lai!<em>"</em>
-                    </div>
-                    <div className="clients_author">
-                      Nguyễn Văn Ba <span>Khách hàng</span>
-                    </div>
-                  </div>
-
-                  <div className="item">
-                    <div className="avatar">
-                      <img src="\assets\images\testimonials\member3.png" alt="Image" />
-                    </div>
-                    <div className="testimonials">
-                      <em>"</em> Chất lượng sản phẩm rất tuyệt vời, dịch vụ chăm sóc khách hàng rất chu đáo! Rất hài lòng!<em>"</em>
-                    </div>
-                    <div className="clients_author">
-                      Trần Minh Tuấn <span>Khách hàng</span>
-                    </div>
-                  </div>
-
-                  <div className="item">
-                    <div className="avatar">
-                      <img src="\assets\images\testimonials\member2.png" alt="Image" />
-                    </div>
-                    <div className="testimonials">
-                      <em>"</em> Cửa hàng rất chuyên nghiệp, tôi nhận được sự tư vấn rất nhiệt tình và đã chọn được sản phẩm phù hợp.<em>"</em>
-                    </div>
-                    <div className="clients_author">
-                      Lê Hoài Phúc <span>Khách hàng</span>
-                    </div>
-                  </div>
-
-
-
-
-                </div>
-
-
-
-              </div>
 
             </div>
 
-            <div className="col-xs-12 col-sm-12 col-md-9 homebanner-holder">
+            <div className="col-xs-12 col-sm-12 col-md-9 homebanner-holder" style={{        width: '87%'}}>
 
-      <div id="hero">
+      <div id="hero" style={{paddingTop:'16px'}}>
         <Swiper
         autoplay={{
           delay: 2500,
@@ -322,7 +237,7 @@ const Index = () => {
         modules={[Autoplay, Pagination, Navigation]}
         className="mySwiper">
           <SwiperSlide
-            className="item"
+            className=" "
             style={{
               backgroundImage: "url(/assets/images/sliders/1.jpg)",
               height: "450px",
@@ -384,7 +299,7 @@ const Index = () => {
                           </div>
                         </div>
                         <h6 className="text">Vận chuyển cho các đơn đặt hàng trên
-                          999VNĐ</h6>
+                          1.000.000  VNĐ</h6>
                       </div>
                     </div>
 
@@ -395,7 +310,7 @@ const Index = () => {
                             <h4 className="info-box-heading green">Giảm giá đặc biệt</h4>
                           </div>
                         </div>
-                        <h6 className="text">Giảm thêm 100VNĐ cho tất cả các mặt hàng</h6>
+                        <h6 className="text">Giảm thêm 100.000 VNĐ cho tất cả các mặt hàng</h6>
                       </div>
                     </div>
                   </div>
@@ -407,22 +322,72 @@ const Index = () => {
                   <h3 className="new-product-title pull-left">Sản phẩm mới</h3>
                  
                   <ul className="nav nav-tabs nav-tab-line pull-right gap-3" id="new-products-1">
-  <li className={`me-3 ${categoryId === null ? 'active' : ''}`} onClick={() => handleCategoryClick(null)}>
-    <span>Tất cả</span>
-  </li>
-  <li className={`me-3 ${categoryId === 1 ? 'active' : ''}`} onClick={() => handleCategoryClick(1)}>
-    <span>Điện thoại di động</span>
-  </li>
-  <li className={`me-3 ${categoryId === 2 ? 'active' : ''}`} onClick={() => handleCategoryClick(2)}>
-    <span>Laptop</span>
-  </li>
-  <li className={`me-3 ${categoryId === 3 ? 'active' : ''}`} onClick={() => handleCategoryClick(3)}>
-    <span>Máy tính bảng</span>
-  </li>
-  <li className={categoryId === 4 ? 'active' : ''} onClick={() => handleCategoryClick(4)}>
-    <span>Phụ kiện</span>
-  </li>
-</ul>
+      <li
+        className={`me-3 ${categoryId === null ? 'active' : ''}`}
+        onClick={() => handleCategoryClick(null)}
+        onMouseEnter={() => handleMouseEnter(1)}
+        onMouseLeave={handleMouseLeave}
+        style={{
+          cursor: 'pointer',
+          transition: 'color 0.3s ease',
+          color: hoverIndex === 1 ? 'blue' : '#000', // Blue on hover, black by default
+        }}
+      >
+        <span>Tất cả</span>
+      </li>
+      <li
+        className={`me-3 ${categoryId === 1 ? 'active' : ''}`}
+        onClick={() => handleCategoryClick(1)}
+        onMouseEnter={() => handleMouseEnter(2)}
+        onMouseLeave={handleMouseLeave}
+        style={{
+          cursor: 'pointer',
+          transition: 'color 0.3s ease',
+          color: hoverIndex === 2 ? 'red' : '#000', // Red on hover, black by default
+        }}
+      >
+        <span>Điện thoại di động</span>
+      </li>
+      <li
+        className={`me-3 ${categoryId === 2 ? 'active' : ''}`}
+        onClick={() => handleCategoryClick(2)}
+        onMouseEnter={() => handleMouseEnter(3)}
+        onMouseLeave={handleMouseLeave}
+        style={{
+          cursor: 'pointer',
+          transition: 'color 0.3s ease',
+          color: hoverIndex === 3 ? 'purple' : '#000', // Purple on hover, black by default
+        }}
+      >
+        <span>Laptop</span>
+      </li>
+      <li
+        className={`me-3 ${categoryId === 3 ? 'active' : ''}`}
+        onClick={() => handleCategoryClick(3)}
+        onMouseEnter={() => handleMouseEnter(4)}
+        onMouseLeave={handleMouseLeave}
+        style={{
+          cursor: 'pointer',
+          transition: 'color 0.3s ease',
+          color: hoverIndex === 4 ? 'yellow' : '#000', // Yellow on hover, black by default
+        }}
+      >
+        <span>Máy tính bảng</span>
+      </li>
+      <li
+        className={`${categoryId === 4 ? 'active' : ''}`}
+        onClick={() => handleCategoryClick(4)}
+        onMouseEnter={() => handleMouseEnter(5)}
+        onMouseLeave={handleMouseLeave}
+        style={{
+          cursor: 'pointer',
+          transition: 'color 0.3s ease',
+          color: hoverIndex === 5 ? 'green' : '#000', // Green on hover, black by default
+        }}
+      >
+        <span>Phụ kiện</span>
+      </li>
+    </ul>
 
                  
                 </div>
@@ -448,75 +413,95 @@ const Index = () => {
     
                 return (
                   <SwiperSlide className="col-12 col-sm-6 col-md-4 col-lg-12" key={product.id}>
-                    <div className="product">
-                      <div className="product-image">
-                        <div className="image">
-                          <a href={`/product/${product.id}`}>
-                            <img
-                              src={firstImageUrl}
-                              alt={product.name}
-                              className="img-responsive"
-                            />
-                          </a>
-                        </div>
-                        <div className="tag new">
-                          <span>new</span>
-                        </div>
+                  <div className={`product ${likedProducts.some(like => like.product.id === product.id) ? 'liked' : ''}`} style={{
+                    transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out'
+                  }}>
+                    <div className="product-image">
+                      <div className="image">
+                        <a href={`/product/${product.id}`}>
+                          <img
+                            src={firstImageUrl}
+                            alt={product.name}
+                            className="img-responsive"
+                            style={{
+                              transition: 'transform 0.3s ease-in-out',
+                                   transform: 'translateX(-50%)'
+                               
+                            }}
+                          />
+                        </a>
                       </div>
-
-                      <div className="product-info text-left">
-                        <h3 className="name">
-                          <a href={`/product/${product.id}`}>{product.name}</a>
-                        </h3>
-                        <div className="rating rateit-small"></div>
-                        <div className="description"></div>
-                        <div className="product-price">
-                          <span className="price">
-                            {product.price.toLocaleString()} VND
-                          </span>
-                        </div>
-                        <br/>
+                      <div className="tag new">
+                        <span>new</span>
                       </div>
-
-                      <div className="cart clearfix animate-effect">
-                                                                    <div className="action">
-                                                                        <ul className="list-unstyled">
-                                                                            <li className="add-cart-button btn-group">
-
-                                                                                <button
-                                                                                    className="btn btn-primary"
-                                                                                    onClick={() => addToCart(product.id)}
-                                                                                >
-                                                                                    <i className="fa fa-shopping-cart"></i>
-                                                                                </button>
-
-                                                                            </li>
-                                                                            <li className="lnk wishlist">
-                                                            <a
-                                                                data-toggle="tooltip"
-                                                                className="add-to-cart"
-                                                                href="#"
-                                                                onClick={() => addToWishlist(product.id)}
-                                                                title="Wishlist"
-                                                            >
-                                                                <i className="icon fa fa-heart"></i>
-                                                            </a>
-                                                        </li>
-                                                                            <li className="lnk">
-                                                                                <a
-                                                                                    data-toggle="tooltip"
-                                                                                    className="add-to-cart"
-                                                                                    href={`/product/${product.id}`}
-                                                                                    title="Compare"
-                                                                                >
-                                                                                    <i className="fa fa-signal" aria-hidden="true"></i>
-                                                                                </a>
-                                                                            </li>
-                                                                        </ul>
-                                                                    </div>
-                                                                </div>
                     </div>
-                  </SwiperSlide>
+                
+                    <div className="product-info text-left">
+                      <h3 className="name">
+                        <a href={`/product/${product.id}`}>{product.name}</a>
+                      </h3>
+                      <div className="rating rateit-small"></div>
+                      <div className="description"></div>
+                      <div className="product-price">
+                        <span className="price">
+                          {product.price.toLocaleString()} VND
+                        </span>
+                      </div>
+                      <br />
+                    </div>
+                
+                    <div className="cart clearfix animate-effect">
+                      <div className="action">
+                        <ul className="list-unstyled">
+                          <li className="add-cart-button btn-group">
+                            <button
+                              className="btn btn-primary"
+                              onClick={() => {
+                                handlePurchase();
+                                addToCart(product.id);
+                              }}
+                            >
+                              <i className="fa fa-shopping-cart"></i>
+                            </button>
+                          </li>
+                          <li className="add-cart-button btn-group">
+                            <button
+                              className="btn btn-primary"
+                              onClick={() => {
+                                addToWishlist(product.id);
+                                thich();
+                              }}
+                              style={{
+                                color: isFavorited ? 'red' : 'white', // Thay đổi màu biểu tượng trái tim
+                              }}
+                            >
+                              <i className={`icon fa fa-heart ${isFavorited ? 'favorited' : ''}`}></i>
+                            </button>
+                          </li>
+                          <li className="add-cart-button btn-group">
+                            <button
+                              className="btn btn-primary"
+                              onClick={() => window.location.href = `/product/${product.id}`}
+                            >
+                              <i className="fa fa-signal" aria-hidden="true"></i>
+                            </button>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                
+                  <style jsx>{`
+                    .product:hover {
+                      transform: translateY(-10px);
+                      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                    }
+                    .product:hover .product-image img {
+                      transform: scale(1.1);
+                    }
+                  `}</style>
+                </SwiperSlide>
+                
                 );
               })
             ) : (
@@ -529,19 +514,19 @@ const Index = () => {
               </div>
               <div className="wide-banners wow fadeInUp outer-bottom-xs">
                 <div className="row">
-                  <div className="col-md-7 col-sm-7">
+                  <div className="col-md-7 col-sm-6">
                     <div className="wide-banner cnt-strip">
                       <div className="image">
-                        <img className="img-responsive" src="\assets\\images\banners\home-banner1.jpg"
+                        <img className="img-responsive" src="\assets\\images\banners\bannerdt4.webp"
                           alt="" />
                       </div>
 
                     </div>
                   </div>
-                  <div className="col-md-5 col-sm-5">
+                  <div className="col-md-5 col-sm-6">
                     <div className="wide-banner cnt-strip">
                       <div className="image">
-                        <img className="img-responsive" src="\assets\\images\banners\home-banner2.jpg"
+                        <img className="img-responsive" src="\assets\\images\banners\bannerdt3.jpg"
                           alt="" />
                       </div>
                     </div>
@@ -563,7 +548,7 @@ const Index = () => {
         modules={[Pagination, Navigation]}
         className="mySwiper">
            {Array.isArray(products.cheap) && products.cheap.length > 0 ? (
-  products.cheap.map((product) => {
+  products.phonesCheap.map((product) => {
     const firstImageUrl = product.productsImages && product.productsImages.length > 0
     ? `/assets/images/${product.productsImages[0].image.url}`
     : 'default-image.jpg';
@@ -571,74 +556,96 @@ const Index = () => {
     
                 return (
                   <SwiperSlide className="col-12 col-sm-6 col-md-4 col-lg-12" key={product.id}>
-                    <div className="product">
-                      <div className="product-image">
-                        <div className="image">
-                          <a href={`/product/${product.id}`}>
-                            <img
-                              src={firstImageUrl}
-                              alt={product.name}
-                              className="img-responsive"
-                            />
-                          </a>
-                        </div>
-                        <div className="tag new">
-                          <span>new</span>
-                        </div>
+                  <div className={`product ${likedProducts.some(like => like.product.id === product.id) ? 'liked' : ''}`} 
+                       style={{
+                         transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
+                       }}
+                  >
+                    <div className="product-image">
+                      <div className="image">
+                        <a href={`/product/${product.id}`}>
+                          <img
+                            style={{
+                              transform: 'translateX(-50%)',
+                              transition: 'transform 0.3s ease-in-out',
+                            }}
+                            src={firstImageUrl}
+                            alt={product.name}
+                            className="img-responsive"
+                          />
+                        </a>
                       </div>
-
-                      <div className="product-info text-left">
-                        <h3 className="name">
-                          <a href={`/product/${product.id}`}>{product.name}</a>
-                        </h3>
-                        <div className="rating rateit-small"></div>
-                        <div className="description"></div>
-                        <div className="product-price">
-                          <span className="price">
-                            {product.price.toLocaleString()} VND
-                          </span>
-                        </div>
-                        <br/>
+                      <div className="tag new">
+                        <span>new</span>
                       </div>
-
-                      <div className="cart clearfix animate-effect">
-                                                                    <div className="action">
-                                                                        <ul className="list-unstyled">
-                                                                            <li className="add-cart-button btn-group">
-
-                                                                                <button
-                                                                                    className="btn btn-primary"
-                                                                                    onClick={() => addToCart(product.id)}
-                                                                                >
-                                                                                    <i className="fa fa-shopping-cart"></i>
-                                                                                </button>
-
-                                                                            </li>
-                                                                            <li className="lnk wishlist">
-                                                                                <a
-                                                                                    data-toggle="tooltip"
-                                                                                    className="add-to-cart"
-                                                                                    href={`/addlike/${product.id}`}
-                                                                                    title="Wishlist"
-                                                                                >
-                                                                                    <i className="icon fa fa-heart"></i>
-                                                                                </a>
-                                                                            </li>
-                                                                            <li className="lnk">
-                                                                                <a
-                                                                                    data-toggle="tooltip"
-                                                                                    className="add-to-cart"
-                                                                                    href={`/product/${product.id}`}
-                                                                                    title="Compare"
-                                                                                >
-                                                                                    <i className="fa fa-signal" aria-hidden="true"></i>
-                                                                                </a>
-                                                                            </li>
-                                                                        </ul>
-                                                                    </div>
-                                                                </div>
                     </div>
-                  </SwiperSlide>
+                
+                    <div className="product-info text-left">
+                      <h3 className="name">
+                        <a href={`/product/${product.id}`}>{product.name}</a>
+                      </h3>
+                      <div className="rating rateit-small"></div>
+                      <div className="description"></div>
+                      <div className="product-price">
+                        <span className="price">
+                          {product.price.toLocaleString()} VND
+                        </span>
+                      </div>
+                      <br />
+                    </div>
+                
+                    <div className="cart clearfix animate-effect">
+                      <div className="action">
+                        <ul className="list-unstyled">
+                          <li className="add-cart-button btn-group">
+                            <button
+                              className="btn btn-primary"
+                              onClick={() => {
+                                handlePurchase();
+                                addToCart(product.id);
+                              }}
+                            >
+                              <i className="fa fa-shopping-cart"></i>
+                            </button>
+                          </li>
+                          <li className="add-cart-button btn-group">
+                            <button
+                              className="btn btn-primary"
+                              onClick={() => {
+                                addToWishlist(product.id);
+                                thich();
+                              }}
+                              style={{
+                                color: isFavorited ? 'red' : 'white',
+                              }}
+                            >
+                              <i className={`icon fa fa-heart ${isFavorited ? 'favorited' : ''}`}></i>
+                            </button>
+                          </li>
+                          <li className="add-cart-button btn-group">
+                            <button
+                              className="btn btn-primary"
+                              onClick={() => window.location.href = `/product/${product.id}`}
+                            >
+                              <i className="fa fa-signal" aria-hidden="true"></i>
+                            </button>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                
+                  <style jsx>{`
+                    .product:hover {
+                      transform: translateY(-10px);
+                      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                    }
+                    .product:hover .product-image img {
+                      transform: scale(1.1);
+                    }
+                  `}</style>
+                </SwiperSlide>
+                
                 );
               })
             ) : (
@@ -652,17 +659,10 @@ const Index = () => {
                   <div className="col-md-12">
                     <div className="wide-banner cnt-strip">
                       <div className="image">
-                        <img className="img-responsive" src="\assets\\images\banners\home-banner.jpg"
+                        <img className="img-responsive" style={{width : "1500px",height:"391px"}} src="\assets\\images\banners\bannerdt2.jpg"
                           alt="" />
                       </div>
-                      <div className="strip strip-text">
-                        <div className="strip-inner">
-                          <h2 className="text-right">
-                            Sản phẩm bán chạy<br /> <span className="shopping-needs">Giảm
-                              giá lên đến 10%</span>
-                          </h2>
-                        </div>
-                      </div>
+                     
                       <div className="new-label">
                         <div className="text">NEW</div>
                       </div>
@@ -695,74 +695,98 @@ const Index = () => {
     
                 return (
                   <SwiperSlide className="col-12 col-sm-6 col-md-4 col-lg-12" key={product.id}>
-                    <div className="product">
-                      <div className="product-image">
-                        <div className="image">
-                          <a href={`/product/${product.id}`}>
-                            <img
-                              src={firstImageUrl}
-                              alt={product.name}
-                              className="img-responsive"
-                            />
-                          </a>
-                        </div>
-                        <div className="tag new">
-                          <span>new</span>
-                        </div>
+                  <div className={`product ${likedProducts.some(like => like.product.id === product.id) ? 'liked' : ''}`} 
+                       style={{
+                         transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
+                       }}
+                  >
+                    <div className="product-image">
+                      <div className="image">
+                        <a href={`/product/${product.id}`}>
+                          <img
+                            src={firstImageUrl}
+                            alt={product.name}
+                            className="img-responsive"
+                            style={{
+                              transition: 'transform 0.3s ease-in-out',
+
+                              transform: 'translateX(-50%)'
+
+                            }}
+                          />
+                        </a>
                       </div>
-
-                      <div className="product-info text-left">
-                        <h3 className="name">
-                          <a href={`/product/${product.id}`}>{product.name}</a>
-                        </h3>
-                        <div className="rating rateit-small"></div>
-                        <div className="description"></div>
-                        <div className="product-price">
-                          <span className="price">
-                            {product.price.toLocaleString()} VND
-                          </span>
-                        </div>
-                        <br/>
+                      <div className="tag new">
+                        <span>new</span>
                       </div>
-
-                      <div className="cart clearfix animate-effect">
-                                                                    <div className="action">
-                                                                        <ul className="list-unstyled">
-                                                                            <li className="add-cart-button btn-group">
-
-                                                                                <button
-                                                                                    className="btn btn-primary"
-                                                                                    onClick={() => addToCart(product.id)}
-                                                                                >
-                                                                                    <i className="fa fa-shopping-cart"></i>
-                                                                                </button>
-
-                                                                            </li>
-                                                                            <li className="lnk wishlist">
-                                                                                <a
-                                                                                    data-toggle="tooltip"
-                                                                                    className="add-to-cart"
-                                                                                    href={`/addlike/${product.id}`}
-                                                                                    title="Wishlist"
-                                                                                >
-                                                                                    <i className="icon fa fa-heart"></i>
-                                                                                </a>
-                                                                            </li>
-                                                                            <li className="lnk">
-                                                                                <a
-                                                                                    data-toggle="tooltip"
-                                                                                    className="add-to-cart"
-                                                                                    href={`/product/${product.id}`}
-                                                                                    title="Compare"
-                                                                                >
-                                                                                    <i className="fa fa-signal" aria-hidden="true"></i>
-                                                                                </a>
-                                                                            </li>
-                                                                        </ul>
-                                                                    </div>
-                                                                </div>
                     </div>
-                  </SwiperSlide>
+                
+                    <div className="product-info text-left">
+                      <h3 className="name">
+                        <a href={`/product/${product.id}`}>{product.name}</a>
+                      </h3>
+                      <div className="rating rateit-small"></div>
+                      <div className="description"></div>
+                      <div className="product-price">
+                        <span className="price">
+                          {product.price.toLocaleString()} VND
+                        </span>
+                      </div>
+                      <br />
+                    </div>
+                
+                    <div className="cart clearfix animate-effect">
+                      <div className="action">
+                        <ul className="list-unstyled">
+                          <li className="add-cart-button btn-group">
+                            <button
+                              className="btn btn-primary"
+                              onClick={() => {
+                                handlePurchase();
+                                addToCart(product.id);
+                              }}
+                            >
+                              <i className="fa fa-shopping-cart"></i>
+                            </button>
+                          </li>
+                          <li className="add-cart-button btn-group">
+                            <button
+                              className="btn btn-primary"
+                              onClick={() => {
+                                addToWishlist(product.id);
+                                thich();
+                              }}
+                              style={{
+                                color: isFavorited ? 'red' : 'white',
+                              }}
+                            >
+                              <i className={`icon fa fa-heart ${isFavorited ? 'favorited' : ''}`}></i>
+                            </button>
+                          </li>
+                          <li className="add-cart-button btn-group">
+                            <button
+                              className="btn btn-primary"
+                              onClick={() => window.location.href = `/product/${product.id}`}
+                            >
+                              <i className="fa fa-signal" aria-hidden="true"></i>
+                            </button>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                
+                  <style jsx>{`
+                    .product:hover {
+                      transform: translateY(-10px);
+                      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                    }
+                    .product:hover .product-image img {
+                      transform: scale(1.1);
+                    }
+                  `}</style>
+                </SwiperSlide>
+                
                 );
               })
             ) : (
@@ -777,10 +801,10 @@ const Index = () => {
             </div>
           </div>
         </div>
-      </div>
-    </div></>
+    
+    </>
   );
 
 };
-  
+
 export default Index;

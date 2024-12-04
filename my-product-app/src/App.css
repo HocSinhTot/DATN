@@ -1,18 +1,44 @@
-.App {
+/* General styles */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+}
+
+/* Container for the responsive layout */
+.responsive-container {
+  display: flex;
+  flex-direction: column;
+  max-width: 1200px;
+  margin: 0 auto; /* Center on the page */
+  padding: 20px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Light shadow */
+}
+
+/* Main content */
+.responsive-container main {
+  flex: 1; /* Allow the main section to grow */
+  padding: 20px;
+}
+
+/* Header and Footer */
+.responsive-container header,
+.responsive-container footer {
+  padding: 10px 20px;
+  background-color: #333;
+  color: white;
   text-align: center;
 }
 
+/* Specific styles for the App logo */
 .App-logo {
   height: 40vmin;
   pointer-events: none;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
+/* App header styling */
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
@@ -28,6 +54,7 @@
   color: #61dafb;
 }
 
+/* Animation for the App logo */
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
@@ -37,3 +64,51 @@
   }
 }
 
+/* Responsive Design Rules */
+
+/* For tablet and larger screens */
+@media (max-width: 768px) {
+  .responsive-container {
+    padding: 15px; /* Slightly reduce padding */
+  }
+
+  .responsive-container main {
+    padding: 15px; /* Adjust padding for smaller screens */
+  }
+
+  .App-header {
+    font-size: calc(10px + 3vmin); /* Adjust font size for header */
+  }
+
+  .App-logo {
+    height: 30vmin; /* Smaller logo for medium screens */
+  }
+}
+
+/* For mobile devices */
+@media (max-width: 480px) {
+  .responsive-container {
+    padding: 10px; /* Even smaller padding for mobile */
+  }
+
+  .responsive-container header,
+  .responsive-container footer {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .App-header {
+    font-size: calc(10px + 4vmin); /* Adjust font size more for mobile */
+  }
+
+  .App-logo {
+    height: 25vmin; /* Even smaller logo on mobile */
+  }
+}
+
+/* For devices with reduced motion preference */
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}

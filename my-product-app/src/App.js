@@ -62,6 +62,8 @@ function App() {
 
         <Route path="/nguoidung/add" element={<AddUserAmin />} />
         <Route path="/nguoidung/edit/:id" element={<EditUserAmin />} />
+        
+
         <Route path="/products/add" element={<AddProductAmin />} />
         <Route path="/products/edit/:id" element={<EditProductAmin />} />
         <Route
@@ -69,7 +71,6 @@ function App() {
           element={
             <>
 
-              <Head />
               <Header setKeyword={setKeyword} setCategoryId={setCategoryId}/>
               <ProductDetail />
               <Footer />
@@ -81,7 +82,6 @@ function App() {
           element={
             <>
 
-              <Head />
               <Header setKeyword={setKeyword} setCategoryId={setCategoryId}/>
               <Account/>
               <Footer />
@@ -93,7 +93,6 @@ function App() {
           element={
             <>
 
-              <Head />
               <Header setKeyword={setKeyword} setCategoryId={setCategoryId}/>
               <Favorite/>
               <Footer />
@@ -105,7 +104,6 @@ function App() {
           element={
             <>
 
-              <Head />
               <Header setKeyword={setKeyword} setCategoryId={setCategoryId}/>
               <Categorys   keyword={keyword} 
                 categoryId={categoryId} 
@@ -118,7 +116,6 @@ function App() {
           path="/cart"
           element={
             <>
- <Head />
  <Header setKeyword={setKeyword} setCategoryId={setCategoryId}/>
              
               <Cart />
