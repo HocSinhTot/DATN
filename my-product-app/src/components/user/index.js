@@ -89,6 +89,8 @@ const Index = () => {
       alert("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.");
       return;
     }
+
+    
     try {
       const response = await axios.post('http://localhost:8080/api/cart/addToCart', null, {
         params: { userId, productId, quantity },
@@ -320,75 +322,72 @@ const Index = () => {
     
                 return (
                   <SwiperSlide className="col-12 col-sm-6 col-md-4 col-lg-12" key={product.id}>
-                    <div className="product">
-                      <div className="product-image">
-                        <div className="image">
-                          <a href={`/product/${product.id}`}>
-                            <img
-                              src={firstImageUrl}
-                              alt={product.name}
-                              className="img-responsive"
-                            />
-                          </a>
-                        </div>
-                        <div className="tag new">
-                          <span>new</span>
-                        </div>
-                      </div>
-
-                      <div className="product-info text-left">
-                        <h3 className="name">
-                          <a href={`/product/${product.id}`}>{product.name}</a>
-                        </h3>
-                        <div className="rating rateit-small"></div>
-                        <div className="description"></div>
-                        <div className="product-price">
-                          <span className="price">
-                            {product.price.toLocaleString()} VND
-                          </span>
-                        </div>
-                        <br/>
-                      </div>
-
-                      <div className="cart clearfix animate-effect">
-                                                                    <div className="action">
-                                                                        <ul className="list-unstyled">
-                                                                            <li className="add-cart-button btn-group">
-
-                                                                                <button
-                                                                                    className="btn btn-primary"
-                                                                                    onClick={() => addToCart(product.id)}
-                                                                                >
-                                                                                    <i className="fa fa-shopping-cart"></i>
-                                                                                </button>
-
-                                                                            </li>
-                                                                            <li className="lnk wishlist">
-                                                            <a
-                                                                data-toggle="tooltip"
-                                                                className="add-to-cart"
-                                                                href="#"
-                                                                onClick={() => addToWishlist(product.id)}
-                                                                title="Wishlist"
-                                                            >
-                                                                <i className="icon fa fa-heart"></i>
-                                                            </a>
-                                                        </li>
-                                                                            <li className="lnk">
-                                                                                <a
-                                                                                    data-toggle="tooltip"
-                                                                                    className="add-to-cart"
-                                                                                    href={`/product/${product.id}`}
-                                                                                    title="Compare"
-                                                                                >
-                                                                                    <i className="fa fa-signal" aria-hidden="true"></i>
-                                                                                </a>
-                                                                            </li>
-                                                                        </ul>
-                                                                    </div>
-                                                                </div>
+                  <div className={`product ${likedProducts.some(like => like.product.id === product.id) ? 'liked' : ''}`}>                        <div className="product-image">
+                    <div className="image">
+                      <a href={`/product/${product.id}`}>
+                        <img
+                          src={firstImageUrl}
+                          alt={product.name}
+                          className="img-responsive"
+                        />
+                      </a>
                     </div>
-                  </SwiperSlide>
+                    <div className="tag new">
+                      <span>new</span>
+                    </div>
+                  </div>
+
+                    <div className="product-info text-left">
+                      <h3 className="name">
+                        <a href={`/product/${product.id}`}>{product.name}</a>
+                      </h3>
+                      <div className="rating rateit-small"></div>
+                      <div className="description"></div>
+                      <div className="product-price">
+                        <span className="price">
+                          {product.price.toLocaleString()} VND
+                        </span>
+                      </div>
+                      <br />
+                    </div>
+
+                    <div className="cart clearfix animate-effect">
+                      <div className="action">
+                        <ul className="list-unstyled">
+                          <li className="add-cart-button btn-group">
+
+                            <button
+                              className="btn btn-primary"
+                              onClick={() => addToCart(product.id)}
+                            >
+                              <i className="fa fa-shopping-cart"></i>
+                            </button>
+
+                          </li>
+                          <li className="add-cart-button btn-group">
+                            <button
+                              className="btn btn-primary"
+                              onClick={() => addToWishlist(product.id)}
+                            >
+                              <i className="icon fa fa-heart"></i>
+                            </button>
+
+
+                          </li>
+                          <li className="add-cart-button btn-group">
+                            <button
+                              className="btn btn-primary"
+                              onClick={() => window.location.href = `/product/${product.id}`}
+                            >
+                              <i className="fa fa-signal" aria-hidden="true"></i>
+                            </button>
+
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </SwiperSlide>
                 );
               })
             ) : (
@@ -435,7 +434,7 @@ const Index = () => {
         modules={[Pagination, Navigation]}
         className="mySwiper">
            {Array.isArray(products.cheap) && products.cheap.length > 0 ? (
-  products.cheap.map((product) => {
+  products.phonesCheap.map((product) => {
     const firstImageUrl = product.productsImages && product.productsImages.length > 0
     ? `/assets/images/${product.productsImages[0].image.url}`
     : 'default-image.jpg';
@@ -443,74 +442,73 @@ const Index = () => {
     
                 return (
                   <SwiperSlide className="col-12 col-sm-6 col-md-4 col-lg-12" key={product.id}>
-                    <div className="product">
-                      <div className="product-image">
-                        <div className="image">
-                          <a href={`/product/${product.id}`}>
-                            <img
-                              src={firstImageUrl}
-                              alt={product.name}
-                              className="img-responsive"
-                            />
-                          </a>
-                        </div>
-                        <div className="tag new">
-                          <span>new</span>
-                        </div>
-                      </div>
+                  <div className={`product ${likedProducts.some(like => like.product.id === product.id) ? 'liked' : ''}`}>                   
+                  <div className="product-image">
+                  <div className="image">
+                    <a href={`/product/${product.id}`}>
+                      <img
+                        src={firstImageUrl}
+                        alt={product.name}
+                        className="img-responsive"
+                      />
+                    </a>
+                  </div>
+                  <div className="tag new">
+                    <span>new</span>
+                  </div>
+                </div>
 
-                      <div className="product-info text-left">
-                        <h3 className="name">
-                          <a href={`/product/${product.id}`}>{product.name}</a>
-                        </h3>
-                        <div className="rating rateit-small"></div>
-                        <div className="description"></div>
-                        <div className="product-price">
-                          <span className="price">
-                            {product.price.toLocaleString()} VND
-                          </span>
-                        </div>
-                        <br/>
-                      </div>
+                <div className="product-info text-left">
+                  <h3 className="name">
+                    <a href={`/product/${product.id}`}>{product.name}</a>
+                  </h3>
+                  <div className="rating rateit-small"></div>
+                  <div className="description"></div>
+                  <div className="product-price">
+                    <span className="price">
+                      {product.price.toLocaleString()} VND
+                    </span>
+                  </div>
+                  <br />
+                </div>
 
-                      <div className="cart clearfix animate-effect">
-                                                                    <div className="action">
-                                                                        <ul className="list-unstyled">
-                                                                            <li className="add-cart-button btn-group">
+                <div className="cart clearfix animate-effect">
+                  <div className="action">
+                  <ul className="list-unstyled">
+                          <li className="add-cart-button btn-group">
 
-                                                                                <button
-                                                                                    className="btn btn-primary"
-                                                                                    onClick={() => addToCart(product.id)}
-                                                                                >
-                                                                                    <i className="fa fa-shopping-cart"></i>
-                                                                                </button>
+                            <button
+                              className="btn btn-primary"
+                              onClick={() => addToCart(product.id)}
+                            >
+                              <i className="fa fa-shopping-cart"></i>
+                            </button>
 
-                                                                            </li>
-                                                                            <li className="lnk wishlist">
-                                                                                <a
-                                                                                    data-toggle="tooltip"
-                                                                                    className="add-to-cart"
-                                                                                    href={`/addlike/${product.id}`}
-                                                                                    title="Wishlist"
-                                                                                >
-                                                                                    <i className="icon fa fa-heart"></i>
-                                                                                </a>
-                                                                            </li>
-                                                                            <li className="lnk">
-                                                                                <a
-                                                                                    data-toggle="tooltip"
-                                                                                    className="add-to-cart"
-                                                                                    href={`/product/${product.id}`}
-                                                                                    title="Compare"
-                                                                                >
-                                                                                    <i className="fa fa-signal" aria-hidden="true"></i>
-                                                                                </a>
-                                                                            </li>
-                                                                        </ul>
-                                                                    </div>
-                                                                </div>
-                    </div>
-                  </SwiperSlide>
+                          </li>
+                          <li className="add-cart-button btn-group">
+                            <button
+                              className="btn btn-primary"
+                              onClick={() => addToWishlist(product.id)}
+                            >
+                              <i className="icon fa fa-heart"></i>
+                            </button>
+
+
+                          </li>
+                          <li className="add-cart-button btn-group">
+                            <button
+                              className="btn btn-primary"
+                              onClick={() => window.location.href = `/product/${product.id}`}
+                            >
+                              <i className="fa fa-signal" aria-hidden="true"></i>
+                            </button>
+
+                          </li>
+                        </ul>
+                  </div>
+                </div>
+              </div>
+            </SwiperSlide>
                 );
               })
             ) : (
@@ -560,74 +558,73 @@ const Index = () => {
     
                 return (
                   <SwiperSlide className="col-12 col-sm-6 col-md-4 col-lg-12" key={product.id}>
-                    <div className="product">
-                      <div className="product-image">
-                        <div className="image">
-                          <a href={`/product/${product.id}`}>
-                            <img
-                              src={firstImageUrl}
-                              alt={product.name}
-                              className="img-responsive"
-                            />
-                          </a>
-                        </div>
-                        <div className="tag new">
-                          <span>new</span>
-                        </div>
-                      </div>
-
-                      <div className="product-info text-left">
-                        <h3 className="name">
-                          <a href={`/product/${product.id}`}>{product.name}</a>
-                        </h3>
-                        <div className="rating rateit-small"></div>
-                        <div className="description"></div>
-                        <div className="product-price">
-                          <span className="price">
-                            {product.price.toLocaleString()} VND
-                          </span>
-                        </div>
-                        <br/>
-                      </div>
-
-                      <div className="cart clearfix animate-effect">
-                                                                    <div className="action">
-                                                                        <ul className="list-unstyled">
-                                                                            <li className="add-cart-button btn-group">
-
-                                                                                <button
-                                                                                    className="btn btn-primary"
-                                                                                    onClick={() => addToCart(product.id)}
-                                                                                >
-                                                                                    <i className="fa fa-shopping-cart"></i>
-                                                                                </button>
-
-                                                                            </li>
-                                                                            <li className="lnk wishlist">
-                                                                                <a
-                                                                                    data-toggle="tooltip"
-                                                                                    className="add-to-cart"
-                                                                                    href={`/addlike/${product.id}`}
-                                                                                    title="Wishlist"
-                                                                                >
-                                                                                    <i className="icon fa fa-heart"></i>
-                                                                                </a>
-                                                                            </li>
-                                                                            <li className="lnk">
-                                                                                <a
-                                                                                    data-toggle="tooltip"
-                                                                                    className="add-to-cart"
-                                                                                    href={`/product/${product.id}`}
-                                                                                    title="Compare"
-                                                                                >
-                                                                                    <i className="fa fa-signal" aria-hidden="true"></i>
-                                                                                </a>
-                                                                            </li>
-                                                                        </ul>
-                                                                    </div>
-                                                                </div>
-                    </div>
-                  </SwiperSlide>
+                  <div className={`product ${likedProducts.some(like => like.product.id === product.id) ? 'liked' : ''}`}>    
+                                                <div className="product-image">
+                                                  <div className="image">
+                                                    <a href={`/product/${product.id}`}>
+                                                      <img
+                                                        src={firstImageUrl}
+                                                        alt={product.name}
+                                                        className="img-responsive"
+                                                      />
+                                                    </a>
+                                                  </div>
+                                                  <div className="tag new">
+                                                    <span>new</span>
+                                                  </div>
+                                                </div>
+                  
+                                                <div className="product-info text-left">
+                                                  <h3 className="name">
+                                                    <a href={`/product/${product.id}`}>{product.name}</a>
+                                                  </h3>
+                                                  <div className="rating rateit-small"></div>
+                                                  <div className="description"></div>
+                                                  <div className="product-price">
+                                                    <span className="price">
+                                                      {product.price.toLocaleString()} VND
+                                                    </span>
+                                                  </div>
+                                                  <br />
+                                                </div>
+                  
+                                                <div className="cart clearfix animate-effect">
+                                                  <div className="action">
+                                                       <ul className="list-unstyled">
+                                                        <li className="add-cart-button btn-group">
+                  
+                                                          <button
+                                                            className="btn btn-primary"
+                                                            onClick={() => addToCart(product.id)}
+                                                          >
+                                                            <i className="fa fa-shopping-cart"></i>
+                                                          </button>
+                  
+                                                        </li>
+                                                        <li className="add-cart-button btn-group">
+                                                          <button
+                                                            className="btn btn-primary"
+                                                            onClick={() => addToWishlist(product.id)}
+                                                          >
+                                                            <i className="icon fa fa-heart"></i>
+                                                          </button>
+                  
+                  
+                                                        </li>
+                                                        <li className="add-cart-button btn-group">
+                                                          <button
+                                                            className="btn btn-primary"
+                                                            onClick={() => window.location.href = `/product/${product.id}`}
+                                                          >
+                                                            <i className="fa fa-signal" aria-hidden="true"></i>
+                                                          </button>
+                  
+                                                        </li>
+                                                      </ul>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </SwiperSlide>
                 );
               })
             ) : (

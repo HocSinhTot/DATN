@@ -325,6 +325,7 @@ const addToWishlist = async (productId) => {
 
                         return (
                           <div className="col-md-3 product" key={product.id}>
+                            <div className={`product ${likedProducts.some(like => like.product.id === product.id) ? 'liked' : ''}`}> 
                             <div className="product-image">
                               <div className="image">
                                 <a href={`/product/${product.id}`}>
@@ -352,39 +353,41 @@ const addToWishlist = async (productId) => {
 
                             <div className="cart clearfix animate-effect">
                               <div className="action">
-                                <ul className="list-unstyled">
-                                  <li className="add-cart-button btn-group">
-                                    <button
-                                      className="btn btn-primary"
-                                      onClick={() => addToCart(product.id)}
-                                    >
-                                      <i className="fa fa-shopping-cart"></i>
-                                    </button>
-                                  </li>
-                                  <li className="lnk wishlist">
-                                    <a
-                                      data-toggle="tooltip"
-                                      className="add-to-cart"
-                                      href={`/addlike/${product.id}`}
-                                      title="Wishlist"
-                                    >
-                                      <i className="icon fa fa-heart"></i>
-                                    </a>
-                                  </li>
-                                  <li className="lnk">
-                                    <a
-                                      data-toggle="tooltip"
-                                      className="add-to-cart"
-                                      href={`/product/${product.id}`}
-                                      title="Compare"
-                                    >
-                                      <i className="fa fa-signal" aria-hidden="true"></i>
-                                    </a>
-                                  </li>
-                                </ul>
+                              <ul className="list-unstyled">
+                          <li className="add-cart-button btn-group">
+
+                            <button
+                              className="btn btn-primary"
+                              onClick={() => addToCart(product.id)}
+                            >
+                              <i className="fa fa-shopping-cart"></i>
+                            </button>
+
+                          </li>
+                          <li className="add-cart-button btn-group">
+                            <button
+                              className="btn btn-primary"
+                              onClick={() => addToWishlist(product.id)}
+                            >
+                              <i className="icon fa fa-heart"></i>
+                            </button>
+
+
+                          </li>
+                          <li className="add-cart-button btn-group">
+                            <button
+                              className="btn btn-primary"
+                              onClick={() => window.location.href = `/product/${product.id}`}
+                            >
+                              <i className="fa fa-signal" aria-hidden="true"></i>
+                            </button>
+
+                          </li>
+                        </ul>
                               </div>
                             </div>
                             <hr />
+                          </div>
                           </div>
                         );
                       })
