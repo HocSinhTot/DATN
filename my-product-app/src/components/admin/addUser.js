@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 
 const AddUserForm = () => {
@@ -15,17 +15,6 @@ const AddUserForm = () => {
   });
 
   const [errors, setErrors] = useState({});
-  const [stars, setStars] = useState([]);
-
-  useEffect(() => {
-    const newStars = Array.from({ length: 10 }).map((_, index) => ({
-      id: index,
-      top: `${Math.random() * 100}%`,
-      left: `${Math.random() * 100}%`,
-      animationDelay: `${Math.random() * 3}s`,
-    }));
-    setStars(newStars);
-  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -45,6 +34,7 @@ const AddUserForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Tạo FormData và thêm dữ liệu
       const formDataToSend = new FormData();
       const userPayload = {
         username: formData.username,
@@ -62,6 +52,7 @@ const AddUserForm = () => {
         formDataToSend.append('file', formData.file);
       }
 
+      // Gửi dữ liệu đến backend
       const response = await axios.post('http://localhost:8080/api/users', formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -81,63 +72,24 @@ const AddUserForm = () => {
     }
   };
 
-  const styles = {
-    body: {
-      background: 'radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%)',
-      height: '100vh',
-      overflow: 'hidden',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      color: '#fff',
-      margin: 0,
-    },
-    stars: {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      width: '100%',
-      height: '100%',
-      overflow: 'hidden',
-    },
-    star: {
-      position: 'absolute',
-      width: '3px',
-      height: '3px',
-      background: 'rgba(255, 255, 255, 0.8)',
-      borderRadius: '50%',
-      animation: 'starAnimation 2s infinite',
-    },
-    container: {
-      position: 'relative',
-      background: 'rgba(255, 255, 255, 0.1)',
-      padding: '30px',
-      borderRadius: '8px',
-      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-      maxWidth: '500px',
-      width: '100%',
-      zIndex: 10,
-    },
-  };
-
   return (
-    <div style={styles.body}>
-      <div style={styles.stars}>
-        {stars.map(star => (
-          <div
-            key={star.id}
-            style={{
-              ...styles.star,
-              top: star.top,
-              left: star.left,
-              animationDelay: star.animationDelay,
-            }}
-          ></div>
-        ))}
-      </div>
+    <div style={{ display: 'flex', justifyContent: 'center' }}>
 
-      <div style={styles.container}>
-        <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>Thêm Người Dùng</h1>
+
+      <div
+        style={{
+          width: '1000px',
+          maxWidth: '600px',
+          marginTop: '50px',
+          backgroundColor: '#f9f9f9',
+          padding: '30px',
+          borderRadius: '8px',
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+        }}
+      >
+        <h1 style={{ fontSize: '24px', color: '#333', marginBottom: '20px', fontWeight: 'bold', textAlign: 'center' }}>
+          Thêm Người Dùng
+        </h1>
         <form onSubmit={handleSubmit}>
           <div className="form-group" style={{ marginBottom: '15px' }}>
             <label htmlFor="username" style={{ fontSize: '16px', fontWeight: '600', color: '#555', marginBottom: '8px' }}>
@@ -183,7 +135,162 @@ const AddUserForm = () => {
             {errors.password && <div style={{ color: '#dc3545', fontSize: '14px' }}>{errors.password}</div>}
           </div>
 
-          {/* Add other input fields here */}
+          <div className="form-group" style={{ marginBottom: '15px' }}>
+            <label htmlFor="email" style={{ fontSize: '16px', fontWeight: '600', color: '#555', marginBottom: '8px' }}>
+              Email
+            </label>
+            <input
+              type="email"
+              className="form-control"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              style={{
+                borderRadius: '5px',
+                border: '1px solid #ccc',
+                padding: '10px',
+                width: '100%',
+                transition: 'border-color 0.3s ease',
+              }}
+            />
+            {errors.email && <div style={{ color: '#dc3545', fontSize: '14px' }}>{errors.email}</div>}
+          </div>
+
+          <div className="form-group" style={{ marginBottom: '15px' }}>
+            <label htmlFor="name" style={{ fontSize: '16px', fontWeight: '600', color: '#555', marginBottom: '8px' }}>
+              Tên
+            </label>
+            <input
+              type="text"
+              className="form-control"
+              id="name"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              style={{
+                borderRadius: '5px',
+                border: '1px solid #ccc',
+                padding: '10px',
+                width: '100%',
+                transition: 'border-color 0.3s ease',
+              }}
+            />
+            {errors.name && <div style={{ color: '#dc3545', fontSize: '14px' }}>{errors.name}</div>}
+          </div>
+
+          <div className="form-group" style={{ marginBottom: '15px' }}>
+            <label htmlFor="birthday" style={{ fontSize: '16px', fontWeight: '600', color: '#555', marginBottom: '8px' }}>
+              Ngày sinh
+            </label>
+            <input
+              type="date"
+              className="form-control"
+              id="birthday"
+              name="birthday"
+              value={formData.birthday}
+              onChange={handleChange}
+              style={{
+                borderRadius: '5px',
+                border: '1px solid #ccc',
+                padding: '10px',
+                width: '100%',
+                transition: 'border-color 0.3s ease',
+              }}
+            />
+            {errors.birthday && <div style={{ color: '#dc3545', fontSize: '14px' }}>{errors.birthday}</div>}
+          </div>
+
+          <div className="form-group" style={{ marginBottom: '15px' }}>
+            <label htmlFor="phone" style={{ fontSize: '16px', fontWeight: '600', color: '#555', marginBottom: '8px' }}>
+              Số điện thoại
+            </label>
+            <input
+              type="text"
+              className="form-control"
+              id="phone"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              style={{
+                borderRadius: '5px',
+                border: '1px solid #ccc',
+                padding: '10px',
+                width: '100%',
+                transition: 'border-color 0.3s ease',
+              }}
+            />
+            {errors.phone && <div style={{ color: '#dc3545', fontSize: '14px' }}>{errors.phone}</div>}
+          </div>
+
+          <div className="form-group" style={{ marginBottom: '15px' }}>
+            <label htmlFor="role" style={{ fontSize: '16px', fontWeight: '600', color: '#555', marginBottom: '8px' }}>
+              Vai trò
+            </label>
+            <select
+              className="form-control"
+              id="role"
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              style={{
+                borderRadius: '5px',
+                border: '1px solid #ccc',
+
+                width: '100%',
+              }}
+            >
+              <option value="true">Admin</option>
+              <option value="false">User</option>
+            </select>
+          </div>
+
+          <div className="form-group" style={{ marginBottom: '15px' }}>
+            <label style={{ fontSize: '16px', fontWeight: '600', color: '#555', marginBottom: '8px' }}>
+              Giới tính
+            </label>
+            <div>
+              <input
+                type="radio"
+                id="male"
+                name="gender"
+                value="true"
+                checked={formData.gender === 'true'}
+                onChange={handleChange}
+                style={{ marginRight: '10px' }}
+              />
+              <label htmlFor="male" style={{ marginRight: '20px' }}>Nam</label>
+
+              <input
+                type="radio"
+                id="female"
+                name="gender"
+                value="false"
+                checked={formData.gender === 'false'}
+                onChange={handleChange}
+                style={{ marginRight: '10px' }}
+              />
+              <label htmlFor="female">Nữ</label>
+            </div>
+          </div>
+
+          <div className="form-group" style={{ marginBottom: '15px' }}>
+            <label htmlFor="file" style={{ fontSize: '16px', fontWeight: '600', color: '#555', marginBottom: '8px' }}>
+              Hình ảnh
+            </label>
+            <input
+              type="file"
+              className="form-control"
+              id="file"
+              onChange={handleFileChange}
+              style={{
+                padding: '10px',
+                borderRadius: '5px',
+                border: '1px solid #ccc',
+                height: '43px',
+              }}
+            />
+          </div>
 
           <div className="d-flex" style={{ justifyContent: 'space-between' }}>
             <button
