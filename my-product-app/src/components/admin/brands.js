@@ -13,7 +13,7 @@ const BrandManagement = () => {
 
     const handleDelete = (id) => {
         if (window.confirm('Are you sure you want to delete this brand?')) {
-            fetch(`http://localhost:8080/api/brands/${id}`, {
+            fetch(`http://localhost:8080/api/admin/brands/${id}`, {
                 method: 'DELETE',
             })
                 .then((response) => {
@@ -34,7 +34,7 @@ const BrandManagement = () => {
                         <div className="card">
                             <div className="card-header">
                                 <h5 className="card-title m-0">Quản lý thương hiệu</h5>
-                                <Link to="/brands/create" className="btn btn-light">Thêm mới</Link>
+                                <Link to="/brands/add" className="btn btn-light">Thêm mới</Link>
                             </div>
                             <div className="card-body">
                                 <table className="table">

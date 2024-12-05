@@ -125,18 +125,18 @@ public ResponseEntity<String> updateUser(
                         try {
                             String uploadDir = "assets/images/U/";
                             Path uploadPath = Paths.get(uploadDir);
-
+                    
                             if (!Files.exists(uploadPath)) {
                                 Files.createDirectories(uploadPath);
                             }
-
+                    
                             // Sử dụng tên file độc nhất
                             String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
                             Path filePath = uploadPath.resolve(fileName);
                             Files.copy(file.getInputStream(), filePath);
-
-                            // Cập nhật đường dẫn ảnh
-                            user.setImage("" + fileName);
+                    
+                            // Cập nhật đường dẫn ảnh, bao gồm thư mục 'U'
+                            user.setImage("U/U/" + fileName);
                         } catch (IOException e) {
                             logger.error("Error uploading file: ", e);
                             return ResponseEntity.status(500).body("Error uploading file: " + e.getMessage());
@@ -144,6 +144,7 @@ public ResponseEntity<String> updateUser(
                     } else {
                         user.setImage(existingUser.getImage()); // Giữ ảnh cũ nếu không tải lên
                     }
+                    
 
                     // Cập nhật thông tin khác
                     user.setId(id); // Đảm bảo ID được giữ nguyên

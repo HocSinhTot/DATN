@@ -44,8 +44,20 @@ import OrderAmin from './components/admin/order';
 
 import EditUserAmin from './components/admin/editUser';
 import EditProductAmin from './components/admin/editProduct';
+import EditCategoryAmin from './components/admin/editCategory';
+import EditBrandAmin from './components/admin/editBrand';
+import EditColorAmin from './components/admin/editColor';
+import EditCapacityAmin from './components/admin/editCapacity';
+import EditImageAmin from './components/admin/editImage';
+
 import AddUserAmin from './components/admin/addUser';
 import AddProductAmin from './components/admin/addProduct';
+import AddCategoryAmin from './components/admin/addCategory';
+import AddBrandAmin from './components/admin/addBrand';
+import AddColorAmin from './components/admin/addColor';
+import AddCapacityAmin from './components/admin/addCapacity';
+import AddImageAmin from './components/admin/addImage';
+
 function App() {
   const [keyword, setKeyword] = useState('');
   const [ categoryId, setCategoryId] = useState('');
@@ -66,6 +78,22 @@ function App() {
 
         <Route path="/products/add" element={<AddProductAmin />} />
         <Route path="/products/edit/:id" element={<EditProductAmin />} />
+
+        <Route path="/category/add" element={<AddCategoryAmin />} />
+        <Route path="/category/edit/:id" element={<EditCategoryAmin />} />
+
+        <Route path="/brands/add" element={<AddBrandAmin />} />
+        <Route path="/brands/edit/:id" element={<EditBrandAmin />} />
+
+        <Route path="/color/add" element={<AddColorAmin />} />
+        <Route path="/color/edit/:id" element={<EditColorAmin />} />
+
+        <Route path="/capacity/add" element={<AddCapacityAmin />} />
+        <Route path="/capacity/edit/:id" element={<EditCapacityAmin />} />
+
+        <Route path="/images/add" element={<AddImageAmin />} />
+        <Route path="/images/edit/:id" element={<EditImageAmin />} />
+
         <Route
           path="/product/:id"
           element={

@@ -63,9 +63,6 @@ const EditUserPage = () => {
   
       if (response.data === "User updated successfully.") {
         setSuccess("Người dùng đã được cập nhật thành công.");
-        setTimeout(() => {
-          navigate(`/user/${id}`);
-        }, 2000);
       } else {
         setError("Lỗi khi cập nhật người dùng.");
       }
@@ -188,8 +185,7 @@ const EditUserPage = () => {
           {user.image && (
             <div>
               <img
-                src={`http://localhost:8080/assets/images/${user.image}`}
-                alt="User"
+               src={`http://localhost:8080/assets/images/${user.image}`} alt="User" 
                 width="100"
                 height="100"
               />

@@ -34,7 +34,7 @@ const CapacityManagement = () => {
                         <div className="card">
                             <div className="card-header">
                                 <h5 className="card-title m-0">Quản lý dung lượng</h5>
-                                <Link to="/capacity/create" className="btn btn-light">
+                                <Link to="/capacity/add" className="btn btn-light">
                                     Thêm mới
                                 </Link>
                             </div>
