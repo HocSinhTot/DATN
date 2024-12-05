@@ -83,7 +83,6 @@ public class CartController {
         BigDecimal totalAmount = cartItems.stream()
                 .map(CartModel::getTotalPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-
         Map<String, Object> response = new HashMap<>();
         response.put("cartItems", cartItems);
         response.put("totalAmount", totalAmount);
@@ -131,8 +130,8 @@ public class CartController {
         }
 
         return ResponseEntity.ok(Map.of(
-                "message", "Sản phẩm đã được thêm vào giỏ."
-
+                "message", "Sản phẩm đã được thêm vào giỏ.",
+                "redirectUrl", "/cart" // URL để frontend chuyển hướng
         ));
     }
 
@@ -145,7 +144,6 @@ public class CartController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("message", "Vui lòng đăng nhập để cập nhật giỏ hàng."));
         }
-
         UserModel user = userService.getUserById(userId);
         if (user == null) {
             return ResponseEntity.badRequest().body(Map.of("message", "Người dùng không tồn tại."));
@@ -272,7 +270,6 @@ public class CartController {
         if (user == null) {
             throw new RuntimeException("Không tìm thấy người dùng với ID: " + paymentRequest.getUserId());
         }
-
         PaymentMethodModel paymentMethod = paymentMethodRepository.findById(paymentRequest.getPayMethod())
                 .orElseThrow(() -> new RuntimeException(
                         "Phương thức thanh toán không hợp lệ: " + paymentRequest.getPayMethod()));

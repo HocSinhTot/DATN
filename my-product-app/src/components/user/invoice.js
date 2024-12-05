@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const InvoicePage = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -12,6 +12,9 @@ const InvoicePage = () => {
   // Lấy dữ liệu từ location state
   const location = useLocation();
   const { invoiceData } = location.state || {};
+
+  // Khởi tạo navigate
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (invoiceData) {
@@ -72,6 +75,10 @@ const InvoicePage = () => {
 
         if (response.ok) {
           alert("Thanh toán COD thành công!");
+
+          // Chuyển hướng về trang index (trang chủ)
+          navigate("/");  // Điều hướng về trang chủ
+
         } else {
           alert("Thanh toán COD thất bại.");
         }
@@ -81,7 +88,6 @@ const InvoicePage = () => {
     }
   };
 
-  
   return (
     <div style={{ margin: "20px" }}>
       <div style={{ border: "1px solid #ccc", borderRadius: "5px", padding: "20px" }}>
@@ -95,14 +101,14 @@ const InvoicePage = () => {
             <select
               id="discountCode"
               style={{ display: "block", width: "100%", marginBottom: "10px", padding: "5px" }}
-            
+
             >
               <option value="">Chọn mã</option>
-           
+
             </select>
             <button
               style={{ backgroundColor: "#28a745", color: "#fff", padding: "10px 20px", border: "none", cursor: "pointer" }}
-             
+
             >
               Áp dụng mã giảm giá
             </button>
