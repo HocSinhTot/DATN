@@ -8,8 +8,9 @@ const InvoicePage = () => {
   const [address, setAddress] = useState("");
   const [payMethod, setPayMethod] = useState("1");
   const [totalAmount, setTotalAmount] = useState(0);
+  const [discountCode, setDiscountCode] = useState("");  // Mã giảm giá từ người dùng
+  const [discountAmount, setDiscountAmount] = useState(0);  // Giá trị giảm giá
 
-  // Lấy dữ liệu từ location state
   const location = useLocation();
   const { invoiceData } = location.state || {};
 
@@ -18,8 +19,6 @@ const InvoicePage = () => {
 
   useEffect(() => {
     if (invoiceData) {
-      console.log("User ID: ", invoiceData.userId);
-      console.log("Total Amount: ", invoiceData.totalAmount);
       setUserId(invoiceData.userId);
       setCartItems(invoiceData.cartItems);
       setTotalAmount(invoiceData.totalAmount);
@@ -27,6 +26,39 @@ const InvoicePage = () => {
       setErrorMessage("Không có dữ liệu hóa đơn.");
     }
   }, [invoiceData]);
+
+  // Kiểm tra tính hợp lệ của mã giảm giá (gọi từ backend)
+  const validateDiscountCode = async () => {
+    if (!discountCode) {
+      alert("Vui lòng nhập mã giảm giá.");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/vouchers/${discountCode}`,
+        {
+          method: "GET",
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+
+        // Kiểm tra nếu mã giảm giá hợp lệ
+        if (data.valid) {
+          setDiscountAmount(data.discountPercentage * totalAmount);  // Cập nhật giá trị giảm giá theo phần trăm
+          alert("Mã giảm giá hợp lệ và đã được áp dụng.");
+        } else {
+          alert("Mã giảm giá đã hết hạn hoặc không hợp lệ.");
+        }
+      } else {
+        alert("Không thể kiểm tra mã giảm giá.");
+      }
+    } catch (error) {
+      alert("Đã xảy ra lỗi: " + error.message);
+    }
+  };
 
   const handleSubmitPayment = async (event) => {
     event.preventDefault();
@@ -36,11 +68,13 @@ const InvoicePage = () => {
       return;
     }
 
+    // Tính tổng tiền sau khi áp dụng mã giảm giá
+    const totalAfterDiscount = totalAmount - discountAmount;
+
     if (payMethod === "2") {
-      // Gửi yêu cầu thanh toán qua VNPay
       try {
         const response = await fetch(
-          `http://localhost:8080/api/payment/vnpay?amount=${totalAmount}`,
+          `http://localhost:8080/api/payment/vnpay?amount=${totalAfterDiscount}`,
           {
             method: "GET",
           }
@@ -49,10 +83,9 @@ const InvoicePage = () => {
         if (response.ok) {
           const data = await response.json();
           if (data.code === "00" && data.data) {
-            // Chuyển hướng người dùng đến URL thanh toán VNPay
             window.location.href = data.data;
           } else {
-            alert("Không thể tạo URL thanh toán VNPay: " + data.message);
+            alert("Không thể tạo URL thanh toán VNPay.");
           }
         } else {
           alert("Lỗi kết nối đến server.");
@@ -61,8 +94,7 @@ const InvoicePage = () => {
         alert("Đã xảy ra lỗi: " + error.message);
       }
     } else {
-      // Xử lý thanh toán COD
-      const paymentData = { userId, address, payMethod, totalAmount };
+      const paymentData = { userId, address, payMethod, totalAmount: totalAfterDiscount };
       try {
         const response = await fetch(
           "http://localhost:8080/api/cart/order/redirectPayment",
@@ -97,18 +129,17 @@ const InvoicePage = () => {
         <div>
           <h4>Giỏ hàng của bạn</h4>
           <div style={{ marginBottom: "20px" }}>
-            <label htmlFor="discountCode">Chọn mã giảm giá:</label>
-            <select
+            <label htmlFor="discountCode">Nhập mã giảm giá:</label>
+            <input
+              type="text"
               id="discountCode"
-              style={{ display: "block", width: "100%", marginBottom: "10px", padding: "5px" }}
-
-            >
-              <option value="">Chọn mã</option>
-
-            </select>
+              value={discountCode}
+              onChange={(e) => setDiscountCode(e.target.value)}
+              style={{ display: "block", width: "100%", padding: "5px", marginBottom: "10px" }}
+            />
             <button
+              onClick={validateDiscountCode}
               style={{ backgroundColor: "#28a745", color: "#fff", padding: "10px 20px", border: "none", cursor: "pointer" }}
-
             >
               Áp dụng mã giảm giá
             </button>
@@ -141,10 +172,8 @@ const InvoicePage = () => {
 
           <div>
             <p>Tổng cộng: {totalAmount} VND</p>
-            {/* <p>Giảm giá: {discountAmount} VND</p> */}
-            <p>
-              {/* <strong>Tổng tiền sau giảm giá: {finalTotalAmount} VND</strong> */}
-            </p>
+            {discountAmount > 0 && <p>Giảm giá: {discountAmount} VND</p>}
+            <p><strong>Tổng tiền sau giảm giá: {totalAmount - discountAmount} VND</strong></p>
           </div>
 
           {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
@@ -185,22 +214,13 @@ const InvoicePage = () => {
                     checked={payMethod === "2"}
                     onChange={() => setPayMethod("2")}
                   />
-                  Thanh toán qua VNPay
+                  Thanh toán VNPay
                 </label>
               </div>
             </div>
 
-            <button
-              type="submit"
-              style={{
-                backgroundColor: "#007bff",
-                color: "#fff",
-                padding: "10px 20px",
-                border: "none",
-                cursor: "pointer",
-              }}
-            >
-              Thanh toán
+            <button type="submit" style={{ backgroundColor: "#007bff", color: "#fff", padding: "10px 20px", border: "none", cursor: "pointer" }}>
+              Xác nhận thanh toán
             </button>
           </form>
         </div>

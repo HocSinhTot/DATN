@@ -1,30 +1,30 @@
 package JAVA6.users.controller;
 
-import org.springframework.ui.ModelMap;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
 
+import JAVA6.service.DiscountCodeService;
 import JAVA6.Model.DiscountCodeModel;
-import JAVA6.repository.DiscountCodeRepository;
+import JAVA6.Model.DiscountCode_UseModel;
+import JAVA6.Request.UseVoucherRequest;
 
-import java.util.List;
-
-@Controller
+@RestController
+@RequestMapping("/api")
 public class VoucherController {
 
     @Autowired
-    private DiscountCodeRepository discountCodeRepository;
+    private DiscountCodeService discountCodeService;
 
-    @GetMapping("/vouchers")
-    public String showVoucherList(ModelMap model) {
-        // Lấy danh sách voucher từ database
-        List<DiscountCodeModel> vouchers = discountCodeRepository.findAll();
-
-        // Thêm dữ liệu vào modelMap
-        model.addAttribute("vouchers", vouchers);
-
-        // Trả về view (HTML)
-        return "user/voucherList"; // Tên file voucherList.html
+    // API tìm kiếm mã giảm giá theo mã
+    @GetMapping("/vouchers/{code}")
+    public DiscountCodeModel getVoucherByCode(@PathVariable String code) {
+        return discountCodeService.getDiscountCodeByCode(code);
     }
+
+    // API để sử dụng mã giảm giá
+    // @PostMapping("/use-voucher")
+    // public DiscountCode_UseModel useVoucher(@RequestBody UseVoucherRequest request) {
+    //     // Gọi service để lưu thông tin mã giảm giá đã sử dụng
+    //     return discountCodeService.useDiscountCode(request.getCode(), request.getUserId(), request.getOrderId());
+    // }
 }

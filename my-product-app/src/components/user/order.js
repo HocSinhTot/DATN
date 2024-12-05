@@ -34,7 +34,6 @@ const OrderHistory = () => {
     fetchOrders(); // Gọi hàm khi component render
   }, []); // useEffect chỉ chạy một lần khi component được mount
 
-  // Fetch order details by orderId
   const fetchOrderDetails = async (orderId) => {
     try {
       const response = await fetch(`http://localhost:8080/api/history/${orderId}`);
@@ -49,9 +48,20 @@ const OrderHistory = () => {
     }
   };
 
-  // Close the modal (reset order details)
   const closeModal = () => {
     setOrderDetails(null);
+  };
+
+  const formatDate = (date) => {
+    const d = new Date(date);
+    return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear()}`;
+  };
+
+  const formatCurrency = (amount) => {
+    if (typeof amount !== 'number' || isNaN(amount)) {
+      return 'Không xác định'; // Trả về thông báo nếu giá trị không hợp lệ
+    }
+    return amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
   };
 
   if (loading) {
@@ -62,99 +72,177 @@ const OrderHistory = () => {
     return <div>Error: {error}</div>; // Show error message if there is an issue
   }
 
-  const tableStyle = {
-    width: '100%',
-    backgroundColor: '#fff',
-    borderCollapse: 'collapse',
-    boxShadow: '0 0 20px rgba(0, 0, 0, 0.1)',
-    borderRadius: '8px',
-    overflow: 'hidden',
-    marginBottom: '20px',
-  };
-
-  const thTdStyle = {
-    padding: '12px 15px',
-    textAlign: 'left',
-    borderBottom: '1px solid #ddd',
-    fontSize: '14px',
-    fontWeight: 'bold',
-  };
-
-  const tdStyle = {
-    fontWeight: 'normal',
-  };
-
-  const tbodyRowHoverStyle = {
-    backgroundColor: '#f5f5f5',
-  };
-
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', lineHeight: '1.6', backgroundColor: '#f0f0f0' }}>
-      <div className="breadcrumb">
-        <div className="container">
-          <div className="breadcrumb-inner"></div>
-        </div>
+    <div style={{ maxWidth: '1350px', margin: '20px auto', padding: '20px', background: '#fff', borderRadius: '10px', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }}>
+      <h2 style={{ fontSize: '2.5rem', textAlign: 'center', color: '#333', marginBottom: '20px' }}>Lịch sử đơn hàng</h2>
+
+      <div className="table-responsive">
+        <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '20px', fontSize: '1.2rem', height: 'auto' }}>
+          <thead>
+            <tr>
+              <th style={{ border: '1px solid #ddd', padding: '12px 15px', textAlign: 'left', backgroundColor: '#007bff', color: '#fff' }}>STT</th>
+              <th style={{ border: '1px solid #ddd', padding: '12px 15px', textAlign: 'left', backgroundColor: '#007bff', color: '#fff' }}>Ngày mua hàng</th>
+              <th style={{ border: '1px solid #ddd', padding: '12px 15px', textAlign: 'left', backgroundColor: '#007bff', color: '#fff' }}>Tổng tiền</th>
+              <th style={{ border: '1px solid #ddd', padding: '12px 15px', textAlign: 'left', backgroundColor: '#007bff', color: '#fff' }}>Địa chỉ</th>
+              <th style={{ border: '1px solid #ddd', padding: '12px 15px', textAlign: 'left', backgroundColor: '#007bff', color: '#fff' }}>Trạng thái</th>
+              <th style={{ border: '1px solid #ddd', padding: '12px 15px', textAlign: 'left', backgroundColor: '#007bff', color: '#fff' }}>Hành động</th>
+            </tr>
+          </thead>
+          <tbody>
+            {orders.map((order, index) => (
+              <tr key={index} style={index % 2 === 0 ? { backgroundColor: '#f9f9f9' } : {}}>
+                <td style={{ padding: '12px 15px', textAlign: 'left', fontSize: '14px' }}>{index + 1}</td>
+                <td style={{ padding: '12px 15px', textAlign: 'left', fontSize: '14px' }}>{formatDate(order.date)}</td>
+                <td style={{ padding: '12px 15px', textAlign: 'left', fontSize: '14px' }}>{formatCurrency(order.total)}</td>
+                <td style={{ padding: '12px 15px', textAlign: 'left', fontSize: '14px' }}>{order.address}</td>
+                <td style={{ padding: '12px 15px', textAlign: 'left', fontSize: '14px' }}>{order.orderStatus.status}</td>
+                <td style={{ padding: '12px 15px', textAlign: 'left', fontSize: '14px' }}>
+                  <button
+                    onClick={() => fetchOrderDetails(order.id)}
+                    style={{
+                      padding: '8px 15px',
+                      backgroundColor: '#17a2b8',
+                      color: '#fff',
+                      border: 'none',
+                      cursor: 'pointer',
+                      borderRadius: '5px',
+                      transition: 'background-color 0.3s',
+                    }}
+                  >
+                    Xem chi tiết
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
-      <div className="body-content">
-        <div className="container">
-          <div className="my-wishlist-page">
-            <div className="row">
-              <div className="col-md-12 my-wishlist">
-                <div className="table-responsive">
-                  <table className="table" style={tableStyle}>
-                    <thead>
-                      <tr>
-                        <th scope="col" style={thTdStyle}>STT</th>
-                        <th scope="col" style={thTdStyle}>Ngày mua hàng</th>
-                        <th scope="col" style={thTdStyle}>Tổng tiền</th>
-                        <th scope="col" style={thTdStyle}>Địa chỉ</th>
-                        <th scope="col" style={thTdStyle}>Trạng thái</th>
-                        <th scope="col" style={thTdStyle}>Hành động</th> {/* Cột hành động */}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {orders.map((order, index) => (
-                        <tr key={index} style={index % 2 === 0 ? { ...tbodyRowHoverStyle } : {}}>
-                          <th scope="row" style={thTdStyle}>{index + 1}</th>
-                          <td style={tdStyle}>{order.date}</td>
-                          <td style={tdStyle}>{order.total}</td>
-                          <td style={tdStyle}>{order.address}</td>
-                          <td style={tdStyle}>{order.orderStatus.status}</td>
-                          <td style={tdStyle}>
-                            <button 
-                              onClick={() => fetchOrderDetails(order.id)} 
-                              className="btn btn-info">Xem chi tiết</button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
+      <ul style={{ listStyleType: 'none', padding: '0' }}>
+        {orderDetails && (
+          <div
+            style={{
+              position: 'fixed',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              backgroundColor: '#ffffff',
+              padding: '25px 40px',
+              borderRadius: '15px',
+              boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)',
+              zIndex: '1000',
+              width: '90%',
+              maxWidth: '700px',
+              maxHeight: '80vh',
+              overflowY: 'auto',
+              animation: 'fadeIn 0.3s ease-in-out',
+            }}
+          >
+            <h3
+              style={{
+                marginBottom: '20px',
+                fontSize: '24px',
+                fontWeight: '700',
+                textAlign: 'center',
+                color: '#4a90e2',
+                borderBottom: '2px solid #e0e0e0',
+                paddingBottom: '10px',
+              }}
+            >
+              Chi tiết đơn hàng
+            </h3>
+            <ul style={{ padding: '0', margin: '0', listStyleType: 'none' }}>
+              {orderDetails.map((detail, idx) => (
+                <li
+                  key={idx}
+                  style={{
+                    marginBottom: '20px',
+                    padding: '20px',
+                    backgroundColor: '#f4f8fb',
+                    borderRadius: '10px',
+                    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+                    fontSize: '16px',
+                    color: '#333',
+                    transition: 'transform 0.2s ease-in-out',
+                  }}
+                  onMouseOver={(e) => (e.currentTarget.style.transform = 'scale(1.02)')}
+                  onMouseOut={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                >
+                  <strong style={{ color: '#4a90e2' }}>Sản phẩm:</strong> {detail.product.name}
+                  <div style={{ textAlign: 'center', margin: '15px 0' }}>
+                    <img
+                      src={`/assets/images/${detail.product.productsImages[0].image.url}`}
+                      alt={detail.product.name}
+                      style={{
+                        maxWidth: '150px',
+                        maxHeight: '150px',
+                        borderRadius: '10px',
+                        boxShadow: '0 6px 15px rgba(0, 0, 0, 0.1)',
+                      }}
+                    />
+
+
+
+
+                  </div>
+                  <strong style={{ color: '#4a90e2' }}>Số lượng:</strong> {detail.totalQuantity} <br />
+                  <strong style={{ color: '#4a90e2' }}>Tổng tiền:</strong> {detail.totalPrice} VND
+                </li>
+              ))}
+            </ul>
+            <button
+              onClick={closeModal}
+              style={{
+                display: 'block',
+                margin: '30px auto 0',
+                backgroundColor: '#4a90e2',
+                color: '#fff',
+                padding: '12px 25px',
+                borderRadius: '10px',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '16px',
+                fontWeight: 'bold',
+                boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+                transition: 'all 0.3s ease',
+              }}
+              onMouseOver={(e) => {
+                e.target.style.backgroundColor = '#357abd';
+                e.target.style.transform = 'scale(1.05)';
+              }}
+              onMouseOut={(e) => {
+                e.target.style.backgroundColor = '#4a90e2';
+                e.target.style.transform = 'scale(1)';
+              }}
+            >
+              Đóng
+            </button>
           </div>
-        </div>
-      </div>
+        )}
+      </ul>
+
+
+
 
       {/* Modal hiển thị chi tiết đơn hàng */}
-      {orderDetails && (
-        <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'white', padding: '20px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', zIndex: '1000' }}>
-          <h4>Chi tiết đơn hàng</h4>
-          <ul>
-            {orderDetails.map((detail, idx) => (
-              <li key={idx}>
-                Sản phẩm: {detail.product.name} | Số lượng: {detail.totalQuantity} | Tổng tiền: {detail.totalPrice}
-              </li>
-            ))}
-          </ul>
-          <button onClick={closeModal} style={{ backgroundColor: 'red', color: 'white', padding: '10px', border: 'none', cursor: 'pointer' }}>Đóng</button>
-        </div>
-      )}
 
-      {/* Overlay when modal is open */}
+
+
+
+
       {orderDetails && (
-        <div onClick={closeModal} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0, 0, 0, 0.5)', zIndex: '999' }}></div>
+        <div
+          onClick={closeModal}
+          style={{
+            position: 'fixed',
+            top: '0',
+            left: '0',
+            right: '0',
+            bottom: '0',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: '999',
+          }}
+        ></div>
       )}
     </div>
   );
