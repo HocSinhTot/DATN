@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import JAVA6.Model.CapacityModel;
 import JAVA6.Model.ImageModel;
 import JAVA6.Model.ProductsImagesModel;
 import JAVA6.Model.ProductsImagesModel.ProductsImagesId;
@@ -45,5 +46,18 @@ public class ImagesService {
     public List<ImageModel> getAllImages() {
         // TODO Auto-generated method stub
         return imageRepository.findAll();
+    }
+
+
+    public void saveColor(ImageModel image) {
+        imageRepository.save(image);
+    }
+
+    public ImageModel getImageById(Integer id) {
+        return imageRepository.findById(id).orElse(null);
+    }
+
+    public void deleteImage(Integer id) {
+        imageRepository.deleteById(id);
     }
 }
