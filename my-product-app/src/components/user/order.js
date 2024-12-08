@@ -54,6 +54,12 @@ const OrderHistory = () => {
 
   const closeModal = () => {
     setOrderDetails(null);
+
+    setIsCancelModalOpen(false);
+    setCancelReason('');
+  };
+  const closeModalhuy = () => {
+
     setIsCancelModalOpen(false);
     setCancelReason('');
   };
@@ -176,22 +182,31 @@ const OrderHistory = () => {
               <button
                 onClick={() => fetchOrderDetails(order.id)}
                 style={{
-                  width: '100%',
-                  padding: '10px',
-                  marginTop: '10px',
-                  border: 'none',
-                  borderRadius: '5px',
-                  backgroundColor: '#007bff',
-                  color: '#fff',
-                  cursor: 'pointer',
-                  fontWeight: 'bold',
-                  transition: 'background-color 0.3s',
+                  width: "100%", // Chiều rộng nút phủ toàn bộ
+                  padding: "12px", // Khoảng cách bên trong lớn hơn để nhìn cân đối
+                  marginTop: "10px", // Khoảng cách phía trên
+                  border: "none", // Xóa viền
+                  borderRadius: "10px", // Bo góc mềm mại
+                  backgroundColor: "#007bff", // Màu xanh lam ban đầu
+                  color: "#fff", // Chữ trắng
+                  cursor: "pointer", // Hiển thị con trỏ khi hover
+                  fontWeight: "bold", // Chữ đậm
+                  fontSize: "16px", // Cỡ chữ
+                  boxShadow: "0 5px 10px rgba(0, 123, 255, 0.3)", // Hiệu ứng đổ bóng
+                  transition: "all 0.3s ease", // Hiệu ứng chuyển đổi mượt mà
                 }}
-                onMouseOver={(e) => (e.target.style.backgroundColor = '#0056b3')}
-                onMouseOut={(e) => (e.target.style.backgroundColor = '#007bff')}
+                onMouseOver={(e) => {
+                  e.target.style.backgroundColor = "#0056b3"; // Màu nền khi hover (xanh đậm hơn)
+                  e.target.style.boxShadow = "0 8px 15px rgba(0, 86, 179, 0.4)"; // Tăng đổ bóng khi hover
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.backgroundColor = "#007bff"; // Trả về màu nền ban đầu
+                  e.target.style.boxShadow = "0 5px 10px rgba(0, 123, 255, 0.3)"; // Trả về bóng ban đầu
+                }}
               >
                 Xem chi tiết
               </button>
+
             </div>
           ))}
         </div>
@@ -276,18 +291,29 @@ const OrderHistory = () => {
               <button
                 onClick={closeModal}
                 style={{
-                  padding: '10px 20px',
-                  backgroundColor: '#ccc',
-                  border: 'none',
-                  borderRadius: '5px',
-                  color: '#fff',
-                  fontWeight: 'bold',
-                  cursor: 'pointer',
-                  transition: 'background-color 0.3s',
+                  padding: "12px 24px", // Khoảng cách bên trong lớn hơn
+                  backgroundColor: "#6c757d", // Màu xám ban đầu (chuẩn Bootstrap)
+                  border: "none", // Xóa viền
+                  borderRadius: "10px", // Bo góc mềm mại
+                  color: "#fff", // Chữ trắng
+                  fontWeight: "bold", // Chữ đậm
+                  cursor: "pointer", // Hiển thị con trỏ khi hover
+                  fontSize: "16px", // Cỡ chữ
+                  boxShadow: "0 5px 10px rgba(108, 117, 125, 0.3)", // Hiệu ứng đổ bóng
+                  transition: "all 0.3s ease", // Hiệu ứng chuyển đổi mượt mà
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.backgroundColor = "#5a6268"; // Màu xám đậm hơn khi hover
+                  e.target.style.boxShadow = "0 8px 15px rgba(90, 98, 104, 0.4)"; // Tăng đổ bóng khi hover
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.backgroundColor = "#6c757d"; // Trả về màu nền ban đầu
+                  e.target.style.boxShadow = "0 5px 10px rgba(108, 117, 125, 0.3)"; // Trả về bóng ban đầu
                 }}
               >
                 Đóng
               </button>
+
               <button
                 onClick={() => openCancelModal(orderDetails[0].orderId)} // Lấy orderId từ chi tiết đơn hàng
                 style={{
@@ -355,39 +381,61 @@ const OrderHistory = () => {
                 fontSize: '16px',
               }}
             />
-            <div style={{ textAlign: 'center' }}>
+            <div style={{ textAlign: "center" }}>
               <button
                 onClick={handleCancelOrder}
                 style={{
-                  padding: '10px 20px',
-                  backgroundColor: '#e74c3c',
-                  border: 'none',
-                  borderRadius: '5px',
-                  color: '#fff',
-                  fontWeight: 'bold',
-                  cursor: 'pointer',
-                  transition: 'background-color 0.3s',
+                  padding: "12px 24px", // Khoảng cách bên trong lớn hơn
+                  backgroundColor: "#e74c3c", // Màu đỏ ban đầu
+                  border: "none", // Xóa viền
+                  borderRadius: "10px", // Bo góc mềm mại
+                  color: "#fff", // Chữ trắng
+                  fontWeight: "bold", // Chữ đậm
+                  cursor: "pointer", // Hiển thị con trỏ khi hover
+                  fontSize: "16px", // Cỡ chữ
+                  boxShadow: "0 5px 10px rgba(231, 76, 60, 0.3)", // Hiệu ứng đổ bóng
+                  transition: "all 0.3s ease", // Hiệu ứng mượt mà
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.backgroundColor = "#c0392b"; // Màu đỏ đậm hơn khi hover
+                  e.target.style.boxShadow = "0 8px 15px rgba(192, 57, 43, 0.4)"; // Tăng đổ bóng khi hover
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.backgroundColor = "#e74c3c"; // Trả lại màu nền ban đầu
+                  e.target.style.boxShadow = "0 5px 10px rgba(231, 76, 60, 0.3)"; // Trả về bóng ban đầu
                 }}
               >
                 Xác nhận hủy
               </button>
               <button
-                onClick={closeModal}
+                onClick={closeModalhuy}
                 style={{
-                  marginLeft: '10px',
-                  padding: '10px 20px',
-                  backgroundColor: '#ccc',
-                  border: 'none',
-                  borderRadius: '5px',
-                  color: '#fff',
-                  fontWeight: 'bold',
-                  cursor: 'pointer',
-                  transition: 'background-color 0.3s',
+                  marginLeft: "10px", // Khoảng cách giữa hai nút
+                  padding: "12px 24px", // Khoảng cách bên trong lớn hơn
+                  backgroundColor: "#6c757d", // Màu xám ban đầu (chuẩn Bootstrap)
+                  border: "none", // Xóa viền
+                  borderRadius: "10px", // Bo góc mềm mại
+                  color: "#fff", // Chữ trắng
+                  fontWeight: "bold", // Chữ đậm
+                  cursor: "pointer", // Hiển thị con trỏ khi hover
+                  fontSize: "16px", // Cỡ chữ
+                  boxShadow: "0 5px 10px rgba(108, 117, 125, 0.3)", // Hiệu ứng đổ bóng
+                  transition: "all 0.3s ease", // Hiệu ứng mượt mà
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.backgroundColor = "#5a6268"; // Màu xám đậm hơn khi hover
+                  e.target.style.boxShadow = "0 8px 15px rgba(90, 98, 104, 0.4)"; // Tăng đổ bóng khi hover
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.backgroundColor = "#6c757d"; // Trả lại màu nền ban đầu
+                  e.target.style.boxShadow = "0 5px 10px rgba(108, 117, 125, 0.3)"; // Trả về bóng ban đầu
                 }}
               >
                 Hủy
               </button>
             </div>
+
+
           </div>
         )}
       </div>

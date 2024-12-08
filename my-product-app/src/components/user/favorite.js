@@ -198,16 +198,29 @@ const WishlistPage = () => {
                                     <button
                                         onClick={() => handleShowPopup(like.id)}
                                         style={{
-                                            backgroundColor: '#ff6f61',
-                                            color: '#fff',
-                                            border: 'none',
-                                            padding: '12px 24px',
-                                            cursor: 'pointer',
-                                            borderRadius: '5px',
+                                            backgroundColor: "#dc3545", // Màu đỏ ban đầu
+                                            color: "#fff", // Màu chữ trắng
+                                            fontWeight: "bold", // Chữ đậm
+                                            fontSize: "16px", // Cỡ chữ
+                                            padding: "12px 24px", // Khoảng cách bên trong
+                                            border: "none", // Xóa viền
+                                            borderRadius: "10px", // Bo góc mềm mại
+                                            cursor: "pointer", // Hiển thị con trỏ khi hover
+                                            boxShadow: "0 5px 10px rgba(220, 53, 69, 0.3)", // Hiệu ứng đổ bóng
+                                            transition: "all 0.3s ease", // Hiệu ứng chuyển đổi mượt mà
+                                        }}
+                                        onMouseOver={(e) => {
+                                            e.target.style.backgroundColor = "#a71d2a"; // Đổi sang màu đỏ đậm khi hover
+                                            e.target.style.boxShadow = "0 8px 15px rgba(167, 29, 42, 0.4)"; // Tăng bóng đậm khi hover
+                                        }}
+                                        onMouseOut={(e) => {
+                                            e.target.style.backgroundColor = "#dc3545"; // Trả về màu nền đỏ ban đầu
+                                            e.target.style.boxShadow = "0 5px 10px rgba(220, 53, 69, 0.3)"; // Giảm bóng về mức ban đầu
                                         }}
                                     >
                                         Xóa
                                     </button>
+
                                 </td>
                             </tr>
                         ))}

@@ -370,15 +370,42 @@ const Account = () => {
                   </div>
                 </div>
 
-                <div className="text-right mt-4">
+                <div
+                  className="text-right mt-4"
+                  style={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                  }}
+                >
                   <button
                     type="button"
                     onClick={handleUpdate}
-                    className="btn btn-success px-4"
+                    className="btn"
+                    style={{
+                      backgroundColor: "#007bff", // Màu nền ban đầu (màu xanh dương)
+                      color: "#fff", // Màu chữ trắng
+                      fontWeight: "bold", // Chữ đậm
+                      fontSize: "16px", // Cỡ chữ lớn hơn
+                      padding: "12px 30px", // Khoảng cách bên trong
+                      border: "none", // Xóa viền
+                      borderRadius: "10px", // Bo góc
+                      cursor: "pointer", // Hiển thị con trỏ khi hover
+                      boxShadow: "0 5px 10px rgba(0, 123, 255, 0.3)", // Hiệu ứng đổ bóng
+                      transition: "all 0.3s ease", // Hiệu ứng mượt mà khi hover
+                    }}
+                    onMouseOver={(e) => {
+                      e.target.style.backgroundColor = "#0056b3"; // Đổi sang màu xanh đậm khi hover
+                      e.target.style.boxShadow = "0 8px 15px rgba(0, 86, 179, 0.4)"; // Tăng hiệu ứng bóng
+                    }}
+                    onMouseOut={(e) => {
+                      e.target.style.backgroundColor = "#007bff"; // Trả lại màu nền ban đầu
+                      e.target.style.boxShadow = "0 5px 10px rgba(0, 123, 255, 0.3)"; // Xóa bóng tăng cường
+                    }}
                   >
                     Cập nhật
                   </button>
                 </div>
+
               </div>
             </div>
 
