@@ -148,33 +148,65 @@ const Account = () => {
         />
 
         <div className="row gutters">
+
           <div className="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12" style={{ paddingTop: '70px' }}>
-            <div className="card h-100">
-              <div className="card-body">
+            <div className="card h-100" style={{ borderRadius: '10px', border: 'none', boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)', overflow: 'hidden' }}>
+              <div className="card-body" style={{ padding: '20px', textAlign: 'center' }}>
                 <div className="account-settings">
                   <div className="user-profile">
-                    <div className="user-avatar" style={{ paddingLeft: '42px' }}>
+                    <div className="user-avatar" style={{ position: 'relative', marginBottom: '15px' }}>
                       <img
                         src={user.previewImage || `http://localhost:8080/assets/images/${user.image}`}
                         alt="User Avatar"
                         style={{
-                          width: "120px",
-                          height: "120px",
-                          borderRadius: "50%",
-                          objectFit: "cover",
-                          border: "2px solid #ddd",
-                          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                          width: '120px',
+                          height: '120px',
+                          borderRadius: '50%',
+                          objectFit: 'cover',
+                          border: '4px solid #f0f0f0',
+                          boxShadow: '0 6px 12px rgba(0, 0, 0, 0.1)',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease',
                         }}
+                        onClick={() => document.getElementById("fileInput").click()}
+                        onMouseEnter={(e) => e.target.style.transform = 'scale(1.05)'}
+                        onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
+                      />
+                      <input
+                        id="fileInput"
+                        type="file"
+                        accept="image/*"
+                        className="form-control"
+                        name="image"
+                        style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          width: '100%',
+                          height: '100%',
+                          opacity: 0, // Ẩn input nhưng vẫn có thể tương tác
+                          cursor: 'pointer',
+                        }}
+                        onChange={(e) => handleImageChange(e)}
                       />
                     </div>
-                    <input style={{ marginTop: '15px' }}
-                      type="file"
-                      accept="image/*"
-                      className="form-control"
-                      name="image"
-                      onChange={(e) => handleImageChange(e)}
-                    />
-                    <input type="hidden" name="id" value={user.id} />
+                    <div
+                      style={{
+                        backgroundColor: '#f5f5f5',
+                        color: '#333',
+                        padding: '8px 15px',
+                        borderRadius: '20px',
+                        fontSize: '14px',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        transition: 'background-color 0.3s ease',
+                      }}
+                      onClick={() => document.getElementById("fileInput").click()}
+                      onMouseEnter={(e) => e.target.style.backgroundColor = '#e0e0e0'}
+                      onMouseLeave={(e) => e.target.style.backgroundColor = '#f5f5f5'}
+                    >
+                      Chọn ảnh
+                    </div>
                   </div>
                 </div>
               </div>
@@ -182,28 +214,36 @@ const Account = () => {
           </div>
 
 
+
           <div
             className="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-12"
 
           >
             {/* Nội dung bên trong */}
-            <div className="card h-100" >
-              <div className="card-body" >
-                <div className="row gutters" style={{
-                  border: "2px solid #007bff", // Đường viền màu xanh lam
-                  borderRadius: "10px", // Bo góc
-                  padding: "15px", // Khoảng cách bên trong
-                  margin: "15px 0", // Khoảng cách bên ngoài
-                }}>
-                  <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                    <h2 className="mb-2 text-primary" style={{ fontWeight: "bold" }}>
+            <div className="card h-100 shadow-sm" style={{ borderRadius: "15px" }}>
+              <div className="card-body">
+                <div
+                  className="row gutters"
+                  style={{
+                    border: "1px solid #cce7ff",
+                    borderRadius: "10px",
+                    padding: "20px",
+                    margin: "15px 0",
+                    backgroundColor: "#f9fbff",
+                  }}
+                >
+                  <div className="col-12">
+                    <h2 className="mb-3 text-primary" style={{ fontWeight: "bold" }}>
                       Thông tin người dùng
                     </h2>
                   </div>
 
-                  <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                    <div className="form-group" style={{ border: '#ff0000 solid 2px;' }}>
-                      <label htmlFor="fullName">Họ tên</label>
+                  {/* Họ tên */}
+                  <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12 mb-3">
+                    <div className="form-group">
+                      <label htmlFor="fullName" style={{ fontWeight: "bold" }}>
+                        Họ tên
+                      </label>
                       <input
                         type="text"
                         className="form-control"
@@ -211,16 +251,22 @@ const Account = () => {
                         name="name"
                         value={user.name || ""}
                         onChange={(e) => setUser({ ...user, name: e.target.value })}
-
                         placeholder="Nhập tên"
                       />
-                      {formErrors.name && <p style={{ color: 'red' }} className="error">{formErrors.name}</p>}
+                      {formErrors.name && (
+                        <p style={{ color: "red" }} className="error">
+                          {formErrors.name}
+                        </p>
+                      )}
                     </div>
                   </div>
 
-                  <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                  {/* Email */}
+                  <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12 mb-3">
                     <div className="form-group">
-                      <label htmlFor="eMail">Email</label>
+                      <label htmlFor="eMail" style={{ fontWeight: "bold" }}>
+                        Email
+                      </label>
                       <input
                         type="email"
                         className="form-control"
@@ -230,13 +276,20 @@ const Account = () => {
                         onChange={(e) => setUser({ ...user, email: e.target.value })}
                         placeholder="Nhập email"
                       />
-                      {formErrors.email && <p style={{ color: 'red' }} className="error">{formErrors.email}</p>}
+                      {formErrors.email && (
+                        <p style={{ color: "red" }} className="error">
+                          {formErrors.email}
+                        </p>
+                      )}
                     </div>
                   </div>
 
-                  <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                  {/* Số điện thoại */}
+                  <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12 mb-3">
                     <div className="form-group">
-                      <label htmlFor="phone">Số điện thoại</label>
+                      <label htmlFor="phone" style={{ fontWeight: "bold" }}>
+                        Số điện thoại
+                      </label>
                       <input
                         type="text"
                         className="form-control"
@@ -246,16 +299,20 @@ const Account = () => {
                         onChange={(e) => setUser({ ...user, phone: e.target.value })}
                         placeholder="Nhập số điện thoại"
                       />
-                      {formErrors.phone && <p style={{ color: 'red' }} className="error">{formErrors.phone}</p>}
-
+                      {formErrors.phone && (
+                        <p style={{ color: "red" }} className="error">
+                          {formErrors.phone}
+                        </p>
+                      )}
                     </div>
                   </div>
 
-
-
-                  <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                  {/* Ngày sinh */}
+                  <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12 mb-3">
                     <div className="form-group">
-                      <label htmlFor="date">Ngày sinh</label>
+                      <label htmlFor="date" style={{ fontWeight: "bold" }}>
+                        Ngày sinh
+                      </label>
                       <input
                         type="date"
                         className="form-control"
@@ -264,16 +321,18 @@ const Account = () => {
                         value={user.birthday || ""}
                         onChange={(e) => setUser({ ...user, birthday: e.target.value })}
                       />
-                      {formErrors.birthday && <p style={{ color: 'red' }} className="error">{formErrors.birthday}</p>}
-
+                      {formErrors.birthday && (
+                        <p style={{ color: "red" }} className="error">
+                          {formErrors.birthday}
+                        </p>
+                      )}
                     </div>
                   </div>
 
-                  <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6">
-                    <div className="form-group">
-                      <label>Giới tính</label>
-                      <br />
-                      <br />
+                  {/* Giới tính */}
+                  <div className="form-group">
+                    <label style={{ fontWeight: "bold" }}>Giới tính</label>
+                    <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
                       <div className="form-check">
                         <input
                           type="radio"
@@ -284,9 +343,11 @@ const Account = () => {
                           checked={user.gender === true}
                           onChange={(e) => setUser({ ...user, gender: true })}
                         />
-                        <label className="form-check-label" htmlFor="genderMale" style={{ paddingRight: '40px' }}>
+                        <label className="form-check-label" htmlFor="genderMale">
                           Nam
                         </label>
+                      </div>
+                      <div className="form-check">
                         <input
                           type="radio"
                           className="form-check-input"
@@ -299,36 +360,28 @@ const Account = () => {
                         <label className="form-check-label" htmlFor="genderFemale">
                           Nữ
                         </label>
-                        {formErrors.gender && <p style={{ color: 'red' }} className="error">{formErrors.gender}</p>}
                       </div>
                     </div>
+                    {formErrors.gender && (
+                      <p style={{ color: "red" }} className="error">
+                        {formErrors.gender}
+                      </p>
+                    )}
                   </div>
                 </div>
 
-                <div className="row gutters">
-                  <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                    <div
-                      className="text-right"
-                      style={{
-                        marginTop: "20px",
-                        display: "flex",
-                        justifyContent: "flex-end",
-                        gap: "10px",
-                      }}
-                    >
-
-                      <button
-                        type="button"
-                        onClick={handleUpdate}
-                        className="btn btn-success"
-                      >
-                        Cập nhật
-                      </button>
-                    </div>
-                  </div>
+                <div className="text-right mt-4">
+                  <button
+                    type="button"
+                    onClick={handleUpdate}
+                    className="btn btn-success px-4"
+                  >
+                    Cập nhật
+                  </button>
                 </div>
               </div>
             </div>
+
           </div>
         </div>
       </form>
