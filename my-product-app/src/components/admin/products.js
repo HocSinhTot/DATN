@@ -6,7 +6,7 @@ const ProductManagement = () => {
 
     useEffect(() => {
         // Fetch product data from API
-        fetch('http://localhost:8080/api/products')  // API endpoint
+        fetch('http://localhost:8080/api/admin/products')  // API endpoint
             .then(response => response.json())
             .then(data => setProductList(data))
             .catch(error => console.error('Error fetching products:', error));
@@ -14,7 +14,7 @@ const ProductManagement = () => {
 
     const handleDelete = (id) => {
         if (window.confirm('Are you sure you want to delete this product?')) {
-            fetch(`http://localhost:8080/api/products/${id}`, {
+            fetch(`http://localhost:8080/api/admin/products/${id}`, {
                 method: 'DELETE',
             })
                 .then(response => {

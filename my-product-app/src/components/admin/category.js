@@ -6,7 +6,7 @@ const CategoryManagement = () => {
 
     useEffect(() => {
         // Fetch categories from your API
-        fetch('http://localhost:8080/api/categories')  // Replace with your API URL
+        fetch('http://localhost:8080/api/admin/categories')  // Replace with your API URL
             .then((response) => response.json())
             .then((data) => setCategories(data))
             .catch((error) => console.error('Error fetching categories:', error));
@@ -14,7 +14,7 @@ const CategoryManagement = () => {
 
     const handleDelete = (id) => {
         if (window.confirm('Are you sure you want to delete this category?')) {
-            fetch(`http://localhost:8080/api/categories/${id}`, {
+            fetch(`http://localhost:8080/api/admin/categories/${id}`, {
                 method: 'DELETE',
             })
                 .then((response) => {

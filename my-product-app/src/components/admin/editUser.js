@@ -23,7 +23,7 @@ const EditUserPage = () => {
     // Lấy dữ liệu người dùng từ API theo ID người dùng
     const fetchUserData = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/api/users/${id}`);
+        const response = await axios.get(`http://localhost:8080/api/admin/users/${id}`);
         setUser(response.data);
       } catch (err) {
         console.log(err);
@@ -49,7 +49,7 @@ const EditUserPage = () => {
 
     try {
       // Sử dụng PUT để cập nhật người dùng
-      const response = await axios.put(`http://localhost:8080/api/users/${id}`, formData, {
+      const response = await axios.put(`http://localhost:8080/api/admin/users/${id}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

@@ -11,7 +11,7 @@ import JAVA6.Model.EvaluateModel;
 import JAVA6.service.EvaluaesService;
 
 @RestController
-@RequestMapping("/api/evaluaes")
+@RequestMapping("/api/admin/evaluaes")
 public class EvaluaesController {
 
     @Autowired

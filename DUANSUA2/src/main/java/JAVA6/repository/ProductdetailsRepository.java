@@ -27,9 +27,7 @@ public interface ProductdetailsRepository extends JpaRepository<ProductModel, In
             "JOIN Capacity c ON pp.capacity_id = c.id " +
             "WHERE pp.product_id = :productId", nativeQuery = true)
     List<Map<String, Object>> findCapacitiesAndPricesByProductId(@Param("productId") int productId);
-
-    // Tìm sản phẩm theo Category hoặc Brand ID
     @Query("SELECT p FROM ProductModel p WHERE p.category.id = :categoryId OR p.brand.id = :brandId")
-    List<ProductModel> findByCategoryIdOrBrandId(@Param("categoryId") CategoryModel categoryId,
-            @Param("brandId") BrandModel brandId);
-}
+    List<ProductModel> findByCategoryIdOrBrandId(@Param("categoryId") int categoryId,
+            @Param("brandId") int brandId);
+}    

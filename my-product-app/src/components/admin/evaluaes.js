@@ -6,7 +6,7 @@ const EvaluateManagement = () => {
 
     // Lấy dữ liệu từ API khi component được render
     useEffect(() => {
-        fetch('http://localhost:8080/api/evaluaes')  // URL API của backend
+        fetch('http://localhost:8080/api/admin/evaluaes')  // URL API của backend
             .then((response) => response.json())
             .then((data) => setEvaluateList(data))
             .catch((error) => console.error('Error fetching evaluate data:', error));

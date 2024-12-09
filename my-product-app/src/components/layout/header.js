@@ -30,7 +30,10 @@ const Header = ({ setKeyword, setCategoryId }) => {
       const response = await axios.post("http://localhost:8080/api/auth/logout");
       if (response.data.success) {
         // Clear the localStorage and update state
-        sessionStorage.removeItem("username");
+        sessionStorage.removeItem('rememberMe');
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('userId');
+        sessionStorage.removeItem('username');
         setIsLoggedIn(false);
         setUsername('');
         // Redirect to login page

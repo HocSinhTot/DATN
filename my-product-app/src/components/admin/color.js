@@ -6,7 +6,7 @@ const ColorManagement = () => {
 
     // Fetch color data when the component mounts
     useEffect(() => {
-        fetch('http://localhost:8080/api/colors')  // API endpoint to fetch colors
+        fetch('http://localhost:8080/api/admin/colors')  // API endpoint to fetch colors
             .then((response) => response.json())
             .then((data) => setColorList(data))
             .catch((error) => console.error('Error fetching color data:', error));
@@ -14,7 +14,7 @@ const ColorManagement = () => {
 
     const handleDelete = (id) => {
         if (window.confirm('Are you sure you want to delete this color?')) {
-            fetch(`http://localhost:8080/api/colors/${id}`, {
+            fetch(`http://localhost:8080/api/admin/colors/${id}`, {
                 method: 'DELETE',
             })
                 .then((response) => {

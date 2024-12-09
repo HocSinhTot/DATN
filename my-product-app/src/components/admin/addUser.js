@@ -41,7 +41,7 @@ const AddUserForm = () => {
       }
 
       // Send the data to the backend (adjust the URL as needed)
-      const response = await axios.post('http://localhost:8080/api/users', formDataToSend, {
+      const response = await axios.post('http://localhost:8080/api/admin/users', formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

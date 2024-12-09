@@ -5,7 +5,7 @@ const BrandManagement = () => {
     const [brands, setBrands] = useState([]);
 
     useEffect(() => {
-        fetch('http://localhost:8080/api/brands')  // Replace with your backend API URL
+        fetch('http://localhost:8080/api/admin/brands')  // Replace with your backend API URL
             .then((response) => response.json())
             .then((data) => setBrands(data))
             .catch((error) => console.error('Error fetching brand data:', error));
@@ -13,7 +13,7 @@ const BrandManagement = () => {
 
     const handleDelete = (id) => {
         if (window.confirm('Are you sure you want to delete this brand?')) {
-            fetch(`http://localhost:8080/api/brands/${id}`, {
+            fetch(`http://localhost:8080/api/admin/brands/${id}`, {
                 method: 'DELETE',
             })
                 .then((response) => {

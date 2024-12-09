@@ -48,6 +48,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         username, null, authorities);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (Exception e) {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                 System.err.println("Invalid token: " + e.getMessage());
             }
         }

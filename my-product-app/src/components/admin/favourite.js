@@ -5,7 +5,7 @@ const UserManagement = () => {
     const [favouriteList, setFavouriteList] = useState([]);
 
     useEffect(() => {
-        fetch('http://localhost:8080/api/favourite') // API URL for fetching favourite list
+        fetch('http://localhost:8080/api/admin/favourite') // API URL for fetching favourite list
             .then((response) => response.json())
             .then((data) => setFavouriteList(data))
             .catch((error) => console.error('Error fetching favourite data:', error));

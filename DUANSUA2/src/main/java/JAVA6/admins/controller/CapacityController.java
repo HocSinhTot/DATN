@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/capacity")
+@RequestMapping("/api/admin/capacity")
 public class CapacityController {
 
     @Autowired

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const UserManagement = () => {
     const [userList, setUserList] = useState([]);
-    const token = localStorage.getItem('token'); // Lấy token từ localStorage
+    const token = sessionStorage.getItem('token'); // Lấy token từ localStorage
 
     // Cấu hình fetch với header Authorization
     const fetchOptions = (method, body = null) => ({

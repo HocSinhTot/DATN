@@ -33,7 +33,7 @@ public class SecurityConfig {
         
         http.csrf().disable()
             .authorizeHttpRequests()
-            .requestMatchers("/api/admin/**").hasRole("ADMIN") // ROLE_ADMIN trong JWT
+            .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN") // ROLE_ADMIN trong JWT
             .anyRequest().permitAll()
             .and()
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

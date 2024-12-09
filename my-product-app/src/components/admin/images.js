@@ -6,7 +6,7 @@ const ImageManagement = () => {
 
     // Fetch images from API
     useEffect(() => {
-        fetch('http://localhost:8080/api/images')  // Replace with the correct API endpoint
+        fetch('http://localhost:8080/api/admin/images')  // Replace with the correct API endpoint
             .then((response) => response.json())
             .then((data) => setImages(data))
             .catch((error) => console.error('Error fetching image data:', error));
@@ -15,7 +15,7 @@ const ImageManagement = () => {
     // Delete image
     const handleDelete = (id) => {
         if (window.confirm('Are you sure you want to delete this image?')) {
-            fetch(`http://localhost:8080/api/images/${id}`, {
+            fetch(`http://localhost:8080/api/admin/images/${id}`, {
                 method: 'DELETE',
             })
                 .then((response) => {

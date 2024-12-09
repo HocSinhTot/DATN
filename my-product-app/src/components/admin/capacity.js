@@ -5,7 +5,7 @@ const CapacityManagement = () => {
     const [capacityList, setCapacityList] = useState([]);
 
     useEffect(() => {
-        fetch('http://localhost:8080/api/capacity')  // API URL for fetching capacity data
+        fetch('http://localhost:8080/api/admin/capacity')  // API URL for fetching capacity data
             .then((response) => response.json())
             .then((data) => setCapacityList(data))
             .catch((error) => console.error('Error fetching capacity data:', error));
@@ -13,7 +13,7 @@ const CapacityManagement = () => {
 
     const handleDelete = (id) => {
         if (window.confirm('Are you sure you want to delete this capacity?')) {
-            fetch(`http://localhost:8080/api/capacity/${id}`, {
+            fetch(`http://localhost:8080/api/admin/capacity/${id}`, {
                 method: 'DELETE',
             })
                 .then((response) => {

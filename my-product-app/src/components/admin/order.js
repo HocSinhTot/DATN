@@ -7,12 +7,12 @@ const OrderManagement = () => {
 
     useEffect(() => {
         // Fetch all orders and statuses from the API
-        fetch('http://localhost:8080/api/orders')  // API URL for orders
+        fetch('http://localhost:8080/api/admin/orders')  // API URL for orders
             .then((response) => response.json())
             .then((data) => setOrderList(data))
             .catch((error) => console.error('Error fetching orders:', error));
 
-        fetch('http://localhost:8080/api/orderStatuses')  // API URL for order statuses
+        fetch('http://localhost:8080/api/admin/orderStatuses')  // API URL for order statuses
             .then((response) => response.json())
             .then((data) => {
                 // Ensure the fetched data is an array
@@ -27,7 +27,7 @@ const OrderManagement = () => {
 
     const handleUpdateStatus = (orderId, statusId) => {
         // Call API to update order status
-        fetch(`http://localhost:8080/api/orders/${orderId}/updateStatus`, {
+        fetch(`http://localhost:8080/api/admin/orders/${orderId}/updateStatus`, {
             method: 'POST',
             body: JSON.stringify({ statusId }),
             headers: { 'Content-Type': 'application/json' }

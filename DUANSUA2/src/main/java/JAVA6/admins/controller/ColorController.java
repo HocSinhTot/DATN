@@ -18,7 +18,7 @@ import JAVA6.Model.ColorModel;
 import JAVA6.service.ColorService;
 
 @RestController
-@RequestMapping("/api/colors")
+@RequestMapping("/api/admin/colors")
 public class ColorController {
 
     @Autowired
