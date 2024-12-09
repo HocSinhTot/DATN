@@ -36,6 +36,9 @@ import ImagesAmin from './components/admin/images';
 
 import FavouriteAmin from './components/admin/favourite';
 import EvaluaesAmin from './components/admin/evaluaes';
+import ProductsPrice from './components/admin/productprice';
+import ProductsImage from './components/admin/productimages';
+
 
 import OrderAmin from './components/admin/order';
 import EditUserAmin from './components/admin/editUser';
@@ -54,6 +57,7 @@ import AddBrandAmin from './components/admin/addBrand';
 import AddColorAmin from './components/admin/addColor';
 import AddCapacityAmin from './components/admin/addCapacity';
 import AddImageAmin from './components/admin/addImage';
+
 
 function App() {
   const [keyword, setKeyword] = useState('');
@@ -91,6 +95,7 @@ function App() {
         <Route path="/images/add" element={<AddImageAmin />} />
         <Route path="/images/edit/:id" element={<EditImageAmin />} />
 
+       
         <Route
           path="/product/:id"
           element={
@@ -301,7 +306,25 @@ function App() {
             </>
           }
         />
-
+        <Route
+          path="/products-prices"
+          element={
+            <>
+              <Headeradmin />
+              <ProductsPrice />
+            </>
+          }
+        />
+         <Route
+          path="/products-images"
+          element={
+            <>
+              <Headeradmin />
+              <ProductsImage />
+            </>
+          }
+        />
+        
 
       </Routes>
 

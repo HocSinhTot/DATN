@@ -3,10 +3,13 @@ package JAVA6.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import JAVA6.Model.OrderModel;
 import JAVA6.Model.OrderStatusModel;
+
 import JAVA6.repository.OrderRepository;
 import JAVA6.repository.OrderStatusRepository;
 
@@ -49,4 +52,6 @@ public class OrderService {
     public void deleteOrder(int orderId) {
         orderRepository.deleteById(orderId);
     }
+
+    
 }
