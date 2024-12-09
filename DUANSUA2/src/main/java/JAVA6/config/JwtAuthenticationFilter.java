@@ -1,7 +1,6 @@
 package JAVA6.config;
 
 import JAVA6.util.JwtTokenUtil;
-import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,54 +8,59 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Enumeration;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenUtil jwtTokenUtil;
 
     public JwtAuthenticationFilter(JwtTokenUtil jwtTokenUtil) {
         this.jwtTokenUtil = jwtTokenUtil;
     }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        String header = request.getHeader("Authorization");
-        System.out.println("JwtAuthenticationFilter is being called");
-Enumeration<String> headerNames = request.getHeaderNames();
-while (headerNames.hasMoreElements()) {
-    String headerName = headerNames.nextElement();
-    System.out.println(headerName + ": " + request.getHeader(headerName));
-}
+        String token = getTokenFromRequest(request);
 
-        if (header != null && header.startsWith("Bearer ")) {
-            String token = header.substring(7); // Extract token from "Bearer <token>"
-            System.out.println("err");
-            if (StringUtils.hasText(token)) {
-                try {
-                    String username = JwtTokenUtil.getUsernameFromToken(token);
-                    System.out.println("username: "+username);
-                    // Optionally, you can validate the token here
-                    // You can set the authentication in SecurityContext if needed
-                } catch (Exception e) {
-                    // Handle the case where token is invalid or expired
-                    logger.error("Invalid token", e);
+        if (StringUtils.hasText(token)) {
+            try {
+                // Lấy username và roles từ token
+                String username = JwtTokenUtil.getUsernameFromToken(token);
+                String roles = (String) JwtTokenUtil.getClaimsFromToken(token).get("roles");
+
+                // Chuyển đổi roles thành danh sách quyền
+                List<SimpleGrantedAuthority> authorities = Collections.emptyList();
+                if (roles != null) {
+                    authorities = List.of(roles.split(",")).stream()
+                            .map(SimpleGrantedAuthority::new)
+                            .collect(Collectors.toList());
                 }
+
+                // Tạo Authentication và đặt vào SecurityContext
+                Authentication authentication = new UsernamePasswordAuthenticationToken(
+                        username, null, authorities);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            } catch (Exception e) {
+                System.err.println("Invalid token: " + e.getMessage());
             }
         }
-        filterChain.doFilter(request, response); // Proceed with the filter chain
+
+        // Tiếp tục chuỗi filter
+        filterChain.doFilter(request, response);
     }
+
     private String getTokenFromRequest(HttpServletRequest request) {
         String header = request.getHeader("Authorization");
-        if (header != null && header.startsWith("Bearer ")) {
+        if (StringUtils.hasText(header) && header.startsWith("Bearer ")) {
             return header.substring(7);
         }
         return null;
-}
+    }
 }

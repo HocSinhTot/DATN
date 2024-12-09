@@ -51,7 +51,9 @@ public class LoginController {
                 int userId = user.getId();
     
                 // Tạo JWT token
-                String token = jwtUtils.generateToken(user.getUsername(),user.isRole());
+                String role = user.isRole() ? "ROLE_ADMIN" : "ROLE_USER";
+                String token = jwtUtils.generateToken(user.getUsername(), role);
+                
     
                 return ResponseEntity.ok(new ApiResponse(true, "Đăng nhập thành công!", isAdmin, userId, token));
             }

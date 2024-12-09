@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.security.Key;
+import java.util.List;
 
 @Component
 public class JwtTokenUtil {
@@ -21,13 +22,13 @@ public class JwtTokenUtil {
     }
 
     // Generate token
-    public static String generateToken(String username, boolean isAdmin) {
+    public static String generateToken(String username,String roles) {
         return Jwts.builder()
                 .setSubject(username)
-                .claim("isAdmin", isAdmin)
+                .claim("roles", roles) // Thêm danh sách quyền vào token
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // Token expires in 1 hour
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256) // Sign using HS256
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -42,20 +43,19 @@ public class JwtTokenUtil {
 
     // Get username from the token
     public static String getUsernameFromToken(String token) {
-        Claims claims = getClaimsFromToken(token);
-        return claims.getSubject();
+        return getClaimsFromToken(token).getSubject();
     }
 
-    // Get admin flag from the token
-    public static boolean getAdminFromToken(String token) {
+    // Get roles from the token
+    public static List<String> getRolesFromToken(String token) {
         Claims claims = getClaimsFromToken(token);
-        return claims.get("isAdmin", Boolean.class);
+        return claims.get("roles", List.class);
     }
 
-    // Validate the token based on username
+    // Validate the token (username + expiration)
     public static boolean validateToken(String token, String username) {
         String tokenUsername = getUsernameFromToken(token);
-        return tokenUsername.equals(username); // Also check if token is expired
+        Date expiration = getClaimsFromToken(token).getExpiration();
+        return tokenUsername.equals(username) && expiration.after(new Date());
     }
 }
-    // Check if the token has expired
