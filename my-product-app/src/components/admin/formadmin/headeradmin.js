@@ -288,7 +288,8 @@ export default function App() {
 										phẩm</span></a>
 								<ul class="submenu">
 									<li><a href="/products"><span>Quản lý sản phẩm</span></a></li>
-									<li><a href="#"><span>Quản lý sản phẩm chi tiết</span></a></li>
+									<li><a href="/products-prices"><span>Quản lý sản phẩm dung lượng</span></a></li>
+									<li><a href="/products-images"><span>Quản lý sản phẩm hình ảnh</span></a></li>
 									<li><a href="/category"><span>Quản lý danh mục</span></a></li>
 									<li><a href="/brands"><span>Quản lý thương hiệu</span></a></li>
 									<li><a href="/color"><span>Quản lý màu</span></a></li>
