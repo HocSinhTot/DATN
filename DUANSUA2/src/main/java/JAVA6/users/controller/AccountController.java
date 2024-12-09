@@ -24,7 +24,6 @@ public class AccountController {
     @GetMapping("/profile")
     public ResponseEntity<UserModel> getProfile(@RequestHeader("Username") String username) {
         // Kiểm tra giá trị username
-        System.out.println("Username from request header: " + username);
 
         if (username == null) {
             return ResponseEntity.status(400).body(null); // Trả về lỗi nếu không có username

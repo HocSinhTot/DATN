@@ -59,7 +59,7 @@
             <version>9.2.1.jre8</version>
         </dependency>
 
-        <!-- JSTL -->
+        <!-- JSTL (Jakarta) -->
         <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>jakarta.servlet.jsp.jstl</artifactId>
@@ -69,7 +69,7 @@
             <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
         </dependency>
 
-        <!-- Tomcat & Servlet -->
+        <!-- Tomcat & Servlet (provided scope) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-tomcat</artifactId>
@@ -79,13 +79,20 @@
             <groupId>org.apache.tomcat.embed</groupId>
             <artifactId>tomcat-embed-jasper</artifactId>
         </dependency>
+
+        <!-- JWT Library -->
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>4.0.1</version>
-            <scope>provided</scope>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>0.12.6</version>
         </dependency>
 
+        <!-- Spring Boot Security -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        
         <!-- Developer Tools -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -94,7 +101,7 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- Lombok -->
+        <!-- Lombok (Optional) -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

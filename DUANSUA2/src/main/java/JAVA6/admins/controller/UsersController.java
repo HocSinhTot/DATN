@@ -18,7 +18,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/admin/users")
 public class UsersController {
 
     private static final Logger logger = LoggerFactory.getLogger(UsersController.class);

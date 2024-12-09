@@ -56,13 +56,13 @@ const LoginPage = () => {
 
         // Lưu thông tin vào sessionStorage nếu đăng nhập thành công
         if (response.data.success) {
+          localStorage.setItem("token", response.data.token);  // Lưu token vào localStorage
 
           sessionStorage.setItem("username", username); // Lưu tên đăng nhập vào sessionStorage
-          sessionStorage.setItem("password", password); // Lưu mật khẩu vào sessionStorage
           sessionStorage.setItem("rememberMe", rememberMe ? "on" : "off");
           sessionStorage.setItem("userId", response.data.userId); // Lưu idUser vào sessionStorage
           // Điều hướng đến trang chính sau khi đăng nhập
-          navigate("/"); 
+          navigate("/login"); 
         } else {
           setError(response.data.message || "Đăng nhập thất bại.");
         }

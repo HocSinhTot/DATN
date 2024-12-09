@@ -3,19 +3,30 @@ import { Link } from 'react-router-dom';
 
 const UserManagement = () => {
     const [userList, setUserList] = useState([]);
+    const token = localStorage.getItem('token'); // Lấy token từ localStorage
 
+    // Cấu hình fetch với header Authorization
+    const fetchOptions = (method, body = null) => ({
+        method,
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,  // Thêm header Authorization
+        },
+        body: body ? JSON.stringify(body) : null,
+    });
+
+    // Lấy danh sách người dùng
     useEffect(() => {
-        fetch('http://localhost:8080/api/users')  // API URL backend
+        fetch('http://localhost:8080/api/admin/users', fetchOptions('GET'))
             .then((response) => response.json())
             .then((data) => setUserList(data))
             .catch((error) => console.error('Error fetching user data:', error));
     }, []);
 
+    // Xử lý xóa người dùng
     const handleDelete = (id) => {
         if (window.confirm('Are you sure you want to delete this user?')) {
-            fetch(`http://localhost:8080/api/users/${id}`, {
-                method: 'DELETE',
-            })
+            fetch(`http://localhost:8080/api/admin/users/${id}`, fetchOptions('DELETE'))
                 .then((response) => {
                     if (response.ok) {
                         alert('User deleted successfully!');
@@ -26,11 +37,10 @@ const UserManagement = () => {
         }
     };
 
+    // Xử lý khóa người dùng
     const handleBlock = (id) => {
         if (window.confirm('Bạn có chắc chắn muốn khóa người dùng này không?')) {
-            fetch(`http://localhost:8080/api/users/${id}/block`, {
-                method: 'PUT', // Change to PUT
-            })
+            fetch(`http://localhost:8080/api/admin/users/${id}/block`, fetchOptions('PUT'))
                 .then((response) => {
                     if (response.ok) {
                         alert('Khóa người dùng thành công!');
@@ -43,11 +53,10 @@ const UserManagement = () => {
         }
     };
     
+    // Xử lý mở khóa người dùng
     const handleUnblock = (id) => {
         if (window.confirm('Bạn có chắc chắn muốn mở khóa người dùng này không?')) {
-            fetch(`http://localhost:8080/api/users/${id}/unblock`, {
-                method: 'PUT', // Change to PUT
-            })
+            fetch(`http://localhost:8080/api/admin/users/${id}/unblock`, fetchOptions('PUT'))
                 .then((response) => {
                     if (response.ok) {
                         alert('Mở khóa người dùng thành công!');
@@ -58,8 +67,6 @@ const UserManagement = () => {
                 })
                 .catch((error) => console.error('Lỗi khi mở khóa người dùng:', error));
         }
-
-    
     };
 
     return (
