@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 @RestController
@@ -75,24 +76,34 @@ public class UsersController {
 
             // Xử lý upload file nếu có
             if (file != null && !file.isEmpty()) {
-                String uploadDir = "src/main/resources/static/assets/images/uploads/";
-                Path uploadPath = Paths.get(uploadDir);
+                // Định nghĩa thư mục lưu trữ ảnh trong thư mục "static"
+                String uploadDir = "src/main/resources/static/assets/images/U/";
 
+                // Sử dụng `Path` để xử lý đường dẫn và đảm bảo thư mục tồn tại
+                Path uploadPath = Paths.get(uploadDir);
                 if (!Files.exists(uploadPath)) {
-                    Files.createDirectories(uploadPath);
+                    Files.createDirectories(uploadPath); // Tạo thư mục nếu không tồn tại
                 }
 
-                Path filePath = uploadPath.resolve(file.getOriginalFilename());
-                Files.copy(file.getInputStream(), filePath);
+                // Lấy tên tệp gốc
+                String originalFileName = file.getOriginalFilename();
 
-                user.setImage("uploads/" + file.getOriginalFilename());
+                // Đặt đường dẫn đầy đủ đến tệp sẽ lưu
+                Path filePath = uploadPath.resolve(originalFileName);
+
+                // Sao chép tệp vào thư mục
+                Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+                // Lưu tên hình ảnh vào cơ sở dữ liệu (relative path)
+                user.setImage("assets/images/U/" + originalFileName);
             } else {
-                user.setImage("default_user_image.jpg"); // Sử dụng ảnh mặc định nếu không tải lên
+                user.setImage("assets/images/default_user_image.jpg"); // Sử dụng ảnh mặc định nếu không tải lên
             }
 
             // Mặc định vai trò là người dùng nếu không được chỉ định
             user.setRole(user.isRole() != false && user.isRole());
 
+            // Lưu thông tin người dùng vào cơ sở dữ liệu
             usersRepository.save(user);
             return ResponseEntity.ok("User (or customer) created successfully.");
         } catch (IOException e) {

@@ -42,7 +42,6 @@ import ProductsImage from './components/admin/productimages';
 
 import OrderAmin from './components/admin/order';
 import EditUserAmin from './components/admin/editUser';
-import EditProductAmin from './components/admin/editProduct';
 import EditCategoryAmin from './components/admin/editCategory';
 import EditBrandAmin from './components/admin/editBrand';
 import EditColorAmin from './components/admin/editColor';
@@ -50,7 +49,6 @@ import EditCapacityAmin from './components/admin/editCapacity';
 import EditImageAmin from './components/admin/editImage';
 
 import AddUserAmin from './components/admin/addUser';
-import AddProductAmin from './components/admin/addProduct';
 import OrderHistory from './components/user/order';
 import AddCategoryAmin from './components/admin/addCategory';
 import AddBrandAmin from './components/admin/addBrand';
@@ -77,8 +75,6 @@ function App() {
         <Route path="/nguoidung/edit/:id" element={<EditUserAmin />} />
 
 
-        <Route path="/products/add" element={<AddProductAmin />} />
-        <Route path="/products/edit/:id" element={<EditProductAmin />} />
 
         <Route path="/category/add" element={<AddCategoryAmin />} />
         <Route path="/category/edit/:id" element={<EditCategoryAmin />} />
@@ -95,7 +91,7 @@ function App() {
         <Route path="/images/add" element={<AddImageAmin />} />
         <Route path="/images/edit/:id" element={<EditImageAmin />} />
 
-       
+
         <Route
           path="/product/:id"
           element={
@@ -315,7 +311,7 @@ function App() {
             </>
           }
         />
-         <Route
+        <Route
           path="/products-images"
           element={
             <>
@@ -324,7 +320,7 @@ function App() {
             </>
           }
         />
-        
+
 
       </Routes>
 

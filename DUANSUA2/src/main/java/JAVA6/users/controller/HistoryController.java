@@ -42,18 +42,7 @@ public class HistoryController {
     }
 
     // API để hủy đơn hàng
-    @PutMapping("/api/cancel/{orderId}")
-    public ResponseEntity<String> cancelOrder(@PathVariable Long orderId,
-            @RequestBody String cancelReason) {
-        try {
-            // Gọi service để xử lý cập nhật trạng thái đơn hàng và lý do hủy
-            orderService.cancelOrder(orderId, cancelReason);
-            return ResponseEntity.ok("Đơn hàng đã được hủy thành công.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Lỗi khi hủy đơn hàng.");
-        }
-    }
+
 }
 
 // Định nghĩa lớp UserRequest để nhận userId từ body

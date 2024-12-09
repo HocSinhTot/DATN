@@ -14,6 +14,7 @@ const AddUserForm = () => {
     file: null,
   });
 
+
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
@@ -310,13 +311,6 @@ const AddUserForm = () => {
             <button
               type="submit"
               className="btn btn-primary"
-              style={{
-                padding: '13px 23px',
-                fontSize: '16px',
-                fontWeight: '600',
-                borderRadius: '5px',
-                marginLeft: '20px',
-              }}
             >
               Thêm
             </button>

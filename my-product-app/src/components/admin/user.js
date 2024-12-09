@@ -5,7 +5,6 @@ import Popup from './Popup';
 const UserManagement = () => {
     const [userList, setUserList] = useState([]);
     const [popup, setPopup] = useState({ show: false, message: '', onConfirm: null });
-    const [showAddUserForm, setShowAddUserForm] = useState(false); // State to show/hide the add user form
 
     useEffect(() => {
         fetch('http://localhost:8080/api/users')
@@ -62,7 +61,6 @@ const UserManagement = () => {
                 .finally(() => setPopup({ show: false, message: '', onConfirm: null }));
         });
     };
-
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         return date.toLocaleDateString('vi-VN', {
@@ -72,29 +70,6 @@ const UserManagement = () => {
         });
     };
 
-    // Add User Form handler
-    const handleAddUserSubmit = (e) => {
-        e.preventDefault();
-        const formData = new FormData(e.target);
-        const userData = {
-            name: formData.get('name'),
-            email: formData.get('email'),
-            // Add other user fields as needed
-        };
-        fetch('http://localhost:8080/api/users', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(userData),
-        })
-            .then((response) => response.json())
-            .then((newUser) => {
-                setUserList([...userList, newUser]);
-                setShowAddUserForm(false); // Close form after adding the user
-            })
-            .catch((error) => console.error('Error adding user:', error));
-    };
 
     return (
         <>
@@ -105,30 +80,6 @@ const UserManagement = () => {
                     onConfirm={popup.onConfirm}
                 />
             )}
-
-            {showAddUserForm && (
-                <div className="add-user-popup">
-                    <div className="popup-content">
-                        <h3>Thêm người dùng mới</h3>
-                        <form onSubmit={handleAddUserSubmit}>
-                            <div>
-                                <label>Họ tên</label>
-                                <input type="text" name="name" required />
-                            </div>
-                            <div>
-                                <label>Email</label>
-                                <input type="email" name="email" required />
-                            </div>
-                            {/* Add more fields as necessary */}
-                            <div>
-                                <button type="submit">Thêm người dùng</button>
-                                <button type="button" onClick={() => setShowAddUserForm(false)}>Hủy</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-
             <div className="be-wrapper be-fixed-sidebar" style={{ paddingTop: '0px' }}>
                 <div className="be-content">
                     <div className="container-fluid" style={{ padding: '20px', backgroundColor: '#f9f9f9' }}>
@@ -136,7 +87,8 @@ const UserManagement = () => {
                             <div className="card" style={{ border: '1px solid #ddd', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', backgroundColor: '#fff' }}>
                                 <div className="card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px' }}>
                                     <h5 className="card-title m-0" style={{ margin: 0, fontSize: '24px', fontWeight: 'bold' }}>Quản lý khách hàng</h5>
-                                    <button
+                                    <Link
+                                        to="/nguoidung/add"
                                         className="btn btn-light"
                                         style={{
                                             padding: '10px',
@@ -152,26 +104,106 @@ const UserManagement = () => {
                                             boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
                                             transition: 'all 0.3s ease',
                                         }}
-                                        onClick={() => setShowAddUserForm(true)} // Show the form when clicked
+                                        onMouseOver={(e) => {
+                                            e.target.style.backgroundColor = '#0056b3';
+                                        }}
+                                        onMouseOut={(e) => {
+                                            e.target.style.backgroundColor = '#007bff';
+                                        }}
                                     >
                                         <i className="fa fa-plus" style={{ fontSize: '18px' }}></i>
-                                    </button>
+                                    </Link>
+
                                 </div>
                                 <div className="card-body">
-                                    {/* Display user list here */}
-                                    <ul>
-                                        {userList.map((user) => (
-                                            <li key={user.id}>{user.name} - {user.email}</li>
-                                        ))}
-                                    </ul>
+                                    <table className="table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                        <thead style={{ backgroundColor: '#007bff', color: '#fff', fontSize: '18px' }}>
+                                            <tr>
+                                                <th style={{ padding: '10px', textAlign: 'left' }}>STT</th>
+                                                <th style={{ padding: '10px', textAlign: 'left' }}>Tên</th>
+                                                <th style={{ padding: '10px', textAlign: 'left' }}>Email</th>
+                                                <th style={{ padding: '10px', textAlign: 'left' }}>Tên</th>
+                                                <th style={{ padding: '10px', textAlign: 'left' }}>Ngày sinh</th>
+                                                <th style={{ padding: '10px', textAlign: 'left' }}>Số điện thoại</th>
+                                                <th style={{ padding: '10px', textAlign: 'left' }}>Vai trò</th>
+                                                <th style={{ padding: '10px', textAlign: 'left' }}>Trạng thái</th>
+                                                <th style={{ padding: '10px', textAlign: 'left' }}>Giới tính</th>
+                                                <th style={{ padding: '10px', textAlign: 'left' }}>Hình ảnh</th>
+                                                <th style={{ padding: '10px', textAlign: 'center' }}>Thao tác</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {userList.length > 0 ? (
+                                                userList.map((user, index) => (
+                                                    <tr
+                                                        key={user.id}
+                                                        style={{
+                                                            borderBottom: '1px solid #ddd',
+                                                            fontSize: '16px',
+                                                            transition: 'background-color 0.3s ease', /* Thêm hiệu ứng chuyển màu nền */
+                                                        }}
+                                                        onMouseEnter={(e) => {
+                                                            e.currentTarget.style.backgroundColor = '#f1f1f1'; /* Màu nền khi hover */
+                                                            e.currentTarget.style.cursor = 'pointer'; /* Thay đổi con trỏ khi hover */
+                                                        }}
+                                                        onMouseLeave={(e) => {
+                                                            e.currentTarget.style.backgroundColor = ''; /* Khôi phục màu nền ban đầu */
+                                                        }}
+                                                    >
+                                                        <td style={{ padding: '10px' }}>{index + 1}</td>
+                                                        <td style={{ padding: '10px' }}>{user.username}</td>
+                                                        <td style={{ padding: '10px' }}>{user.email}</td>
+                                                        <td style={{ padding: '10px' }}>{user.name}</td>
+                                                        <td style={{ padding: '15px' }}>
+                                                            {formatDate(user.birthday)}
+                                                        </td>
+                                                        <td style={{ padding: '10px' }}>{user.phone}</td>
+                                                        <td style={{ padding: '10px' }}>{user.role ? 'Admin' : 'User'}</td>
+                                                        <td style={{ padding: '10px' }}>{user.status ? 'Active' : 'Inactive'}</td>
+                                                        <td style={{ padding: '10px' }}>{user.gender ? 'Male' : 'Female'}</td>
+                                                        <td style={{ padding: '10px' }}>
+                                                            <img
+                                                                src={user.image ? `/assets/images/${user.image}` : '/assets/images/default_user_image.jpg'}
+                                                                alt={user.name}
+                                                                style={{ width: '50px', height: '50px', borderRadius: '50%' }}
+                                                            />
+                                                        </td>
+                                                        <td style={{ padding: '10px', textAlign: 'center' }}>
+                                                            <Link to={`/nguoidung/edit/${user.id}`} style={{ margin: '5px', fontSize: '18px', color: '#4285f4' }}>
+                                                                <i className="fa fa-edit"></i>
+                                                            </Link>
+                                                            <button onClick={() => handleDelete(user.id)} style={{ margin: '5px', fontSize: '18px', color: '#dc3545', border: 'none', background: 'none' }}>
+                                                                <i className="fa fa-trash"></i>
+                                                            </button>
+                                                            {user.status ? (
+                                                                <button onClick={() => handleBlock(user.id)} style={{ margin: '5px', fontSize: '18px', color: '#dc3545', border: 'none', background: 'none' }}>
+                                                                    <i className="fa fa-lock"></i>
+                                                                </button>
+                                                            ) : (
+                                                                <button onClick={() => handleUnblock(user.id)} style={{ margin: '5px', fontSize: '18px', color: '#28a745', border: 'none', background: 'none' }}>
+                                                                    <i className="fa fa-unlock"></i>
+                                                                </button>
+                                                            )}
+                                                        </td>
+                                                    </tr>
+
+                                                ))
+                                            ) : (
+                                                <tr>
+                                                    <td colSpan="11" style={{ textAlign: 'center', padding: '20px' }}>Không tìm thấy người dùng nào</td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
         </>
     );
 };
 
-export default UserManagement;
+export default UserManagement;  
