@@ -3,16 +3,28 @@ import { Link } from 'react-router-dom';
 
 const OrderManagement = () => {
     const [orderList, setOrderList] = useState([]);
-    const [statuses, setStatuses] = useState([]); // Make sure this is an array
+    const [statuses, setStatuses] = useState([]);
+    const token = sessionStorage.getItem('token'); // Lấy token từ sessionStorage
+
+    // Cấu hình fetch với header Authorization
+    const fetchOptions = (method, body = null) => ({
+        method,
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,  // Thêm header Authorization
+        },
+        body: body ? JSON.stringify(body) : null,
+    });
 
     useEffect(() => {
-        // Fetch all orders and statuses from the API
-        fetch('http://localhost:8080/api/admin/orders')  // API URL for orders
+        // Fetch all orders from the API
+        fetch('http://localhost:8080/api/admin/orders', fetchOptions('GET'))
             .then((response) => response.json())
             .then((data) => setOrderList(data))
             .catch((error) => console.error('Error fetching orders:', error));
 
-        fetch('http://localhost:8080/api/admin/orderStatuses')  // API URL for order statuses
+        // Fetch all order statuses
+        fetch('http://localhost:8080/api/admin/orderStatuses', fetchOptions('GET'))
             .then((response) => response.json())
             .then((data) => {
                 // Ensure the fetched data is an array
@@ -27,11 +39,7 @@ const OrderManagement = () => {
 
     const handleUpdateStatus = (orderId, statusId) => {
         // Call API to update order status
-        fetch(`http://localhost:8080/api/admin/orders/${orderId}/updateStatus`, {
-            method: 'POST',
-            body: JSON.stringify({ statusId }),
-            headers: { 'Content-Type': 'application/json' }
-        })
+        fetch(`http://localhost:8080/api/admin/orders/${orderId}/updateStatus`, fetchOptions('POST', { statusId }))
             .then((response) => {
                 if (response.ok) {
                     alert('Order status updated successfully!');
@@ -42,7 +50,6 @@ const OrderManagement = () => {
             })
             .catch((error) => console.error('Error updating order status:', error));
     };
-
     return (
         <div className="be-wrapper be-fixed-sidebar">
             <div className="be-content">

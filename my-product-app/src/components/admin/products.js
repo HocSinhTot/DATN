@@ -1,22 +1,35 @@
-import React, { useState, useEffect } from 'react';  
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 const ProductManagement = () => {
     const [productList, setProductList] = useState([]);
 
+    // Hàm fetchOptions để sử dụng trong các API call
+    const fetchOptions = (method, body = null) => {
+        const token = sessionStorage.getItem('token'); // Lấy token từ sessionStorage
+
+        return {
+            method,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,  // Thêm header Authorization
+            },
+            body: body ? JSON.stringify(body) : null,
+        };
+    };
+
+    // Lấy danh sách sản phẩm từ API
     useEffect(() => {
-        // Fetch product data from API
-        fetch('http://localhost:8080/api/admin/products')  // API endpoint
+        fetch('http://localhost:8080/api/admin/products', fetchOptions('GET'))  // API endpoint
             .then(response => response.json())
             .then(data => setProductList(data))
             .catch(error => console.error('Error fetching products:', error));
     }, []);
 
+    // Xử lý xóa sản phẩm
     const handleDelete = (id) => {
         if (window.confirm('Are you sure you want to delete this product?')) {
-            fetch(`http://localhost:8080/api/admin/products/${id}`, {
-                method: 'DELETE',
-            })
+            fetch(`http://localhost:8080/api/admin/products/${id}`, fetchOptions('DELETE'))
                 .then(response => {
                     if (response.ok) {
                         alert('Product deleted successfully!');
@@ -26,7 +39,6 @@ const ProductManagement = () => {
                 .catch(error => console.error('Error deleting product:', error));
         }
     };
-
     return (
         <div className="be-wrapper be-fixed-sidebar">
             <div className="be-content">
