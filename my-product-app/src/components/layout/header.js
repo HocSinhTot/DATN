@@ -35,6 +35,10 @@ const Header = ({ setKeyword, setCategoryId }) => {
     try {
       const response = await axios.post("http://localhost:8080/api/auth/logout");
       if (response.data.success) {
+        // Clear the localStorage and update state
+        sessionStorage.removeItem('rememberMe');
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('userId');
         sessionStorage.removeItem("username");
         localStorage.removeItem("alertDisplayed"); // Xóa trạng thái thông báo khi đăng xuất
         setIsLoggedIn(false);

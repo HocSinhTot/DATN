@@ -5,10 +5,20 @@ const OrderManagement = () => {
   const [orderList, setOrderList] = useState([]);
   const [statuses, setStatuses] = useState([]); // Make sure this is an array
   const [filteredOrders, setFilteredOrders] = useState([]); // State cho đơn hàng đã lọc
+  const token = sessionStorage.getItem('token'); // Lấy token từ sessionStorage
+
   const [statusCount, setStatusCount] = useState({}); // Đếm số lượng đơn hàng theo từng trạng thái
+  const fetchOptions = (method, body = null) => ({
+    method,
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,  // Thêm header Authorization
+    },
+    body: body ? JSON.stringify(body) : null,
+});
   useEffect(() => {
     // Fetch all orders and statuses from the API
-    fetch("http://localhost:8080/api/orders") // API URL for orders
+    fetch("http://localhost:8080/api/admin/orders", fetchOptions('GET')) // API URL for orders
       .then((response) => response.json())
       .then((data) => {
         setOrderList(data);
@@ -16,7 +26,7 @@ const OrderManagement = () => {
         updateStatusCount(data); // Cập nhật số lượng đơn hàng theo trạng thái
       })
       .catch((error) => console.error("Error fetching orders:", error));
-      fetch("http://localhost:8080/api/orders/orderStatuses") // API URL for order statuses
+      fetch("http://localhost:8080/api/admin/orders/orderStatuses") // API URL for order statuses
       .then((response) => response.json())
       .then((data) => {
         if (Array.isArray(data)) {
@@ -30,11 +40,8 @@ const OrderManagement = () => {
 
   const handleUpdateStatus = (orderId, statusId) => {
     // Cập nhật API để gửi đúng URL với orderId
-    fetch(`http://localhost:8080/api/orders/${orderId}/updateStatus`, {
-        method: "POST",
-        body: JSON.stringify({ statusId }), // Chỉ gửi statusId
-        headers: { "Content-Type": "application/json" },
-    })
+    fetch(`http://localhost:8080/api/admin/orders/${orderId}/updateStatus`, fetchOptions('POST', { statusId }))
+
         .then((response) => {
             if (response.ok) {
                 alert("Order status updated successfully!");

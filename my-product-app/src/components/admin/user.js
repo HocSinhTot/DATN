@@ -7,7 +7,7 @@ const UserManagement = () => {
     const [popup, setPopup] = useState({ show: false, message: '', onConfirm: null });
 
     useEffect(() => {
-        fetch('http://localhost:8080/api/users')
+        fetch('http://localhost:8080/api/admin/users')
             .then((response) => response.json())
             .then((data) => setUserList(data))
             .catch((error) => console.error('Error fetching user data:', error));
@@ -33,7 +33,7 @@ const UserManagement = () => {
 
     const handleBlock = (id) => {
         openPopup('Bạn có chắc chắn muốn khóa người dùng này không?', () => {
-            fetch(`http://localhost:8080/api/users/${id}/block`, {
+            fetch(`http://localhost:8080/api/admin/users/${id}/block`, {
                 method: 'PUT',
             })
                 .then((response) => {
@@ -48,7 +48,7 @@ const UserManagement = () => {
 
     const handleUnblock = (id) => {
         openPopup('Bạn có chắc chắn muốn mở khóa người dùng này không?', () => {
-            fetch(`http://localhost:8080/api/users/${id}/unblock`, {
+            fetch(`http://localhost:8080/api/admin/users/${id}/unblock`, {
                 method: 'PUT',
             })
                 .then((response) => {
@@ -63,7 +63,7 @@ const UserManagement = () => {
 
     const handleDelete = (id) => {
         openPopup('Bạn có chắc chắn muốn xóa người dùng này không?', () => {
-            fetch(`http://localhost:8080/api/users/${id}`, {
+            fetch(`http://localhost:8080/api/admin/users/${id}`, {
                 method: 'DELETE',
             })
                 .then((response) => {
@@ -235,7 +235,7 @@ const EditUserForm = ({ user, onClose }) => {
                 formDataToSend.append('file', formData.file);
             }
 
-            const response = await axios.put(`http://localhost:8080/api/users/${user.id}`, formDataToSend, {
+            const response = await axios.put(`http://localhost:8080/api/admin/users/${user.id}`, formDataToSend, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
 
@@ -352,7 +352,7 @@ const AddUserForm = ({ onClose }) => {
                 formDataToSend.append('file', formData.file);
             }
 
-            const response = await axios.post('http://localhost:8080/api/users', formDataToSend, {
+            const response = await axios.post('http://localhost:8080/api/admin/users', formDataToSend, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
 

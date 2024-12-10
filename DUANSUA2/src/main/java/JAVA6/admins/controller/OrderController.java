@@ -19,7 +19,7 @@ import JAVA6.service.OrderDetailService;
 import JAVA6.service.OrderService;
 
 @RestController
-@RequestMapping("/api/orders")
+@RequestMapping("/api/admin/orders")
 public class OrderController {
 
     @Autowired

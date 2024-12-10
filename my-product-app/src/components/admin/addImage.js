@@ -41,7 +41,7 @@ const AddImageForm = () => {
       formDataToSend.append('image', JSON.stringify(imagePayload));
 
       const response = await axios.post(
-        'http://localhost:8080/api/images',
+        'http://localhost:8080/api/admin/images',
         formDataToSend,
         {
           headers: {

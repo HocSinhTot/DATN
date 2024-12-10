@@ -33,7 +33,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/capacity")
+@RequestMapping("/api/admin/capacity")
 public class CapacityController {
 
     private static final Logger logger = LoggerFactory.getLogger(CapacityController.class);

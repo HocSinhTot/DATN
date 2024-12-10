@@ -16,7 +16,7 @@ const EditCapacityPage  = () => {
     // Fetch user data by user ID
     const fetchCategoryData = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/api/capacity/${id}`);
+        const response = await axios.get(`http://localhost:8080/api/admin/capacity/${id}`);
         setCapacity(response.data);
       } catch (err) {
         console.log(err);
@@ -37,7 +37,7 @@ const EditCapacityPage  = () => {
     }));
   
     try {
-      const response = await axios.put(`http://localhost:8080/api/capacity/${id}`, formData, {
+      const response = await axios.put(`http://localhost:8080/api/admin/capacity/${id}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

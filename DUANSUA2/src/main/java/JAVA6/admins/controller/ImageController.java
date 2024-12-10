@@ -36,7 +36,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/images")
+@RequestMapping("/api/admin/images")
 public class ImageController {
 
     private static final Logger logger = LoggerFactory.getLogger(ImageController.class);

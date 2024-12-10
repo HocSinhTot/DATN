@@ -35,7 +35,18 @@ const Management = () => {
 
   const navigate = useNavigate();
   const { id } = useParams();
+  const fetchOptions = (method, body = null) => {
+    const token = sessionStorage.getItem('token'); // Lấy token từ sessionStorage
 
+    return {
+        method,
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,  // Thêm header Authorization
+        },
+        body: body ? JSON.stringify(body) : null,
+    };
+};
   useEffect(() => {
     // Fetch product data
     fetchProducts(currentPage, pageSize);

@@ -10,19 +10,42 @@ const ColorManagement = () => {
 
     // Fetch color data when the component mounts
     useEffect(() => {
-        fetch('http://localhost:8080/api/colors')
+        fetchColors();
+    }, []);
+
+    // Fetch color list from the API
+    const fetchColors = () => {
+        fetch('http://localhost:8080/api/admin/colors', fetchOptions('GET')) // API endpoint to fetch colors
             .then((response) => response.json())
             .then((data) => setColorList(data))
             .catch((error) => console.error('Error fetching color data:', error));
-    }, []);
+    };
 
+    // Fetch options with headers for API requests
+    const fetchOptions = (method, body = null) => {
+        const token = sessionStorage.getItem("token");
+        return {
+            method,
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: body ? JSON.stringify(body) : null,
+        };
+    };
+
+    // Handle deleting a color
     const handleDelete = (color) => {
         setPopup({ show: true, type: 'delete', color });
     };
 
+    // Confirm delete action
     const confirmDelete = (colorId) => {
-        fetch(`http://localhost:8080/api/colors/${colorId}`, {
+        fetch(`http://localhost:8080/api/admin/colors/${colorId}`, {
             method: 'DELETE',
+            headers: {
+                Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            },
         })
             .then((response) => {
                 if (response.ok) {
@@ -34,21 +57,27 @@ const ColorManagement = () => {
         setPopup({ show: false, type: '', color: null });
     };
 
+    // Handle form submit for adding or editing a color
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
         const formData = new FormData();
         formData.append('color', JSON.stringify({ name: currentColor.name }));
-
-        setLoading(true);
 
         try {
             let response;
             if (popup.type === 'edit') {
-                response = await axios.put(`http://localhost:8080/api/colors/${currentColor.id}`, formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' },
-                });
+                // PUT request for editing a color
+                response = await axios.put(
+                    `http://localhost:8080/api/admin/colors/${currentColor.id}`,
+                    formData,
+                    {
+                        headers: { 'Content-Type': 'multipart/form-data' },
+                    }
+                );
             } else {
-                response = await axios.post('http://localhost:8080/api/colors', formData, {
+                // POST request for adding a new color
+                response = await axios.post('http://localhost:8080/api/admin/colors', formData, {
                     headers: { 'Content-Type': 'multipart/form-data' },
                 });
             }
@@ -69,16 +98,19 @@ const ColorManagement = () => {
         }
     };
 
+    // Open modal for adding a color
     const openAddModal = () => {
         setPopup({ show: true, type: 'add', color: null });
         setCurrentColor({ name: '' });
     };
 
+    // Open modal for editing a color
     const openEditModal = (color) => {
         setPopup({ show: true, type: 'edit', color });
         setCurrentColor(color);
     };
 
+    // Close modal and reset errors
     const closeModal = () => {
         setPopup({ show: false, type: '', color: null });
         setErrors({});
