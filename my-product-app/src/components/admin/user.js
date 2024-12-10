@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import Popup from './Popup';
+import axios from 'axios';
+import Popup from './Popup';  // Giả sử bạn đã có một component Popup
 
 const UserManagement = () => {
     const [userList, setUserList] = useState([]);
@@ -17,50 +17,13 @@ const UserManagement = () => {
         setPopup({ show: true, message, onConfirm });
     };
 
-    const handleDelete = (id) => {
-        openPopup('Bạn có chắc chắn muốn xóa người dùng này không?', () => {
-            fetch(`http://localhost:8080/api/users/${id}`, {
-                method: 'DELETE',
-            })
-                .then((response) => {
-                    if (response.ok) {
-                        setUserList(userList.filter((user) => user.id !== id));
-                    }
-                })
-                .catch((error) => console.error('Error deleting user:', error))
-                .finally(() => setPopup({ show: false, message: '', onConfirm: null }));
+    const handleAddUser = () => {
+        setPopup({
+            show: true,
+            message: <AddUserForm onClose={() => setPopup({ show: false, message: '', onConfirm: null })} />
         });
     };
 
-    const handleBlock = (id) => {
-        openPopup('Bạn có chắc chắn muốn khóa người dùng này không?', () => {
-            fetch(`http://localhost:8080/api/users/${id}/block`, {
-                method: 'PUT',
-            })
-                .then((response) => {
-                    if (response.ok) {
-                        setUserList(userList.map((user) => (user.id === id ? { ...user, status: false } : user)));
-                    }
-                })
-                .catch((error) => console.error('Error blocking user:', error))
-                .finally(() => setPopup({ show: false, message: '', onConfirm: null }));
-        });
-    };
-
-    const handleUnblock = (id) => {
-        openPopup('Bạn có chắc chắn muốn mở khóa người dùng này không?', () => {
-            fetch(`http://localhost:8080/api/users/${id}/unblock`, {
-                method: 'PUT',
-            })
-                .then((response) => {
-                    if (response.ok) {
-                        setUserList(userList.map((user) => (user.id === id ? { ...user, status: true } : user)));
-                    }
-                })
-                .catch((error) => console.error('Error unblocking user:', error))
-                .finally(() => setPopup({ show: false, message: '', onConfirm: null }));
-        });
-    };
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         return date.toLocaleDateString('vi-VN', {
@@ -69,7 +32,6 @@ const UserManagement = () => {
             year: 'numeric',
         });
     };
-
 
     return (
         <>
@@ -84,115 +46,56 @@ const UserManagement = () => {
                 <div className="be-content">
                     <div className="container-fluid" style={{ padding: '20px', backgroundColor: '#f9f9f9' }}>
                         <div className="content">
-                            <div className="card" style={{ border: '1px solid #ddd', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', backgroundColor: '#fff' }}>
-                                <div className="card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px' }}>
-                                    <h5 className="card-title m-0" style={{ margin: 0, fontSize: '24px', fontWeight: 'bold' }}>Quản lý khách hàng</h5>
-                                    <Link
-                                        to="/nguoidung/add"
+                            <div className="card">
+                                <div className="card-header">
+                                    <h5 className="card-title">Quản lý khách hàng</h5>
+                                    <button
                                         className="btn btn-light"
-                                        style={{
-                                            padding: '10px',
-                                            backgroundColor: '#007bff',
-                                            color: '#fff',
-                                            borderRadius: '50%',
-                                            textDecoration: 'none',
-                                            display: 'flex',
-                                            justifyContent: 'center',
-                                            alignItems: 'center',
-                                            width: '45px',
-                                            height: '45px',
-                                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                                            transition: 'all 0.3s ease',
-                                        }}
-                                        onMouseOver={(e) => {
-                                            e.target.style.backgroundColor = '#0056b3';
-                                        }}
-                                        onMouseOut={(e) => {
-                                            e.target.style.backgroundColor = '#007bff';
-                                        }}
+                                        style={{ padding: '10px', backgroundColor: '#007bff', color: '#fff' }}
+                                        onClick={handleAddUser}
                                     >
-                                        <i className="fa fa-plus" style={{ fontSize: '18px' }}></i>
-                                    </Link>
-
+                                        Thêm Người Dùng
+                                    </button>
                                 </div>
                                 <div className="card-body">
-                                    <table className="table" style={{ width: '100%', borderCollapse: 'collapse' }}>
-                                        <thead style={{ backgroundColor: '#007bff', color: '#fff', fontSize: '18px' }}>
+                                    <table className="table">
+                                        <thead>
                                             <tr>
-                                                <th style={{ padding: '10px', textAlign: 'left' }}>STT</th>
-                                                <th style={{ padding: '10px', textAlign: 'left' }}>Tên</th>
-                                                <th style={{ padding: '10px', textAlign: 'left' }}>Email</th>
-                                                <th style={{ padding: '10px', textAlign: 'left' }}>Tên</th>
-                                                <th style={{ padding: '10px', textAlign: 'left' }}>Ngày sinh</th>
-                                                <th style={{ padding: '10px', textAlign: 'left' }}>Số điện thoại</th>
-                                                <th style={{ padding: '10px', textAlign: 'left' }}>Vai trò</th>
-                                                <th style={{ padding: '10px', textAlign: 'left' }}>Trạng thái</th>
-                                                <th style={{ padding: '10px', textAlign: 'left' }}>Giới tính</th>
-                                                <th style={{ padding: '10px', textAlign: 'left' }}>Hình ảnh</th>
-                                                <th style={{ padding: '10px', textAlign: 'center' }}>Thao tác</th>
+                                                <th>STT</th>
+                                                <th>Tên</th>
+                                                <th>Email</th>
+                                                <th>Ngày sinh</th>
+                                                <th>Số điện thoại</th>
+                                                <th>Vai trò</th>
+                                                <th>Trạng thái</th>
+                                                <th>Giới tính</th>
+                                                <th>Hình ảnh</th>
+                                                <th>Thao tác</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {userList.length > 0 ? (
-                                                userList.map((user, index) => (
-                                                    <tr
-                                                        key={user.id}
-                                                        style={{
-                                                            borderBottom: '1px solid #ddd',
-                                                            fontSize: '16px',
-                                                            transition: 'background-color 0.3s ease', /* Thêm hiệu ứng chuyển màu nền */
-                                                        }}
-                                                        onMouseEnter={(e) => {
-                                                            e.currentTarget.style.backgroundColor = '#f1f1f1'; /* Màu nền khi hover */
-                                                            e.currentTarget.style.cursor = 'pointer'; /* Thay đổi con trỏ khi hover */
-                                                        }}
-                                                        onMouseLeave={(e) => {
-                                                            e.currentTarget.style.backgroundColor = ''; /* Khôi phục màu nền ban đầu */
-                                                        }}
-                                                    >
-                                                        <td style={{ padding: '10px' }}>{index + 1}</td>
-                                                        <td style={{ padding: '10px' }}>{user.username}</td>
-                                                        <td style={{ padding: '10px' }}>{user.email}</td>
-                                                        <td style={{ padding: '10px' }}>{user.name}</td>
-                                                        <td style={{ padding: '15px' }}>
-                                                            {formatDate(user.birthday)}
-                                                        </td>
-                                                        <td style={{ padding: '10px' }}>{user.phone}</td>
-                                                        <td style={{ padding: '10px' }}>{user.role ? 'Admin' : 'User'}</td>
-                                                        <td style={{ padding: '10px' }}>{user.status ? 'Active' : 'Inactive'}</td>
-                                                        <td style={{ padding: '10px' }}>{user.gender ? 'Male' : 'Female'}</td>
-                                                        <td style={{ padding: '10px' }}>
-                                                            <img
-                                                                src={user.image ? `/assets/images/${user.image}` : '/assets/images/default_user_image.jpg'}
-                                                                alt={user.name}
-                                                                style={{ width: '50px', height: '50px', borderRadius: '50%' }}
-                                                            />
-                                                        </td>
-                                                        <td style={{ padding: '10px', textAlign: 'center' }}>
-                                                            <Link to={`/nguoidung/edit/${user.id}`} style={{ margin: '5px', fontSize: '18px', color: '#4285f4' }}>
-                                                                <i className="fa fa-edit"></i>
-                                                            </Link>
-                                                            <button onClick={() => handleDelete(user.id)} style={{ margin: '5px', fontSize: '18px', color: '#dc3545', border: 'none', background: 'none' }}>
-                                                                <i className="fa fa-trash"></i>
-                                                            </button>
-                                                            {user.status ? (
-                                                                <button onClick={() => handleBlock(user.id)} style={{ margin: '5px', fontSize: '18px', color: '#dc3545', border: 'none', background: 'none' }}>
-                                                                    <i className="fa fa-lock"></i>
-                                                                </button>
-                                                            ) : (
-                                                                <button onClick={() => handleUnblock(user.id)} style={{ margin: '5px', fontSize: '18px', color: '#28a745', border: 'none', background: 'none' }}>
-                                                                    <i className="fa fa-unlock"></i>
-                                                                </button>
-                                                            )}
-                                                        </td>
-                                                    </tr>
-
-                                                ))
-                                            ) : (
-                                                <tr>
-                                                    <td colSpan="11" style={{ textAlign: 'center', padding: '20px' }}>Không tìm thấy người dùng nào</td>
+                                            {userList.map((user, index) => (
+                                                <tr key={user.id}>
+                                                    <td>{index + 1}</td>
+                                                    <td>{user.username}</td>
+                                                    <td>{user.email}</td>
+                                                    <td>{formatDate(user.birthday)}</td>
+                                                    <td>{user.phone}</td>
+                                                    <td>{user.role ? 'Admin' : 'User'}</td>
+                                                    <td>{user.status ? 'Active' : 'Inactive'}</td>
+                                                    <td>{user.gender ? 'Male' : 'Female'}</td>
+                                                    <td>
+                                                        <img
+                                                            src={user.image ? `/assets/images/${user.image}` : '/assets/images/default_user_image.jpg'}
+                                                            alt={user.name}
+                                                            style={{ width: '50px', height: '50px', borderRadius: '50%' }}
+                                                        />
+                                                    </td>
+                                                    <td>
+                                                        {/* Thêm các thao tác xóa, khóa, mở khóa */}
+                                                    </td>
                                                 </tr>
-                                            )}
+                                            ))}
                                         </tbody>
                                     </table>
                                 </div>
@@ -201,9 +104,138 @@ const UserManagement = () => {
                     </div>
                 </div>
             </div>
-
         </>
     );
 };
 
-export default UserManagement;  
+const AddUserForm = ({ onClose }) => {
+    const [formData, setFormData] = useState({
+        username: '',
+        password: '',
+        email: '',
+        name: '',
+        birthday: '',
+        phone: '',
+        role: 'false',
+        gender: 'true',
+        file: null,
+    });
+
+    const [errors, setErrors] = useState({});
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({
+            ...formData,
+            [name]: value,
+        });
+    };
+
+    const handleFileChange = (e) => {
+        setFormData({
+            ...formData,
+            file: e.target.files[0],
+        });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const formDataToSend = new FormData();
+            const userPayload = {
+                username: formData.username,
+                password: formData.password,
+                email: formData.email,
+                name: formData.name,
+                birthday: formData.birthday,
+                phone: formData.phone,
+                role: formData.role === 'true',
+                gender: formData.gender === 'true',
+            };
+            formDataToSend.append('user', JSON.stringify(userPayload));
+            if (formData.file) {
+                formDataToSend.append('file', formData.file);
+            }
+
+            const response = await axios.post('http://localhost:8080/api/users', formDataToSend, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+
+            if (response.status === 200) {
+                alert('User added successfully!');
+                onClose(); // Đóng popup sau khi thêm người dùng
+            }
+        } catch (error) {
+            if (error.response) {
+                console.error('Error response:', error.response);
+                setErrors(error.response.data.errors || {});
+            }
+        }
+    };
+
+    return (
+        <div style={{ padding: '20px' }}>
+            <h2>Add User</h2>
+            <form onSubmit={handleSubmit}>
+                <div>
+                    <label>Username</label>
+                    <input type="text" name="username" value={formData.username} onChange={handleChange} />
+                    {errors.username && <div>{errors.username}</div>}
+                </div>
+                <div>
+                    <label>Password</label>
+                    <input type="password" name="password" value={formData.password} onChange={handleChange} />
+                    {errors.password && <div>{errors.password}</div>}
+                </div>
+                <div>
+                    <label>Email</label>
+                    <input type="email" name="email" value={formData.email} onChange={handleChange} />
+                    {errors.email && <div>{errors.email}</div>}
+                </div>
+                <div>
+                    <label>Name</label>
+                    <input type="text" name="name" value={formData.name} onChange={handleChange} />
+                    {errors.name && <div>{errors.name}</div>}
+                </div>
+                <div>
+                    <label>Birthday</label>
+                    <input type="date" name="birthday" value={formData.birthday} onChange={handleChange} />
+                    {errors.birthday && <div>{errors.birthday}</div>}
+                </div>
+                <div>
+                    <label>Phone</label>
+                    <input type="text" name="phone" value={formData.phone} onChange={handleChange} />
+                    {errors.phone && <div>{errors.phone}</div>}
+                </div>
+                <div>
+                    <label>Role</label>
+                    <select name="role" value={formData.role} onChange={handleChange}>
+                        <option value="true">Admin</option>
+                        <option value="false">User</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Gender</label>
+                    <select name="gender" value={formData.gender} onChange={handleChange}>
+                        <option value="true">Male</option>
+                        <option value="false">Female</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Upload Image</label>
+                    <input type="file" onChange={handleFileChange} />
+                </div>
+                <button
+                    type="submit"
+                    className="btn btn-primary"
+                >
+                    Thêm
+                </button>
+
+            </form>
+            <button onClick={onClose}>Close</button>
+        </div>
+    );
+};
+
+export default UserManagement; 
