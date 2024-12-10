@@ -449,11 +449,13 @@ const Management = () => {
             <div className="content">
               <div className="card">
                 <div className="card-header">
-                  <h5 className="card-title m-0">Quản lý sản phẩm</h5>
+
+                  <h5 className="card-title m-0" style={{ fontSize: '30px', fontWeight: '700' }}>Quản lý sản phẩm</h5>
                   <button
                     className="btn btn-success mb-3"
                     onClick={() => openPopup('add')}
                     style={{
+                      marginTop: '18px',
                       backgroundColor: '#28a745',
                       color: '#fff',
                       padding: '12px 30px',
@@ -468,7 +470,7 @@ const Management = () => {
                     onMouseOver={(e) => e.target.style.backgroundColor = '#218838'}
                     onMouseOut={(e) => e.target.style.backgroundColor = '#28a745'}
                   >
-                    Thêm sản phẩm
+                    <i className="bi bi-plus-circle" style={{ fontSize: '32px' }}></i>
                   </button>
 
                 </div>
@@ -568,15 +570,15 @@ const Management = () => {
                   <table className="table">
                     <thead>
                       <tr>
-                        <th >STT</th>
-                        <th>Tên sản phẩm</th>
+                        <th style={{ textAlign: 'center' }}    >STT</th>
+                        <th style={{ textAlign: 'center' }}    >Tên sản phẩm</th>
 
-                        <th>Giá</th>
-                        <th>Số lượng</th>
-                        <th>Danh mục</th>
-                        <th>Thương hiệu</th>
-                        <th>Mô tả</th>
-                        <th>Thao tác</th>
+                        <th style={{ textAlign: 'center' }}    >Giá</th>
+                        <th style={{ textAlign: 'center' }}    >Số lượng</th>
+                        <th style={{ textAlign: 'center' }}    >Danh mục</th>
+                        <th style={{ textAlign: 'center' }}    >Thương hiệu</th>
+                        <th style={{ textAlign: 'center' }}    >Mô tả</th>
+                        <th style={{ textAlign: 'center' }}    >Thao tác</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -615,12 +617,14 @@ const Management = () => {
                                   e.target.style.backgroundColor = '#ffc107';
                                 }}
                               >
-                                Sửa
+                                <i className="bi bi-pencil" style={{ fontSize: '20px' }}></i>
+
                               </button>
 
                               <button
                                 onClick={() => handleDelete(product.id)}
                                 style={{
+                                  marginLeft: '10px',
                                   backgroundColor: '#dc3545',
                                   color: '#fff',
                                   padding: '12px 30px',
@@ -639,7 +643,7 @@ const Management = () => {
                                   e.target.style.backgroundColor = '#dc3545';
                                 }}
                               >
-                                Xóa
+                                <i className="bi bi-trash" style={{ fontSize: '20px' }}></i>
                               </button>
 
                             </td>
@@ -682,7 +686,7 @@ const Management = () => {
                       }}
                       disabled={currentPage === 0}
                     >
-                      Trước
+                      <i class="bi bi-caret-left-square-fill"></i>
                     </button>
 
                     <span
@@ -729,7 +733,7 @@ const Management = () => {
                       }}
                       disabled={currentPage === totalPages - 1}
                     >
-                      Sau
+                      <i class="bi bi-caret-right-square-fill"></i>
                     </button>
 
                   </div>

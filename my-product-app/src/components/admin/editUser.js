@@ -37,7 +37,7 @@ const EditUserPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-  
+
     // Thêm dữ liệu user vào formData
     formData.append("user", JSON.stringify({
       username: user.username,
@@ -48,19 +48,19 @@ const EditUserPage = () => {
       role: user.role.toString(),
       gender: user.gender.toString()
     }));
-  
+
     // Chỉ thêm file nếu có
     if (file) {
       formData.append("file", file);
     }
-  
+
     try {
       const response = await axios.put(`http://localhost:8080/api/users/${id}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-  
+
       if (response.data === "User updated successfully.") {
         setSuccess("Người dùng đã được cập nhật thành công.");
       } else {
@@ -71,9 +71,9 @@ const EditUserPage = () => {
       console.error(err);
     }
   };
-  
-  
-  
+
+
+
 
   return (
     <div className="container">
@@ -185,7 +185,7 @@ const EditUserPage = () => {
           {user.image && (
             <div>
               <img
-               src={`http://localhost:8080/assets/images/${user.image}`} alt="User" 
+                src={`http://localhost:8080/assets/images/${user.image}`} alt="User"
                 width="100"
                 height="100"
               />
