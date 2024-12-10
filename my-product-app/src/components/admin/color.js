@@ -177,7 +177,7 @@ const ColorManagement = () => {
                                                         onMouseOut={(e) => {
                                                             e.target.style.backgroundColor = '#dc3545';
                                                         }}
-                                                    >
+                                                    >    <i className="bi bi-pencil" style={{ fontSize: '20px' }}></i>
                                                         <i className="bi bi-trash" style={{ fontSize: '20px' }}></i>
                                                     </button>
                                                 </td>

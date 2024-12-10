@@ -480,7 +480,7 @@ const Management = () => {
                     <input
                       type="text"
                       placeholder="Nhập tên sản phẩm..."
-                      className="form-control"
+                      className="InputContainer-"
                       value={searchTerm} // Liên kết giá trị với searchTerm
                       onChange={(e) => setSearchTerm(e.target.value)}
                       style={{
@@ -497,6 +497,7 @@ const Management = () => {
                       onMouseEnter={(e) => (e.target.style.boxShadow = '0 2px 8px rgba(0, 123, 255, 0.5)')}
                       onMouseLeave={(e) => (e.target.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.1)')}
                     />
+
 
 
                     <button
