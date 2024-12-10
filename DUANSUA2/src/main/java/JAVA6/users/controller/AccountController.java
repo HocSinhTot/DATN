@@ -38,10 +38,10 @@ public class AccountController {
 
     @PutMapping("/update")
     public ResponseEntity<String> updateUser(
-        @RequestPart("user") UserModel user, // Nhận đối tượng user từ form data
-        @RequestPart(value = "image", required = false) MultipartFile imageFile,  // Nhận file hình ảnh nếu có
-        HttpSession session,
-        HttpServletRequest request) {
+            @RequestPart("user") UserModel user, // Nhận đối tượng user từ form data
+            @RequestPart(value = "image", required = false) MultipartFile imageFile, // Nhận file hình ảnh nếu có
+            HttpSession session,
+            HttpServletRequest request) {
         // Kiểm tra xem người dùng có tồn tại trong cơ sở dữ liệu không
         Optional<UserModel> existingUserOpt = userRepository.findById(user.getId());
         if (existingUserOpt.isEmpty()) {
@@ -49,8 +49,6 @@ public class AccountController {
         }
 
         UserModel existingUser = existingUserOpt.get();
-
-    
 
         // Cập nhật thông tin người dùng
         existingUser.setName(user.getName());
@@ -79,8 +77,8 @@ public class AccountController {
             File destination = new File(uploadPath + File.separator + imageFileName);
 
             try {
-                imageFile.transferTo(destination);  // Chuyển tệp tải lên vào thư mục đích
-                existingUser.setImage(imageFileName);  // Cập nhật tên hình ảnh
+                imageFile.transferTo(destination); // Chuyển tệp tải lên vào thư mục đích
+                existingUser.setImage(imageFileName); // Cập nhật tên hình ảnh
             } catch (IOException e) {
                 e.printStackTrace();
                 return ResponseEntity.status(500).body("Lỗi khi tải lên hình ảnh");

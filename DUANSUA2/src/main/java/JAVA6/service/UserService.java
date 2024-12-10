@@ -2,19 +2,23 @@ package JAVA6.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.stereotype.Service;
 
 import JAVA6.Model.UserModel;
 import JAVA6.repository.UsersRepository;
 
+
 import java.util.List;
 import java.util.Optional;
+
 
 @Service
 public class UserService {
 
     @Autowired
     private UsersRepository userRepository;
+
 
     public UserModel saveUser(UserModel user) {
         return userRepository.save(user);

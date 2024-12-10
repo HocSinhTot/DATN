@@ -1,161 +1,444 @@
 import React, { useState, useEffect } from 'react';
 
 const OrderHistory = () => {
-  const [orders, setOrders] = useState([]); // State to store orders
-  const [loading, setLoading] = useState(true); // Loading state
-  const [error, setError] = useState(null); // Error state
-  const [orderDetails, setOrderDetails] = useState(null); // State to store order details for modal
-  const userId = sessionStorage.getItem('userId'); // Lấy userId từ sessionStorage
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [orderDetails, setOrderDetails] = useState(null);
+  const [detailsLoading, setDetailsLoading] = useState(false);
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [cancelReason, setCancelReason] = useState('');
+  const [orderIdToCancel, setOrderIdToCancel] = useState(null);
+
+  const userId = sessionStorage.getItem('userId');
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
         const response = await fetch('http://localhost:8080/api/history', {
-          method: 'POST', // Sử dụng POST
+          method: 'POST',
           headers: {
-            'Content-Type': 'application/json', // Đảm bảo gửi dữ liệu JSON
+            'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ userId: userId }), // Gửi userId trong body
+          body: JSON.stringify({ userId }),
         });
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch orders');
-        }
+        if (!response.ok) throw new Error('Failed to fetch orders');
 
         const data = await response.json();
-        setOrders(data); // Lưu dữ liệu đơn hàng vào state
+        setOrders(data);
       } catch (err) {
-        setError(err.message); // Xử lý lỗi
+        setError(err.message);
       } finally {
-        setLoading(false); // Đặt loading thành false
+        setLoading(false);
       }
     };
 
-    fetchOrders(); // Gọi hàm khi component render
-  }, []); // useEffect chỉ chạy một lần khi component được mount
+    fetchOrders();
+  }, [userId]);
 
-  // Fetch order details by orderId
   const fetchOrderDetails = async (orderId) => {
     try {
+      setDetailsLoading(true);
+      setOrderDetails(null);
       const response = await fetch(`http://localhost:8080/api/history/${orderId}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch order details');
-      }
-
+      if (!response.ok) throw new Error('Failed to fetch order details');
       const data = await response.json();
-      setOrderDetails(data); // Lưu chi tiết đơn hàng vào state
+      setOrderDetails(data);
     } catch (err) {
-      setError(err.message); // Xử lý lỗi
+      setError(err.message);
+    } finally {
+      setDetailsLoading(false);
     }
   };
 
-  // Close the modal (reset order details)
   const closeModal = () => {
     setOrderDetails(null);
+
+    setIsCancelModalOpen(false);
+    setCancelReason('');
+  };
+  const closeModalhuy = () => {
+
+    setIsCancelModalOpen(false);
+    setCancelReason('');
   };
 
-  if (loading) {
-    return <div>Loading...</div>; // Show loading message while fetching data
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>; // Show error message if there is an issue
-  }
-
-  const tableStyle = {
-    width: '100%',
-    backgroundColor: '#fff',
-    borderCollapse: 'collapse',
-    boxShadow: '0 0 20px rgba(0, 0, 0, 0.1)',
-    borderRadius: '8px',
-    overflow: 'hidden',
-    marginBottom: '20px',
+  const openCancelModal = (orderId) => {
+    setOrderIdToCancel(orderId);
+    setIsCancelModalOpen(true);
   };
 
-  const thTdStyle = {
-    padding: '12px 15px',
-    textAlign: 'left',
-    borderBottom: '1px solid #ddd',
-    fontSize: '14px',
-    fontWeight: 'bold',
+  const handleCancelOrder = async () => {
+    if (!cancelReason) {
+      alert('Vui lòng nhập lý do hủy!');
+      return;
+    }
+
+    const confirmCancel = window.confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?');
+    if (!confirmCancel) return;
+
+    try {
+      const response = await fetch(`http://localhost:8080/api/cancel/${orderIdToCancel}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ reason: cancelReason }),
+      });
+
+      if (!response.ok) throw new Error('Hủy đơn hàng thất bại');
+
+      alert('Hủy đơn hàng thành công');
+      setOrders((prevOrders) => prevOrders.filter((order) => order.id !== orderIdToCancel));
+      closeModal();
+    } catch (error) {
+      alert(`Lỗi: ${error.message}`);
+    }
   };
 
-  const tdStyle = {
-    fontWeight: 'normal',
+  const formatDate = (date) => {
+    const d = new Date(date);
+return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1)
+      .toString()
+      .padStart(2, '0')}/${d.getFullYear()}`;
   };
 
-  const tbodyRowHoverStyle = {
-    backgroundColor: '#f5f5f5',
-  };
+  const formatCurrency = (amount) =>
+    amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+
+  if (loading)
+    return (
+      <div style={{ textAlign: 'center', padding: '20px' }}>
+        <div className="spinner" />
+      </div>
+    );
+  if (error) return <div>Error: {error}</div>;
 
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', lineHeight: '1.6', backgroundColor: '#f0f0f0' }}>
-      <div className="breadcrumb">
-        <div className="container">
-          <div className="breadcrumb-inner"></div>
-        </div>
-      </div>
+    <div
+      className="order-page"
+      style={{
+        maxWidth: '1350px',
+        margin: '20px auto',
+        padding: '20px',
+        background: '#fff',
+        borderRadius: '10px',
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+      }}
+    >
+      <div style={{ maxWidth: '1300px', margin: '20px auto', padding: '10px' }}>
+        <h2 style={{ textAlign: 'center', color: '#333', fontSize: '2.5rem' }}>
+          Đơn hàng của bạn
+        </h2>
 
-      <div className="body-content">
-        <div className="container">
-          <div className="my-wishlist-page">
-            <div className="row">
-              <div className="col-md-12 my-wishlist">
-                <div className="table-responsive">
-                  <table className="table" style={tableStyle}>
-                    <thead>
-                      <tr>
-                        <th scope="col" style={thTdStyle}>STT</th>
-                        <th scope="col" style={thTdStyle}>Ngày mua hàng</th>
-                        <th scope="col" style={thTdStyle}>Tổng tiền</th>
-                        <th scope="col" style={thTdStyle}>Địa chỉ</th>
-                        <th scope="col" style={thTdStyle}>Trạng thái</th>
-                        <th scope="col" style={thTdStyle}>Hành động</th> {/* Cột hành động */}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {orders.map((order, index) => (
-                        <tr key={index} style={index % 2 === 0 ? { ...tbodyRowHoverStyle } : {}}>
-                          <th scope="row" style={thTdStyle}>{index + 1}</th>
-                          <td style={tdStyle}>{order.date}</td>
-                          <td style={tdStyle}>{order.total}</td>
-                          <td style={tdStyle}>{order.address}</td>
-                          <td style={tdStyle}>{order.orderStatus.status}</td>
-                          <td style={tdStyle}>
-                            <button 
-                              onClick={() => fetchOrderDetails(order.id)} 
-                              className="btn btn-info">Xem chi tiết</button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'center' }}>
+          {orders.map((order) => (
+            <div
+              key={order.id}
+              style={{
+                width: '300px',
+                backgroundColor: '#fff',
+                borderRadius: '15px',
+                boxShadow: '0 6px 12px rgba(0, 0, 0, 0.15)',
+                padding: '20px',
+                transition: 'transform 0.3s, box-shadow 0.3s',
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.transform = 'scale(1.05)';
+                e.currentTarget.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.2)';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.transform = 'scale(1)';
+                e.currentTarget.style.boxShadow = '0 6px 12px rgba(0, 0, 0, 0.15)';
+              }}
+            >
+              <div>
+                <p>
+                  <strong>Ngày mua:</strong> {formatDate(order.date)}
+                </p>
+                <p>
+                  <strong>Tổng tiền:</strong> {formatCurrency(order.total)}
+                </p>
+                <p>
+                  <strong>Địa chỉ:</strong> {order.address}
+                </p>
+                <p>
+                  <strong>Trạng thái:</strong>{' '}
+                  <span
+                    style={{
+                      color:
+                        order.orderStatus.status === 'Hoàn thành'
+                          ? 'green'
+                          : order.orderStatus.status === 'Đang xử lý'
+                            ? 'orange'
+                            : 'red',
+                    }}
+                  >
+                    {order.orderStatus.status}
+                  </span>
+                </p>
               </div>
+              <button
+                onClick={() => fetchOrderDetails(order.id)}
+                style={{
+width: "100%", // Chiều rộng nút phủ toàn bộ
+                  padding: "12px", // Khoảng cách bên trong lớn hơn để nhìn cân đối
+                  marginTop: "10px", // Khoảng cách phía trên
+                  border: "none", // Xóa viền
+                  borderRadius: "10px", // Bo góc mềm mại
+                  backgroundColor: "#007bff", // Màu xanh lam ban đầu
+                  color: "#fff", // Chữ trắng
+                  cursor: "pointer", // Hiển thị con trỏ khi hover
+                  fontWeight: "bold", // Chữ đậm
+                  fontSize: "16px", // Cỡ chữ
+                  boxShadow: "0 5px 10px rgba(0, 123, 255, 0.3)", // Hiệu ứng đổ bóng
+                  transition: "all 0.3s ease", // Hiệu ứng chuyển đổi mượt mà
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.backgroundColor = "#0056b3"; // Màu nền khi hover (xanh đậm hơn)
+                  e.target.style.boxShadow = "0 8px 15px rgba(0, 86, 179, 0.4)"; // Tăng đổ bóng khi hover
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.backgroundColor = "#007bff"; // Trả về màu nền ban đầu
+                  e.target.style.boxShadow = "0 5px 10px rgba(0, 123, 255, 0.3)"; // Trả về bóng ban đầu
+                }}
+              >
+                Xem chi tiết
+              </button>
+
             </div>
+          ))}
+        </div>
+
+        {/* Modal hiển thị chi tiết đơn hàng */}
+        {/* Modal hiển thị chi tiết đơn hàng */}
+        {orderDetails && (
+          <div
+            style={{
+              position: 'fixed',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              backgroundColor: '#ffffff',
+              padding: '25px 40px',
+              borderRadius: '15px',
+              boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)',
+              zIndex: '1000',
+              width: '90%',
+              maxWidth: '1000px',
+              maxHeight: '80vh',
+              overflowY: 'auto',
+              animation: 'fadeIn 0.3s ease-in-out',
+            }}
+          >
+            <h3
+              style={{
+                marginBottom: '20px',
+                fontSize: '24px',
+                fontWeight: '700',
+                textAlign: 'center',
+                color: '#4a90e2',
+                borderBottom: '2px solid #e0e0e0',
+                paddingBottom: '10px',
+              }}
+            >
+              Chi tiết đơn hàng
+            </h3>
+            <ul style={{ padding: '0', margin: '0', listStyleType: 'none' }}>
+              {orderDetails.map((detail, idx) => (
+                <li
+                  key={idx}
+                  style={{
+                    marginBottom: '20px',
+                    padding: '20px',
+                    backgroundColor: '#f4f8fb',
+                    borderRadius: '10px',
+boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+                    fontSize: '16px',
+                    color: '#333',
+                    transition: 'all 0.3s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#e6f0fa'; // Màu nền khi hover
+                    e.currentTarget.style.boxShadow = '0 6px 15px rgba(0, 0, 0, 0.2)'; // Thêm bóng đổ khi hover
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#f4f8fb'; // Quay lại màu nền ban đầu
+                    e.currentTarget.style.boxShadow = '0 4px 10px rgba(0, 0, 0, 0.1)'; // Quay lại bóng đổ ban đầu
+                  }}
+                >
+                  <strong style={{ color: '#4a90e2' }}>Sản phẩm:</strong> {detail.product.name}
+                  <div style={{ textAlign: 'center', margin: '15px 0' }}>
+                    <img
+                      src={`/assets/images/${detail.product.productsImages[0].image.url}`}
+                      alt={detail.product.name}
+                      style={{
+                        maxWidth: '150px',
+                        maxHeight: '150px',
+                        borderRadius: '10px',
+                        boxShadow: '0 6px 15px rgba(0, 0, 0, 0.1)',
+                      }}
+                    />
+                  </div>
+                  <strong style={{ color: '#4a90e2' }}>Số lượng:</strong> {detail.totalQuantity} <br />
+                  <strong style={{ color: '#4a90e2' }}>Giá:</strong> {formatCurrency(detail.product.price)} <br />
+                </li>
+              ))}
+            </ul>
+
+            <div style={{ textAlign: 'right', marginTop: '20px', display: 'flex', justifyContent: 'flex-end' }}>
+              <button
+                onClick={closeModal}
+                style={{
+                  padding: "12px 24px", // Khoảng cách bên trong lớn hơn
+                  backgroundColor: "#6c757d", // Màu xám ban đầu (chuẩn Bootstrap)
+                  border: "none", // Xóa viền
+                  borderRadius: "10px", // Bo góc mềm mại
+                  color: "#fff", // Chữ trắng
+                  fontWeight: "bold", // Chữ đậm
+                  cursor: "pointer", // Hiển thị con trỏ khi hover
+                  fontSize: "16px", // Cỡ chữ
+                  boxShadow: "0 5px 10px rgba(108, 117, 125, 0.3)", // Hiệu ứng đổ bóng
+                  transition: "all 0.3s ease", // Hiệu ứng chuyển đổi mượt mà
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.backgroundColor = "#5a6268"; // Màu xám đậm hơn khi hover
+                  e.target.style.boxShadow = "0 8px 15px rgba(90, 98, 104, 0.4)"; // Tăng đổ bóng khi hover
+                }}
+                onMouseOut={(e) => {
+e.target.style.backgroundColor = "#6c757d"; // Trả về màu nền ban đầu
+                  e.target.style.boxShadow = "0 5px 10px rgba(108, 117, 125, 0.3)"; // Trả về bóng ban đầu
+                }}
+              >
+                Đóng
+              </button>
+
+              <button
+                onClick={() => openCancelModal(orderDetails[0].orderId)} // Lấy orderId từ chi tiết đơn hàng
+                style={{
+                  marginLeft: '10px',
+                  padding: '10px 20px',
+                  backgroundColor: '#ff6b6b',
+                  border: 'none',
+                  borderRadius: '5px',
+                  color: '#fff',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  transition: 'background-color 0.3s',
+                }}
+                onMouseOver={(e) => (e.target.style.backgroundColor = '#d9534f')}
+                onMouseOut={(e) => (e.target.style.backgroundColor = '#ff6b6b')}
+              >
+                Hủy đơn hàng
+              </button>
+            </div>
+
+
           </div>
-        </div>
+        )}
+
+        {/* Modal hủy đơn hàng */}
+        {isCancelModalOpen && (
+          <div
+            style={{
+              position: 'fixed',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              backgroundColor: '#fff',
+              padding: '25px 40px',
+              borderRadius: '15px',
+              boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)',
+              zIndex: '1000',
+              width: '90%',
+              maxWidth: '700px',
+              animation: 'fadeIn 0.3s ease-in-out',
+            }}
+          >
+            <h3
+              style={{
+                marginBottom: '20px',
+                fontSize: '24px',
+                fontWeight: '700',
+                textAlign: 'center',
+                color: '#e74c3c',
+              }}
+            >
+              Hủy đơn hàng
+            </h3>
+            <textarea
+              placeholder="Lý do hủy đơn hàng"
+              value={cancelReason}
+              onChange={(e) => setCancelReason(e.target.value)}
+              style={{
+                width: '100%',
+                height: '100px',
+                borderRadius: '5px',
+                padding: '10px',
+                border: '1px solid #ccc',
+                marginBottom: '20px',
+                fontSize: '16px',
+              }}
+            />
+            <div style={{ textAlign: "center" }}>
+              <button
+                onClick={handleCancelOrder}
+                style={{
+                  padding: "12px 24px", // Khoảng cách bên trong lớn hơn
+                  backgroundColor: "#e74c3c", // Màu đỏ ban đầu
+                  border: "none", // Xóa viền
+                  borderRadius: "10px", // Bo góc mềm mại
+                  color: "#fff", // Chữ trắng
+fontWeight: "bold", // Chữ đậm
+                  cursor: "pointer", // Hiển thị con trỏ khi hover
+                  fontSize: "16px", // Cỡ chữ
+                  boxShadow: "0 5px 10px rgba(231, 76, 60, 0.3)", // Hiệu ứng đổ bóng
+                  transition: "all 0.3s ease", // Hiệu ứng mượt mà
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.backgroundColor = "#c0392b"; // Màu đỏ đậm hơn khi hover
+                  e.target.style.boxShadow = "0 8px 15px rgba(192, 57, 43, 0.4)"; // Tăng đổ bóng khi hover
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.backgroundColor = "#e74c3c"; // Trả lại màu nền ban đầu
+                  e.target.style.boxShadow = "0 5px 10px rgba(231, 76, 60, 0.3)"; // Trả về bóng ban đầu
+                }}
+              >
+                Xác nhận hủy
+              </button>
+              <button
+                onClick={closeModalhuy}
+                style={{
+                  marginLeft: "10px", // Khoảng cách giữa hai nút
+                  padding: "12px 24px", // Khoảng cách bên trong lớn hơn
+                  backgroundColor: "#6c757d", // Màu xám ban đầu (chuẩn Bootstrap)
+                  border: "none", // Xóa viền
+                  borderRadius: "10px", // Bo góc mềm mại
+                  color: "#fff", // Chữ trắng
+                  fontWeight: "bold", // Chữ đậm
+                  cursor: "pointer", // Hiển thị con trỏ khi hover
+                  fontSize: "16px", // Cỡ chữ
+                  boxShadow: "0 5px 10px rgba(108, 117, 125, 0.3)", // Hiệu ứng đổ bóng
+                  transition: "all 0.3s ease", // Hiệu ứng mượt mà
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.backgroundColor = "#5a6268"; // Màu xám đậm hơn khi hover
+                  e.target.style.boxShadow = "0 8px 15px rgba(90, 98, 104, 0.4)"; // Tăng đổ bóng khi hover
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.backgroundColor = "#6c757d"; // Trả lại màu nền ban đầu
+                  e.target.style.boxShadow = "0 5px 10px rgba(108, 117, 125, 0.3)"; // Trả về bóng ban đầu
+                }}
+              >
+                Hủy
+              </button>
+            </div>
+
+
+          </div>
+        )}
       </div>
-
-      {/* Modal hiển thị chi tiết đơn hàng */}
-      {orderDetails && (
-        <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'white', padding: '20px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', zIndex: '1000' }}>
-          <h4>Chi tiết đơn hàng</h4>
-          <ul>
-            {orderDetails.map((detail, idx) => (
-              <li key={idx}>
-                Sản phẩm: {detail.product.name} | Số lượng: {detail.totalQuantity} | Tổng tiền: {detail.totalPrice}
-              </li>
-            ))}
-          </ul>
-          <button onClick={closeModal} style={{ backgroundColor: 'red', color: 'white', padding: '10px', border: 'none', cursor: 'pointer' }}>Đóng</button>
-        </div>
-      )}
-
-      {/* Overlay when modal is open */}
-      {orderDetails && (
-        <div onClick={closeModal} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0, 0, 0, 0.5)', zIndex: '999' }}></div>
-      )}
     </div>
   );
 };

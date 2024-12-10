@@ -1,70 +1,121 @@
-// package JAVA6.admins.controller;
+package JAVA6.admins.controller;
 
-// import JAVA6.Model.BrandModel;
-// import JAVA6.service.BrandAdminService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.http.ResponseEntity;
-// import org.springframework.web.bind.annotation.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-// import java.util.List;
-// import java.util.Optional;
+import JAVA6.Model.BrandModel;
+import JAVA6.Model.CategoryModel;
+import JAVA6.Model.UserModel;
+import JAVA6.repository.BrandRepository;
+import JAVA6.repository.CategoryRepository;
+import JAVA6.repository.UsersRepository;
+import JAVA6.service.BrandService;
+import JAVA6.service.CategoryService;
+import JAVA6.service.UserService;
 
-// @RestController
-// @RequestMapping("/api/brands")
-// public class BrandController {
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 
-// @Autowired
-// private BrandAdminService brandService;
+@RestController
+@RequestMapping("/api/admin/brands")
+public class BrandController {
 
-// // Get all brands
-// @GetMapping
-// public List<BrandModel> getAllBrands() {
-// return brandService.findAll(); // Returns a list of all brands
-// }
+    private static final Logger logger = LoggerFactory.getLogger(BrandController.class);
 
-// // Get a single brand by ID
-// @GetMapping("/{id}")
-// public ResponseEntity<BrandModel> getBrandById(@PathVariable int id) {
-// Optional<BrandModel> brand = brandService.findById(id);
-// return brand.map(ResponseEntity::ok) // If found, return the brand
-// .orElseGet(() -> ResponseEntity.notFound().build()); // If not found, return
-// 404
-// }
+    @Autowired
+    private BrandRepository brandRepository;
 
-// // Create a new brand
-// @PostMapping
-// public ResponseEntity<BrandModel> createBrand(@RequestBody BrandModel brand)
-// {
-// BrandModel savedBrand = brandService.save(brand); // Save the new brand
-// return ResponseEntity.ok(savedBrand); // Return the created brand with status
-// 200
-// }
+    @Autowired
+    private BrandService brandService;
 
-// // // Update an existing brand
-// // @PutMapping("/{id}")
-// // public ResponseEntity<BrandModel> updateBrand(@PathVariable int id,
-// // @RequestBody BrandModel brand) {
-// // if (!brandService.existsById(id)) {
-// // return ResponseEntity.notFound().build(); // If the brand doesn't exist,
-// // return 404
-// // }
-// // brand.setId(id); // Set the ID to ensure it is updated
-// // BrandModel updatedBrand = brandService.save(brand); // Save the updated
-// brand
-// // return ResponseEntity.ok(updatedBrand); // Return the updated brand with
-// // status 200
-// // }
+    // Lấy danh sách tất cả người dùng
+    @GetMapping
+    public ResponseEntity<List<BrandModel>> getAllBrand() {
+        List<BrandModel> brand = brandRepository.findAll();
+        if (brand.isEmpty()) {
+            return ResponseEntity.noContent().build(); // Trả về 204 nếu danh sách rỗng
+        }
+        return ResponseEntity.ok(brand); // Trả về danh sách người dùng
+    }
 
-// // // Delete a brand
-// // @DeleteMapping("/{id}")
-// // public ResponseEntity<Void> deleteBrand(@PathVariable int id) {
-// // if (!brandService.existsById(id)) {
-// // return ResponseEntity.notFound().build(); // If the brand doesn't exist,
-// // return 404
-// // }
-// // brandService.deleteById(id); // Delete the brand by ID
-// // return ResponseEntity.noContent().build(); // Return status 204 (No
-// Content)
-// // }
-// }
+    // Lấy thông tin người dùng theo ID
+    @GetMapping("/{id}")
+    public ResponseEntity<BrandModel> getBrandById(@PathVariable("id") int id) {
+        logger.info("Fetching brnad with ID: {}", id);
+        return brandRepository.findById(id)
+                .map(brand -> {
+                    logger.info("Found brand: {}", brand);
+                    return ResponseEntity.ok(brand);
+                })
+                .orElse(ResponseEntity.notFound().build()); // Trả về 404 nếu không tìm thấy
+    }
+
+    // Thêm người dùng mới hoặc khách hàng
+@PostMapping
+public ResponseEntity<String> createBrand(
+        @RequestPart("brand") String brandJson) {
+    try {
+        ObjectMapper mapper = new ObjectMapper();
+        BrandModel brand = mapper.readValue(brandJson, BrandModel.class);
+
+        // Kiểm tra dữ liệu hợp lệ
+        if (brand.getName() == null || brand.getName().isEmpty()) {
+            return ResponseEntity.badRequest().body("Name is required.");
+        }
+        
+
+        brandRepository.save(brand);
+        return ResponseEntity.ok("Brand created successfully.");
+    } catch (IOException e) {
+        logger.error("Error processing request: ", e);
+        return ResponseEntity.status(500).body("Error creating category: " + e.getMessage());
+    }
+}
+
+@PutMapping("/{id}")
+public ResponseEntity<String> updateBrand(
+        @PathVariable("id") int id,
+        @RequestPart("brand") String brandJson) {
+    logger.info("Updating brand with ID: {}", id);
+
+    try {
+        // Chuyển đổi JSON thành đối tượng UserModel
+        ObjectMapper mapper = new ObjectMapper();
+        BrandModel brand = mapper.readValue(brandJson, BrandModel.class);
+
+        return brandRepository.findById(id)
+                .map(existingBrand -> {
+                    brand.setId(id); // Đảm bảo ID được giữ nguyên
+                    brandRepository.save(brand);
+                    return ResponseEntity.ok("Brand updated successfully.");
+                })
+                .orElse(ResponseEntity.notFound().build()); // Trả về 404 nếu không tìm thấy user
+    } catch (IOException e) {
+        logger.error("Error processing request: ", e);
+        return ResponseEntity.status(500).body("Error updating category: " + e.getMessage());
+    }
+}
+
+
+
+    // Xóa người dùng
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteBrand(@PathVariable("id") int id) {
+        return brandRepository.findById(id)
+                .map(brand -> {
+                    brandRepository.delete(brand);
+                    return ResponseEntity.ok("Brand deleted successfully.");
+                })
+                .orElse(ResponseEntity.notFound().build()); // Trả về 404 nếu không tìm thấy user
+    }
+
+}

@@ -46,6 +46,13 @@ public class UserModel {
 	private boolean gender;
 
 	// Các getter và setter khác...
+	public boolean isRole() {
+		return role;
+	}
+
+	public void setRole(boolean role) {
+		this.role = role;
+	}
 
 	// Phương thức khóa tài khoản
 	public void blockAccount() {
@@ -62,11 +69,5 @@ public class UserModel {
 		this.status = active;
 	}
 
-	// // Phương thức getDiscountCode chưa được triển khai, bỏ qua nếu không cần
-	// thiết
-	// public String getDiscountCode() {
-	// // TODO Auto-generated method stub
-	// throw new UnsupportedOperationException("Unimplemented method
-	// 'getDiscountCode'");
-	// }
+
 }

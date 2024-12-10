@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.sql.Date;
 import java.util.HashMap;
 import java.util.Map;
+
 @RestController
 @RequestMapping("/api/auth")
 public class RegisterController {

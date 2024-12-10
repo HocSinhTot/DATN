@@ -8,9 +8,10 @@ import org.springframework.data.repository.query.Param;
 import JAVA6.Model.ProductModel;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public interface ProductRepository extends JpaRepository<ProductModel, Integer> {
-
+    List<ProductModel> findByNameContainingIgnoreCase(String name);
     // Phương thức tìm kiếm sản phẩm nâng cao với phân trang
     @Query("SELECT p FROM ProductModel p " +
            "WHERE (:categoryId IS NULL OR p.category.id = :categoryId) " +

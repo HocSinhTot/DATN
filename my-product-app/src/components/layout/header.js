@@ -5,38 +5,44 @@ import axios from 'axios';
 const Header = ({ setKeyword, setCategoryId }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
-  const [localKeyword, setLocalKeyword] = useState(''); // Local state cho keyword
+  const [localKeyword, setLocalKeyword] = useState('');
+  const [showAlert, setShowAlert] = useState(false); // Trạng thái hiển thị thông báo
   const navigate = useNavigate();
-  // Get the username from localStorage when the component mounts
+
   useEffect(() => {
     const storedUsername = sessionStorage.getItem("username");
+    const alertDisplayed = localStorage.getItem("alertDisplayed");
+
     if (storedUsername) {
       setUsername(storedUsername);
       setIsLoggedIn(true);
+      if (!alertDisplayed) {
+        setShowAlert(true); // Hiển thị thông báo chỉ lần đầu
+        setTimeout(() => setShowAlert(false), 3000); // Tự động ẩn thông báo sau 3 giây
+        localStorage.setItem("alertDisplayed", "true");
+      }
     }
   }, []);
 
   const handleSearch = (e) => {
     e.preventDefault();
-    setKeyword(localKeyword);  // Truyền keyword từ Header xuống Category
-    navigate('/categorys'); // Chuyển đến trang Category mà không thay đổi URL với tham số query
+    setKeyword(localKeyword);
+    navigate('/categorys');
   };
 
-  // Logout function
   const handleLogout = async (event) => {
     event.preventDefault();
     try {
-      // Make API request to log out
       const response = await axios.post("http://localhost:8080/api/auth/logout");
       if (response.data.success) {
         // Clear the localStorage and update state
         sessionStorage.removeItem('rememberMe');
         sessionStorage.removeItem('token');
         sessionStorage.removeItem('userId');
-        sessionStorage.removeItem('username');
+        sessionStorage.removeItem("username");
+        localStorage.removeItem("alertDisplayed"); // Xóa trạng thái thông báo khi đăng xuất
         setIsLoggedIn(false);
         setUsername('');
-        // Redirect to login page
         navigate("/login");
       } else {
         alert("Đăng xuất không thành công.");
@@ -45,65 +51,120 @@ const Header = ({ setKeyword, setCategoryId }) => {
       alert("Lỗi khi đăng xuất.");
     }
   };
+
   const handleCategoryClick = (categoryId) => {
-    // Gọi hàm setKeyword nếu muốn truyền thêm từ khóa khi chọn danh mục
     setCategoryId(categoryId);
     navigate(`/categorys`);
   };
+
+
   return (
-    <header className="header-style-1 container-fluid bg-light py-3" >
-      <div className="top-bar animate-dropdown " style={{paddingLeft: '371px'}}>
+    <header className="header-style-1 container-fluid bg-light py-3">
+      <div className="top-bar animate-dropdown" style={{ paddingLeft: '371px' }}>
         <div className="container">
           <div className="header-top-inner">
             <div className="cnt-account">
-            <ul style={{ listStyle: 'none', padding: '0', fontSize: '1.2rem', fontWeight: 'bold', color: 'white' }}>
-  <li style={{ marginBottom: '10px',fontSize:'14px',padding:'5px 20px 0px 20px' }}>
-    <Link to="/account" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
-      <i className="icon fa fa-user" style={{ marginRight: '8px', fontSize: '1.5rem' }}></i>
-      Tài khoản
-    </Link>
-  </li>
-  <li style={{ marginBottom: '10px' ,fontSize:'14px',padding:'5px 20px 0px 20px' }}>
-    <Link to="/like" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
-      <i className="icon fa fa-heart" style={{ marginRight: '8px', fontSize: '1.5rem' }}></i>
-      Yêu thích
-    </Link>
-  </li>
-
-  <li style={{ marginBottom: '10px',fontSize:'14px',padding:'5px 20px 0px 20px' }}>
-    <Link to="/history" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
-      <i className="icon fa fa-check" style={{ marginRight: '8px', fontSize: '1.5rem' }}></i>
-      Đơn hàng
-    </Link>
-  </li>
-  {username && (
-    <>
-      <li style={{ fontSize: '1.5rem', marginBottom: '10px' ,fontSize:'14px',padding:'5px 20px 0px 20px'}}>
-        Xin chào, <span style={{ fontWeight: 'bold' }}>{username}</span>!
-      </li>
-      <li style={{ marginBottom: '10px' ,fontSize:'14px',padding:'5px 20px 0px 20px'}}>
-        <Link to="/change" style={{ textDecoration: 'none' }}>Đổi mật khẩu</Link>
-      </li>
-      <li style={{ marginBottom: '10px' ,fontSize:'14px',padding:'5px 20px 0px 20px'}}>
-        <a href="/" onClick={handleLogout} style={{ textDecoration: 'none' }}>Đăng xuất</a>
-      </li>
-    </>
-  )}
-  {!username && (
-    <li style={{ marginBottom: '10px' ,fontSize:'14px',padding:'5px 20px 0px 20px'}}>
-      <Link to="/login" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
-        <i className="icon fa fa-lock" style={{ marginRight: '8px', fontSize: '1.5rem' }}></i>
-        Đăng nhập
-      </Link>
-    </li>
-  )}
-</ul>
-
-
+              <ul className="account-menu">
+                <li>
+                  <Link to="/account" className="menu-item">
+                    <i className="icon fa fa-user"></i> Tài khoản
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/like" className="menu-item">
+                    <i className="icon fa fa-heart"></i> Yêu thích
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/history" className="menu-item">
+                    <i className="icon fa fa-check"></i> Đơn hàng
+                  </Link>
+                </li>
+                {username ? (
+                  <>
+                    <li>
+                      Xin chào, <span className="username">{username}</span>!
+                    </li>
+                    <li>
+                      <Link to="/change" className="menu-item">Đổi mật khẩu</Link>
+                    </li>
+                    <li>
+                      <a href="/" onClick={handleLogout} className="menu-item">Đăng xuất</a>
+                    </li>
+                  </>
+                ) : (
+                  <li>
+                    <Link to="/login" className="menu-item">
+                      <i className="icon fa fa-lock"></i> Đăng nhập
+                    </Link>
+                  </li>
+                )}
+              </ul>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Hiệu ứng vòng tròn */}
+      <div className={`alert ${showAlert ? 'show' : ''}`} style={{
+        position: 'fixed',
+        top: '30px',
+        left: '85%',
+        transform: 'translateX(-50%)',
+        background: 'linear-gradient(45deg, #4caf50, #8bc34a)',
+        color: 'white',
+        padding: '8px 25px',
+        width: '350px',
+        borderRadius: '8px',
+        fontSize: '12px',
+        boxShadow: '0 3px 8px rgba(0, 0, 0, 0.15)',
+        zIndex: 1000,
+        opacity: showAlert ? 1 : 0,
+        transform: showAlert ? 'translate(-50%, 0)' : 'translateY(-50px)',
+        transition: 'opacity 0.6s ease-in-out, transform 0.6s ease-in-out',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
+        <div className="containers" style={{
+          position: 'absolute',
+          top: '50%',
+          left: '10%',
+          transform: 'translate(-50%, -50%)',
+          borderRadius: '50%',
+          height: '30px',
+          width: '30px',
+          animation: 'rotate_3922 1.2s linear infinite',
+          backgroundColor: '#9b59b6',
+          backgroundImage: 'linear-gradient(#9b59b6, #84cdfa, #5ad1cd)',
+          overflow: 'hidden',
+        }}>
+          {/* Lỗ tròn ở giữa */}
+          <div style={{
+            position: 'absolute',
+            top: '10px',
+            left: '10px',
+            right: '10px',
+            bottom: '10px',
+            backgroundColor: 'white',
+            borderRadius: '50%',
+          }}></div>
+        </div>
+        <p style={{ marginLeft: '50px' }}>Đăng nhập thành công! Chào mừng bạn!</p>
+      </div>
+      
+      <style>
+        {`
+          @keyframes rotate_3922 {
+            from {
+              transform: translate(-50%, -50%) rotate(0deg);
+            }
+            to {
+              transform: translate(-50%, -50%) rotate(360deg);
+            }
+          }
+        `}
+      </style>
 
       <div className="main-header" style={{
     width: '1410px'}}>

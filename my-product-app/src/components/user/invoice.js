@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const InvoicePage = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -13,6 +13,9 @@ const InvoicePage = () => {
 
   const location = useLocation();
   const { invoiceData } = location.state || {};
+
+  // Khởi tạo navigate
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (invoiceData) {
@@ -38,10 +41,10 @@ const InvoicePage = () => {
           method: "GET",
         }
       );
-      
+
       if (response.ok) {
         const data = await response.json();
-        
+
         // Kiểm tra nếu mã giảm giá hợp lệ
         if (data.valid) {
           setDiscountAmount(data.discountPercentage * totalAmount);  // Cập nhật giá trị giảm giá theo phần trăm
@@ -104,6 +107,10 @@ const InvoicePage = () => {
 
         if (response.ok) {
           alert("Thanh toán COD thành công!");
+
+          // Chuyển hướng về trang index (trang chủ)
+          navigate("/");  // Điều hướng về trang chủ
+
         } else {
           alert("Thanh toán COD thất bại.");
         }

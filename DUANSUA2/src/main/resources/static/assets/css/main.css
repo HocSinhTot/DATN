@@ -5745,7 +5745,7 @@ age-container #owl-main .owl-next {
 .table > tfoot > tr > td {
   vertical-align: middle;
   border: none;
-  padding: 30px;
+  padding: 0px;
 }
 .body-content .my-wishlist-page .my-wishlist table tbody .close-btn a,
 .body-content .my-wishlist-page .my-wishlist table tbody .close-btn a:hover {

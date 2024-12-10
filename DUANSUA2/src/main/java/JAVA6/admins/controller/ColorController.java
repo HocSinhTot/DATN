@@ -1,56 +1,124 @@
 package JAVA6.admins.controller;
 
-import java.util.List;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import JAVA6.Model.BrandModel;
+import JAVA6.Model.CategoryModel;
 import JAVA6.Model.ColorModel;
+import JAVA6.Model.UserModel;
+import JAVA6.repository.BrandRepository;
+import JAVA6.repository.CategoryRepository;
+import JAVA6.repository.ColorAdminRepository;
+import JAVA6.repository.UsersRepository;
+import JAVA6.service.BrandService;
+import JAVA6.service.CategoryService;
 import JAVA6.service.ColorService;
+import JAVA6.service.UserService;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/colors")
 public class ColorController {
 
+    private static final Logger logger = LoggerFactory.getLogger(ColorController.class);
+
+    @Autowired
+    private ColorAdminRepository colorAdminRepository;
+
     @Autowired
     private ColorService colorService;
 
-    // Get all colors
+    // Lấy danh sách tất cả người dùng
     @GetMapping
-    public List<ColorModel> listColors() {
-        return colorService.getAllColors();
+    public ResponseEntity<List<ColorModel>> getAllColor() {
+        List<ColorModel> color = colorAdminRepository.findAll();
+        if (color.isEmpty()) {
+            return ResponseEntity.noContent().build(); // Trả về 204 nếu danh sách rỗng
+        }
+        return ResponseEntity.ok(color); // Trả về danh sách người dùng
     }
 
-    // // Add a new color
-    // @PostMapping("/add")
-    // @ResponseStatus(HttpStatus.CREATED)
-    // public ColorModel addColor(@RequestBody ColorModel color) {
-    // colorService.saveColor(color);
-    // return color; // Returning the created color object
-    // }
+    // Lấy thông tin người dùng theo ID
+    @GetMapping("/{id}")
+    public ResponseEntity<ColorModel> getColorById(@PathVariable("id") int id) {
+        logger.info("Fetching color with ID: {}", id);
+        return colorAdminRepository.findById(id)
+                .map(color -> {
+                    logger.info("Found color: {}", color);
+                    return ResponseEntity.ok(color);
+                })
+                .orElse(ResponseEntity.notFound().build()); // Trả về 404 nếu không tìm thấy
+    }
 
-    // // Edit color (update)
-    // @PostMapping("/edit/{id}")
-    // public ColorModel editColor(@PathVariable("id") Integer id, @RequestBody
-    // ColorModel color) {
-    // color.setId(id); // Ensure the id is updated
-    // colorService.saveColor(color);
-    // return color; // Returning the updated color object
-    // }
+    // Thêm người dùng mới hoặc khách hàng
+@PostMapping
+public ResponseEntity<String> createColor(
+        @RequestPart("color") String colorJson) {
+    try {
+        ObjectMapper mapper = new ObjectMapper();
+        ColorModel color = mapper.readValue(colorJson, ColorModel.class);
 
-    // // Delete color
-    // @DeleteMapping("/delete/{id}")
-    // @ResponseStatus(HttpStatus.NO_CONTENT)
-    // public void deleteColor(@PathVariable("id") Integer id) {
-    // colorService.deleteColor(id);
-    // }
+        // Kiểm tra dữ liệu hợp lệ
+        if (color.getName() == null || color.getName().isEmpty()) {
+            return ResponseEntity.badRequest().body("Name is required.");
+        }
+        
+
+        colorAdminRepository.save(color);
+        return ResponseEntity.ok("Color created successfully.");
+    } catch (IOException e) {
+        logger.error("Error processing request: ", e);
+        return ResponseEntity.status(500).body("Error creating color: " + e.getMessage());
+    }
+}
+
+@PutMapping("/{id}")
+public ResponseEntity<String> updateColor(
+        @PathVariable("id") int id,
+        @RequestPart("color") String colorJson) {
+    logger.info("Updating color with ID: {}", id);
+
+    try {
+        // Chuyển đổi JSON thành đối tượng UserModel
+        ObjectMapper mapper = new ObjectMapper();
+        ColorModel color = mapper.readValue(colorJson, ColorModel.class);
+
+        return colorAdminRepository.findById(id)
+                .map(existingColor -> {
+                    color.setId(id); // Đảm bảo ID được giữ nguyên
+                    colorAdminRepository.save(color);
+                    return ResponseEntity.ok("Color updated successfully.");
+                })
+                .orElse(ResponseEntity.notFound().build()); // Trả về 404 nếu không tìm thấy user
+    } catch (IOException e) {
+        logger.error("Error processing request: ", e);
+        return ResponseEntity.status(500).body("Error updating color: " + e.getMessage());
+    }
+}
+
+
+
+    // Xóa người dùng
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteColor(@PathVariable("id") int id) {
+        return colorAdminRepository.findById(id)
+                .map(color -> {
+                    colorAdminRepository.delete(color);
+                    return ResponseEntity.ok("Color deleted successfully.");
+                })
+                .orElse(ResponseEntity.notFound().build()); // Trả về 404 nếu không tìm thấy user
+    }
+
 }

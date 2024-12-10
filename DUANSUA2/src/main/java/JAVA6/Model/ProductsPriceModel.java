@@ -1,5 +1,7 @@
 package JAVA6.Model;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -106,5 +108,8 @@ public class ProductsPriceModel {
 		}
 
 	}
-	// Additional methods if needed
+	public void setPrice(BigDecimal price) {
+		this.price = price.doubleValue();
+	}
+	
 }

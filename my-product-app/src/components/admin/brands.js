@@ -34,7 +34,7 @@ const BrandManagement = () => {
                         <div className="card">
                             <div className="card-header">
                                 <h5 className="card-title m-0">Quản lý thương hiệu</h5>
-                                <Link to="/brands/create" className="btn btn-light">Thêm mới</Link>
+                                <Link to="/brands/add" className="btn btn-light">Thêm mới</Link>
                             </div>
                             <div className="card-body">
                                 <table className="table">

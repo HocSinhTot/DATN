@@ -22,6 +22,10 @@ public class BrandModel {
 	@Column(name = "name", nullable = false, unique = true, length = 50)
 	private String name;
 
+	public BrandModel(int id) {
+        this.id = id;
+    }
+
 	public int getId() {
 		return id;
 	}

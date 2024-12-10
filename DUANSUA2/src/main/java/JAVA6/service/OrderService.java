@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import JAVA6.Model.OrderModel;
 import JAVA6.Model.OrderStatusModel;
+
 import JAVA6.repository.OrderRepository;
 import JAVA6.repository.OrderStatusRepository;
 
@@ -42,9 +43,13 @@ public class OrderService {
             orderRepository.save(order);
         }
     }
-
+     public List<OrderStatusModel> getAllOrderStatuses() {
+        return orderStatusRepository.findAll(); // Giả sử bạn có một phương thức findAll trong repository
+    }
 
     public void deleteOrder(int orderId) {
         orderRepository.deleteById(orderId);
     }
+
+    
 }

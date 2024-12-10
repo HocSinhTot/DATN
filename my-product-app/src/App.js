@@ -27,11 +27,24 @@ import CapacityAmin from './components/admin/capacity';
 import ImagesAmin from './components/admin/images';
 import FavouriteAmin from './components/admin/favourite';
 import EvaluaesAmin from './components/admin/evaluaes';
+import ProductsPrice from './components/admin/productprice';
+import ProductsImage from './components/admin/productimages';
+
+
 import OrderAmin from './components/admin/order';
-import EditUserAmin from './components/admin/editUser';
-import AddUserAmin from './components/admin/addUser';
+import EditCategoryAmin from './components/admin/editCategory';
+import EditBrandAmin from './components/admin/editBrand';
+import EditCapacityAmin from './components/admin/editCapacity';
+import EditImageAmin from './components/admin/editImage';
+
 import OrderHistory from './components/user/order';
 import ProtectedRoute from './ProtectedRoute';
+import AddCategoryAmin from './components/admin/addCategory';
+import AddBrandAmin from './components/admin/addBrand';
+
+import AddCapacityAmin from './components/admin/addCapacity';
+import AddImageAmin from './components/admin/addImage';
+
 
 function App() {
   const [keyword, setKeyword] = useState('');
@@ -141,10 +154,7 @@ function App() {
             </>
             </ProtectedRoute>
         } />
-        <Route path="/nguoidung/add" element={
-           <ProtectedRoute roles={['ROLE_ADMIN']}><AddUserAmin /></ProtectedRoute>} />
-        <Route path="/nguoidung/edit/:id" element={
-           <ProtectedRoute roles={['ROLE_ADMIN']}><EditUserAmin /></ProtectedRoute>} />
+      
         <Route path="/products" element={
            <ProtectedRoute roles={['ROLE_ADMIN']}>
             <>

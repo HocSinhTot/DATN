@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
-import java.util.Optional;
 
 @Data
 @Entity
@@ -32,18 +30,14 @@ public class OrderModel {
 	@JoinColumn(name = "orderstatus_id", nullable = false)
 	private OrderStatusModel orderStatus;
 
-    @ManyToOne
-    @JoinColumn(name = "paymentmethod_id", nullable = false)
-    private PaymentMethodModel paymentMethod;  // Quan hệ với PaymentMethodModel
+	@ManyToOne
+	@JoinColumn(name = "paymentmethod_id", nullable = false)
+	private PaymentMethodModel paymentMethod;
 
 	@Column(name = "address", nullable = false)
 	private String address;
 
 
-
-    // Không cần phương thức setPhone() nữa nếu đã có thuộc tính phone
-    // Nếu vẫn muốn giữ phương thức setPhone(), có thể sử dụng setter mặc định như sau:
-   
-
-    // Getter và setter đã được tạo tự động bởi @Data từ Lombok
+	@Column(name = "orderstatus_id", insertable = false, updatable = false)
+	private int status; // Trạng thái đơn hàng để kiểm tra
 }
