@@ -99,7 +99,7 @@ const OrderHistory = () => {
 
   const formatDate = (date) => {
     const d = new Date(date);
-    return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1)
+return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1)
       .toString()
       .padStart(2, '0')}/${d.getFullYear()}`;
   };
@@ -182,7 +182,7 @@ const OrderHistory = () => {
               <button
                 onClick={() => fetchOrderDetails(order.id)}
                 style={{
-                  width: "100%", // Chiều rộng nút phủ toàn bộ
+width: "100%", // Chiều rộng nút phủ toàn bộ
                   padding: "12px", // Khoảng cách bên trong lớn hơn để nhìn cân đối
                   marginTop: "10px", // Khoảng cách phía trên
                   border: "none", // Xóa viền
@@ -254,7 +254,7 @@ const OrderHistory = () => {
                     padding: '20px',
                     backgroundColor: '#f4f8fb',
                     borderRadius: '10px',
-                    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
                     fontSize: '16px',
                     color: '#333',
                     transition: 'all 0.3s ease',
@@ -307,7 +307,7 @@ const OrderHistory = () => {
                   e.target.style.boxShadow = "0 8px 15px rgba(90, 98, 104, 0.4)"; // Tăng đổ bóng khi hover
                 }}
                 onMouseOut={(e) => {
-                  e.target.style.backgroundColor = "#6c757d"; // Trả về màu nền ban đầu
+e.target.style.backgroundColor = "#6c757d"; // Trả về màu nền ban đầu
                   e.target.style.boxShadow = "0 5px 10px rgba(108, 117, 125, 0.3)"; // Trả về bóng ban đầu
                 }}
               >
@@ -390,7 +390,7 @@ const OrderHistory = () => {
                   border: "none", // Xóa viền
                   borderRadius: "10px", // Bo góc mềm mại
                   color: "#fff", // Chữ trắng
-                  fontWeight: "bold", // Chữ đậm
+fontWeight: "bold", // Chữ đậm
                   cursor: "pointer", // Hiển thị con trỏ khi hover
                   fontSize: "16px", // Cỡ chữ
                   boxShadow: "0 5px 10px rgba(231, 76, 60, 0.3)", // Hiệu ứng đổ bóng

@@ -69,11 +69,5 @@ public class UserModel {
 		this.status = active;
 	}
 
-	// // Phương thức getDiscountCode chưa được triển khai, bỏ qua nếu không cần
-	// thiết
-	// public String getDiscountCode() {
-	// // TODO Auto-generated method stub
-	// throw new UnsupportedOperationException("Unimplemented method
-	// 'getDiscountCode'");
-	// }
+
 }
