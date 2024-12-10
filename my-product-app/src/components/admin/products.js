@@ -1,17 +1,25 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import Popup from "./Popup";
-
 const Management = () => {
   // State for product management
   const [productList, setProductList] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
-  const [totalPages, setTotalPages] = useState(0);
-  const [sortOrder, setSortOrder] = useState("asc");
+  const [pageSize, setPageSize] = useState(10); // Số sản phẩm mỗi trang
+  const [totalPages, setTotalPages] = useState(0); // Tổng số trang
+  const [sortOrder, setSortOrder] = useState("asc"); // Mặc định là sắp xếp tăng dần
 
-  const [popup, setPopup] = useState({ show: false, type: "", productId: null });
+  // State for user management
+  const [userList, setUserList] = useState([]);
+  const [popup, setPopup] = useState({
+    show: false,
+    type: "",
+    productId: null,
+  });
+
+  // State for form data (Add Product / Edit Product)
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -24,115 +32,98 @@ const Management = () => {
   const [brands, setBrands] = useState([]);
   const [categories, setCategories] = useState([]);
   const [errors, setErrors] = useState({});
+
   const navigate = useNavigate();
   const { id } = useParams();
-
-  // Function to generate fetch options
   const fetchOptions = (method, body = null) => {
-    const token = sessionStorage.getItem("token");
-    return {
-      method,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: body ? JSON.stringify(body) : null,
-    };
-  };
+    const token = sessionStorage.getItem('token'); // Lấy token từ sessionStorage
 
+    return {
+        method,
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,  // Thêm header Authorization
+        },
+        body: body ? JSON.stringify(body) : null,
+    };
+};
   useEffect(() => {
+    // Fetch product data
     fetchProducts(currentPage, pageSize);
   }, [currentPage, pageSize]);
 
   useEffect(() => {
-    const fetchBrandsAndCategories = async () => {
+    // Fetch brand and category options
+    const fetchOptions = async () => {
       try {
         const [brandsRes, categoriesRes] = await Promise.all([
-          fetch("http://localhost:8080/api/admin/brands", fetchOptions("GET")),
-          fetch("http://localhost:8080/api/admin/categories", fetchOptions("GET")),
+          axios.get("http://localhost:8080/api/brands"),
+          axios.get("http://localhost:8080/api/categories"),
         ]);
-
-        setBrands(await brandsRes.json());
-        setCategories(await categoriesRes.json());
+        setBrands(brandsRes.data);
+        setCategories(categoriesRes.data);
       } catch (error) {
         console.error("Error fetching brands or categories:", error);
       }
     };
-
-    fetchBrandsAndCategories();
+    fetchOptions();
   }, []);
 
-  const fetchProducts = async (page, size) => {
-    try {
-      const response = await fetch(
-        `http://localhost:8080/api/admin/products?page=${page}&size=${size}`,
-        fetchOptions("GET")
-      );
-      const data = await response.json();
-      setProductList(data.content);
-      setTotalPages(data.totalPages);
-    } catch (error) {
-      console.error("Error fetching products:", error);
-    }
+  const fetchProducts = (page, size) => {
+    fetch(`http://localhost:8080/api/admin/products?page=${page}&size=${size}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setProductList(data.content);
+        setTotalPages(data.totalPages);
+      })
+      .catch((error) => console.error("Error fetching products:", error));
   };
 
   const handlePageSizeChange = (e) => {
     setPageSize(Number(e.target.value));
-    setCurrentPage(0);
+    setCurrentPage(0); // Reset về trang đầu tiên khi thay đổi số sản phẩm mỗi trang
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
-      try {
-        const response = await fetch(
-          `http://localhost:8080/api/admin/products/${id}`,
-          fetchOptions("DELETE")
-        );
-        if (response.ok) {
-          alert("Product deleted successfully!");
-          setProductList(productList.filter((product) => product.id !== id));
-        }
-      } catch (error) {
-        console.error("Error deleting product:", error);
-      }
+      fetch(`http://localhost:8080/api/admin/products/${id}`, {
+        method: "DELETE",
+      })
+        .then((response) => {
+          if (response.ok) {
+            alert("Product deleted successfully!");
+            setProductList(productList.filter((product) => product.id !== id));
+          }
+        })
+        .catch((error) => console.error("Error deleting product:", error));
     }
   };
 
-  const handleSearch = async () => {
+  const handleSearch = () => {
     if (!searchTerm.trim()) {
       alert("Vui lòng nhập từ khóa tìm kiếm!");
       return;
     }
-
-    try {
-      const response = await fetch(
-        `http://localhost:8080/api/admin/products/search?name=${searchTerm}`,
-        fetchOptions("GET")
-      );
-      const data = await response.json();
-      setProductList(data);
-    } catch (error) {
-      console.error("Error searching products:", error);
-    }
+    fetch(`http://localhost:8080/api/admin/products/search?name=${searchTerm}`)
+      .then((response) => response.json())
+      .then((data) => setProductList(data))
+      .catch((error) => console.error("Error searching products:", error));
   };
 
-  const openPopup = async (type, productId = null) => {
+  const openPopup = (type, productId = null) => {
     setPopup({ show: true, type, productId });
     if (type === "edit" && productId) {
-      try {
-        const response = await fetch(
-          `http://localhost:8080/api/admin/products/${productId}`,
-          fetchOptions("GET")
-        );
-        const productData = await response.json();
-        setFormData({
-          ...productData,
-          brand: productData.brand.id,
-          category: productData.category.id,
-        });
-      } catch (error) {
-        console.error("Error fetching product data:", error);
-      }
+      // Fetch the product details for editing
+      axios
+        .get(`http://localhost:8080/api/admin/products/${productId}`)
+        .then((response) => {
+          setFormData({
+            ...response.data,
+            brand: response.data.brand.id,
+            category: response.data.category.id,
+          });
+        })
+        .catch((error) => console.error("Error fetching product data:", error));
     } else {
       setFormData({
         name: "",
@@ -147,55 +138,81 @@ const Management = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const productPayload = {
-      name: formData.name,
-      description: formData.description,
-      price: formData.price,
-      quantity: formData.quantity,
-      brand: formData.brand,
-      category: formData.category,
-    };
-
-    const url =
-      popup.type === "edit"
-        ? `http://localhost:8080/api/admin/products/${popup.productId}`
-        : "http://localhost:8080/api/admin/products";
-
-    const method = popup.type === "edit" ? "PUT" : "POST";
-
     try {
-      const response = await fetch(url, fetchOptions(method, productPayload));
-      if (response.ok) {
+      const formDataToSend = new FormData();
+      const productPayload = {
+        name: formData.name,
+        description: formData.description,
+        price: formData.price,
+        quantity: formData.quantity,
+        brand: formData.brand,
+        category: formData.category,
+      };
+
+      formDataToSend.append("product", JSON.stringify(productPayload));
+
+      const url =
+        popup.type === "edit"
+          ? `http://localhost:8080/api/admin/products/${popup.productId}`
+          : "http://localhost:8080/api/admin/products";
+
+      const method = popup.type === "edit" ? "PUT" : "POST";
+
+      const response = await axios({
+        method,
+        url,
+        data: formDataToSend,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (response.status === 200) {
         alert("Sản phẩm đã được cập nhật/thêm thành công!");
         setPopup({ show: false, type: "", productId: null });
-        fetchProducts(currentPage, pageSize);
-      } else {
-        const errorData = await response.json();
-        setErrors(errorData.errors || {});
+        fetchProducts(currentPage, pageSize); // Refresh product list
       }
     } catch (error) {
-      console.error("Unexpected error:", error);
+      if (error.response) {
+        setErrors(error.response.data.errors || {});
+      } else {
+        console.error("Unexpected error:", error);
+      }
     }
   };
-
   const handleReset = () => {
-    setSearchTerm("");
-    fetchProducts(currentPage, pageSize);
+    setSearchTerm(""); // Clear search input
+    fetchProducts(currentPage, pageSize); // Reload product list without search filter
   };
 
+  // Hàm sắp xếp theo quantity
+  const sortProducts = (order) => {
+    return [...productList].sort((a, b) => {
+      if (order === "asc") {
+        return a.quantity - b.quantity; // Tăng dần
+      } else {
+        return b.quantity - a.quantity; // Giảm dần
+      }
+    });
+  };
+
+  // Hàm thay đổi thứ tự sắp xếp khi nhấn nút
   const toggleSortOrder = () => {
     setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
   };
 
-  const sortedProducts = [...productList].sort((a, b) =>
-    sortOrder === "asc" ? a.quantity - b.quantity : b.quantity - a.quantity
-  );
+  // Lấy danh sách sản phẩm đã sắp xếp
+  const sortedProducts = sortProducts(sortOrder);
+
   return (
     <>
       {/* Popup for Add / Edit Product */}

@@ -6,6 +6,28 @@ const AddBrandForm = () => {
     name: '',
   });
 
+  // Tạo phương thức fetchOptions
+  const fetchOptions = (method, body = null, contentType = 'application/json') => {
+    const token = sessionStorage.getItem('token'); // Lấy token từ sessionStorage
+    const options = {
+      method,
+      headers: {
+        'Content-Type': contentType,
+        'Authorization': `Bearer ${token}`, // Thêm header Authorization
+      },
+    };
+
+    if (body) {
+      if (contentType === 'application/json') {
+        options.body = JSON.stringify(body);
+      } else {
+        options.body = body;
+      }
+    }
+
+    return options;
+  };
+
   const [errors, setErrors] = useState({});
   const [stars, setStars] = useState([]);
 
@@ -31,23 +53,15 @@ const AddBrandForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-   
     try {
+      const brandPayload = { name: formData.name };
       const formDataToSend = new FormData();
-      const brandPayload = {
-        name: formData.name,
-      };
-
       formDataToSend.append('brand', JSON.stringify(brandPayload));
 
       const response = await axios.post(
         'http://localhost:8080/api/admin/brands',
         formDataToSend,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
+        fetchOptions('POST', formDataToSend, 'multipart/form-data')
       );
 
       if (response.status === 200) {
@@ -61,6 +75,7 @@ const AddBrandForm = () => {
       }
     }
   };
+
 
   return (
     <div className="container" style={{ maxWidth: '600px', marginTop: '50px' }}>

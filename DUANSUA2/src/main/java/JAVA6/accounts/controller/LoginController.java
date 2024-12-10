@@ -2,7 +2,7 @@ package JAVA6.accounts.controller;
 
 import JAVA6.Model.UserModel;
 import JAVA6.Request.LoginRequest;
-import JAVA6.ApiResponse.ApiResponse;
+import JAVA6.Response.ApiResponse;
 import JAVA6.repository.UsersRepository;
 import JAVA6.util.JwtTokenUtil;
 import jakarta.servlet.http.Cookie;

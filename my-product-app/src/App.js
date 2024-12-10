@@ -32,18 +32,10 @@ import ProductsImage from './components/admin/productimages';
 
 
 import OrderAmin from './components/admin/order';
-import EditCategoryAmin from './components/admin/editCategory';
-import EditBrandAmin from './components/admin/editBrand';
-import EditCapacityAmin from './components/admin/editCapacity';
-import EditImageAmin from './components/admin/editImage';
 
 import OrderHistory from './components/user/order';
 import ProtectedRoute from './ProtectedRoute';
-import AddCategoryAmin from './components/admin/addCategory';
-import AddBrandAmin from './components/admin/addBrand';
 
-import AddCapacityAmin from './components/admin/addCapacity';
-import AddImageAmin from './components/admin/addImage';
 
 
 function App() {
@@ -66,6 +58,7 @@ function App() {
             <Footer />
           </>
         } />
+
         <Route path="/categorys" element={
           <>
             <Header setKeyword={setKeyword} setCategoryId={setCategoryId} />
@@ -91,6 +84,8 @@ function App() {
             </>
             </ProtectedRoute>
           } />
+            {/* Các route yêu cầu đăng nhập */}
+ 
           <Route path="/change" element={
            <ProtectedRoute roles={['ROLE_USER', 'ROLE_ADMIN']}>
             <>
@@ -225,6 +220,22 @@ function App() {
             <>
               <Headeradmin />
               <EvaluaesAmin />
+            </>
+            </ProtectedRoute>
+        } />
+         <Route path="/products-prices" element={
+           <ProtectedRoute roles={['ROLE_ADMIN']}>
+            <>
+              <Headeradmin />
+              <ProductsPrice />
+            </>
+            </ProtectedRoute>
+        } />
+         <Route path="/products-images" element={
+           <ProtectedRoute roles={['ROLE_ADMIN']}>
+            <>
+              <Headeradmin />
+              <ProductsImage />
             </>
             </ProtectedRoute>
         } />

@@ -41,7 +41,7 @@ const AddCapacityForm = () => {
       formDataToSend.append('capacity', JSON.stringify(capacityPayload));
 
       const response = await axios.post(
-        'http://localhost:8080/api/capacity',
+        'http://localhost:8080/api/admin/capacity',
         formDataToSend,
         {
           headers: {
