@@ -14,4 +14,5 @@ public interface OrderRepository extends JpaRepository<OrderModel, Integer> {
     // Các phương thức tùy chỉnh có thể được thêm vào đây nếu cần
 	@Query("SELECT p FROM OrderModel p WHERE p.user.id = ?1")
 	List<OrderModel> findbyId(Integer userId);
+	List<OrderModel> findById(int id);
 }

@@ -12,19 +12,20 @@ import JAVA6.repository.OrderRepository;
 @Service
 public class HistoryService {
 	@Autowired
-	private OrderRepository orderRepository;
-	@Autowired
-	private JdbcTemplate jdbcTemplate;
+    private OrderRepository orderRepository;
 
-	public List<OrderModel> getbyIdOrders(int id) {
-		return orderRepository.findbyId(id); // Phương thức findAll() sẽ trả về danh sách tất cả các đơn hàng từ cơ sở
-												// dữ liệu
-	}
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
-	public void cancelOrder(Long orderId, String cancelReason) {
-		String sql = "UPDATE Orders SET orderstatus_id = 8, cancel_reason = ? WHERE id = ?";
+    // Phương thức lấy đơn hàng theo ID
+    public List<OrderModel> getbyIdOrders(int id) {
+        return orderRepository.findbyId(id); // Giả sử bạn có phương thức này trong repository
+    }
 
-		// Cập nhật trạng thái đơn hàng thành "Đã hủy" và lưu lý do hủy
-		jdbcTemplate.update(sql, cancelReason, orderId);
-	}
+    // Phương thức để cập nhật trạng thái đơn hàng sau khi hủy
+    public void updateOrderStatus(OrderModel order) {
+        String sql = "UPDATE Orders SET status = ? WHERE id = ?";
+        jdbcTemplate.update(sql, order.getStatus(), order.getId()); // Cập nhật trạng thái
+    }
+
 }
