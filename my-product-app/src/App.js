@@ -41,13 +41,11 @@ import ProductsImage from './components/admin/productimages';
 
 
 import OrderAmin from './components/admin/order';
-import EditUserAmin from './components/admin/editUser';
 import EditCategoryAmin from './components/admin/editCategory';
 import EditBrandAmin from './components/admin/editBrand';
 import EditCapacityAmin from './components/admin/editCapacity';
 import EditImageAmin from './components/admin/editImage';
 
-import AddUserAmin from './components/admin/addUser';
 import OrderHistory from './components/user/order';
 import AddCategoryAmin from './components/admin/addCategory';
 import AddBrandAmin from './components/admin/addBrand';
@@ -68,10 +66,6 @@ function App() {
         <Route path="/change" element={<Change />} />
 
 
-
-
-        <Route path="/nguoidung/add" element={<AddUserAmin />} />
-        <Route path="/nguoidung/edit/:id" element={<EditUserAmin />} />
 
 
 

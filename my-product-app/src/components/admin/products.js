@@ -785,15 +785,15 @@ const Management = () => {
                   <table className="table">
                     <thead>
                       <tr>
-                        <th>STT</th>
-                        <th>Tên sản phẩm</th>
+                        <th style={{ textAlign: 'center' }} >STT</th>
+                        <th style={{ textAlign: 'center' }} >Tên sản phẩm</th>
 
-                        <th>Giá</th>
-                        <th>Số lượng </th>
-                        <th>Danh mục</th>
-                        <th>Thương hiệu</th>
-                        <th>Mô tả</th>
-                        <th>Thao tác</th>
+                        <th style={{ textAlign: 'center' }} >Giá</th>
+                        <th style={{ textAlign: 'center' }} >Số lượng </th>
+                        <th style={{ textAlign: 'center' }} >Danh mục</th>
+                        <th style={{ textAlign: 'center' }} >Thương hiệu</th>
+                        <th style={{ textAlign: 'center' }} >Mô tả</th>
+                        <th style={{ textAlign: 'center' }} >Thao tác</th>
                       </tr>
                     </thead>
                     <tbody>
