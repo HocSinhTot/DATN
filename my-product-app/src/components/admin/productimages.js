@@ -3,30 +3,26 @@ import axios from 'axios';
 
 const ProductsImageTable = () => {
   const [productsImage, setProductsImage] = useState([]);
-  const [products, setProducts] = useState({}); // Để lưu thông tin sản phẩm theo ID
+  const [products, setProducts] = useState({});
 
-  // Fetch data khi component được render
   useEffect(() => {
     const fetchProductsImage = async () => {
       try {
         const response = await axios.get('http://localhost:8080/api/admin/products-images');
-        console.log(response.data); // Kiểm tra dữ liệu phản hồi
         setProductsImage(response.data);
 
-        // Lấy thông tin sản phẩm từ API khác nếu cần
-        const productIds = response.data.map(item => item.id.productId);
-        const uniqueProductIds = [...new Set(productIds)];
-
-        const productPromises = uniqueProductIds.map(id =>
-          axios.get(`http://localhost:8080/api/admin/products/${id}`) // Giả sử có API trả về thông tin sản phẩm
+        const productIds = [...new Set(response.data.map(item => item.id.productId))];
+        const productPromises = productIds.map(id =>
+          axios.get(`http://localhost:8080/api/admin/products/${id}`)
         );
 
         const productsResponse = await Promise.all(productPromises);
         const productsData = productsResponse.reduce((acc, product) => {
-          acc[product.data.id] = product.data; // Lưu thông tin sản phẩm vào state theo ID
+          acc[product.data.id] = product.data;
           return acc;
         }, {});
-        setProducts(productsData); // Lưu thông tin sản phẩm
+
+        setProducts(productsData);
       } catch (error) {
         console.error('Error fetching products images:', error);
       }
@@ -36,7 +32,6 @@ const ProductsImageTable = () => {
   }, []);
 
   const handleEdit = (item) => {
-    // Thêm logic chỉnh sửa
     console.log('Edit item:', item);
   };
 
@@ -52,101 +47,92 @@ const ProductsImageTable = () => {
   };
 
   return (
-    <div className="container">
-      <style>
-        {`
-          .container {
-            padding: 20px;
-          }
-
-          h2 {
-            text-align: center;
-            margin-bottom: 20px;
-          }
-
-          .table {
-            width: 100%;
-            border-collapse: collapse;
-          }
-
-          .table th,
-          .table td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: left;
-          }
-
-          .table th {
-            background-color: #007bff;
-          }
-
-          .table .btn {
-            padding: 5px 10px;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-          }
-
-          .table .btn-primary {
-            background-color: #007bff;
-            color: white;
-          }
-
-          .table .btn-danger {
-            background-color: #dc3545;
-            color: white;
-          }
-
-          .table .btn:hover {
-            opacity: 0.9;
-          }
-        `}
-      </style>
-      <h2>Products Image</h2>
-      <table className="table">
-        <thead>
-          <tr>
-            <th>Product</th>
-            <th>Url</th>
-            <th>Image</th>
-            <th>Color</th>
-          </tr>
-        </thead>
-        <tbody>
-          {productsImage.length > 0 ? (
-            productsImage.map((item) => (
-              <tr key={`${item.id.productId}-${item.id.imageId}-${item.id.colorId}`}>
-                <td>{products[item.id.productId]?.name || 'Unknown'}</td>
-                <td>{item.image?.url || 'N/A'}</td>
-                <td>
-                                                        <img
-                                                            src={`/assets/images/${item.image?.url}`} 
-                                                            alt="Image"
-                                                            style={{ width: '100px', height: 'auto' }}
-                                                        />
-                                                    </td>
-                <td>{item.color?.name || 'N/A'}</td>
-                
-                <td>
-                  <button onClick={() => handleEdit(item)} className="btn btn-primary">
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(item.id)}
-                    className="btn btn-danger"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="5">No data available</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+    <div className="be-wrapper be-fixed-sidebar" style={{ justifyContent: 'center', display: 'flex' }}>
+      <div className="be-content" style={{ width: '1100px' }}>
+        <div className="container-fluid">
+          <div className="card">
+            <div className="card-header">
+              <h5 className="card-title m-0" style={{ fontSize: '30px', fontWeight: '700' }}>Quản lý hình ảnh sản phẩm</h5>
+            </div>
+            <div className="card-body">
+              <table className="table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr>
+                    <th style={{ textAlign: 'center', padding: '12px', backgroundColor: '#007bff', color: '#fff' }}>Sản phẩm</th>
+                    <th style={{ textAlign: 'center', padding: '12px', backgroundColor: '#007bff', color: '#fff' }}>URL</th>
+                    <th style={{ textAlign: 'center', padding: '12px', backgroundColor: '#007bff', color: '#fff' }}>Hình ảnh</th>
+                    <th style={{ textAlign: 'center', padding: '12px', backgroundColor: '#007bff', color: '#fff' }}>Màu sắc</th>
+                    <th style={{ textAlign: 'center', padding: '12px', backgroundColor: '#007bff', color: '#fff' }}>Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {productsImage.length > 0 ? (
+                    productsImage.map((item) => (
+                      <tr key={`${item.id.productId}-${item.id.imageId}-${item.id.colorId}`}>
+                        <td style={{ textAlign: 'center', padding: '12px' }}>{products[item.id.productId]?.name || 'Unknown'}</td>
+                        <td style={{ textAlign: 'center', padding: '12px' }}>{item.image?.url || 'N/A'}</td>
+                        <td style={{ textAlign: 'center', padding: '12px' }}>
+                          <img
+                            src={`/assets/images/${item.image?.url}`}
+                            alt="Image"
+                            style={{ width: '100px', height: 'auto' }}
+                          />
+                        </td>
+                        <td style={{ textAlign: 'center', padding: '12px' }}>{item.color?.name || 'N/A'}</td>
+                        <td style={{ textAlign: 'center', padding: '12px' }}>
+                          <button
+                            onClick={() => handleEdit(item)}
+                            style={{
+                              backgroundColor: '#ffc107',
+                              color: '#fff',
+                              padding: '12px 30px',
+                              borderRadius: '8px',
+                              border: 'none',
+                              cursor: 'pointer',
+                              fontSize: '16px',
+                              fontWeight: 'bold',
+                              marginRight: '10px',
+                              boxShadow: '0 5px 10px rgba(255, 193, 7, 0.3)',
+                              transition: 'all 0.3s ease',
+                            }}
+                            onMouseOver={(e) => e.target.style.backgroundColor = '#e0a800'}
+                            onMouseOut={(e) => e.target.style.backgroundColor = '#ffc107'}
+                          >
+                            <i className="bi bi-pencil" style={{ fontSize: '20px' }}></i>
+                          </button>
+                          <button
+                            onClick={() => handleDelete(item.id)}
+                            style={{
+                              backgroundColor: '#dc3545',
+                              color: '#fff',
+                              padding: '12px 30px',
+                              borderRadius: '8px',
+                              border: 'none',
+                              cursor: 'pointer',
+                              fontSize: '16px',
+                              fontWeight: 'bold',
+                              boxShadow: '0 5px 10px rgba(220, 53, 69, 0.3)',
+                              transition: 'all 0.3s ease',
+                            }}
+                            onMouseOver={(e) => e.target.style.backgroundColor = '#a71d2a'}
+                            onMouseOut={(e) => e.target.style.backgroundColor = '#dc3545'}
+                          >
+                            <i className="bi bi-trash" style={{ fontSize: '20px' }}></i>
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="5" style={{ textAlign: 'center', padding: '20px' }}>Không có dữ liệu</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

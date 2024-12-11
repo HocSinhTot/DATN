@@ -150,6 +150,7 @@ const UserManagement = () => {
                                                     <td>{index + 1}</td>
                                                     <td>{user.username}</td>
                                                     <td>{user.email}</td>
+
                                                     <td>{formatDate(user.birthday)}</td>
                                                     <td>{user.phone}</td>
                                                     <td>{user.role ? 'Admin' : 'User'}</td>
@@ -162,21 +163,119 @@ const UserManagement = () => {
                                                             style={{ width: '50px', height: '50px', borderRadius: '50%' }}
                                                         />
                                                     </td>
+
+
+
+
+
+
+
                                                     <td style={{ padding: '10px', textAlign: 'center' }}>
-                                                        <button onClick={() => handleEditUser(user)} style={{ margin: '5px', color: '#4285f4' }}>
-                                                            <i className="fa fa-edit"></i>
+                                                        <button onClick={() => handleEditUser(user)}
+                                                            style={{
+                                                                backgroundColor: '#ffc107',
+                                                                color: '#fff',
+                                                                padding: '8px 20px',
+                                                                borderRadius: '10px',
+                                                                border: 'none',
+                                                                cursor: 'pointer',
+                                                                fontSize: '16px',
+                                                                fontWeight: 'bold',
+                                                                boxShadow: '0 5px 10px rgba(255, 193, 7, 0.3)',
+                                                                transition: 'all 0.3s ease',
+                                                            }}
+                                                            onMouseOver={(e) => {
+                                                                e.target.style.backgroundColor = '#e0a800';
+                                                            }}
+                                                            onMouseOut={(e) => {
+                                                                e.target.style.backgroundColor = '#ffc107';
+                                                            }}
+                                                        >
+                                                            <i className="bi bi-pencil" style={{ fontSize: '20px' }}></i>
                                                         </button>
-                                                        <button onClick={() => handleDelete(user.id)} style={{ margin: '5px', fontSize: '18px', color: '#dc3545', border: 'none', background: 'none' }}>
-                                                            <i className="fa fa-trash"></i>
+
+
+
+                                                        <button onClick={() => handleDelete(user.id)}
+                                                            style={{
+                                                                marginLeft: '20px',
+                                                                backgroundColor: '#dc3545',
+                                                                color: '#fff',
+                                                                padding: '8px 20px',
+                                                                borderRadius: '10px',
+                                                                border: 'none',
+                                                                cursor: 'pointer',
+                                                                fontSize: '16px',
+                                                                fontWeight: 'bold',
+                                                                boxShadow: '0 5px 10px rgba(220, 53, 69, 0.3)',
+                                                                transition: 'all 0.3s ease',
+                                                            }}
+                                                            onMouseOver={(e) => {
+                                                                e.target.style.backgroundColor = '#a71d2a';
+                                                            }}
+                                                            onMouseOut={(e) => {
+                                                                e.target.style.backgroundColor = '#dc3545';
+                                                            }}
+                                                        >
+                                                            <i className="bi bi-trash" style={{ fontSize: '20px' }}></i>
                                                         </button>
+
+
                                                         {user.status ? (
-                                                            <button onClick={() => handleBlock(user.id)} style={{ margin: '5px', fontSize: '18px', color: '#dc3545', border: 'none', background: 'none' }}>
-                                                                <i className="fa fa-lock"></i>
+
+
+                                                            <button onClick={() => handleBlock(user.id)}
+                                                                style={{
+                                                                    marginLeft: '20px',
+                                                                    backgroundColor: '#dc3545',
+                                                                    color: '#fff',
+                                                                    padding: '8px 20px',
+                                                                    borderRadius: '10px',
+                                                                    border: 'none',
+                                                                    cursor: 'pointer',
+                                                                    fontSize: '16px',
+                                                                    fontWeight: 'bold',
+                                                                    boxShadow: '0 5px 10px rgba(220, 53, 69, 0.3)',
+                                                                    transition: 'all 0.3s ease',
+                                                                }}
+                                                                onMouseOver={(e) => {
+                                                                    e.target.style.backgroundColor = '#a71d2a';
+                                                                }}
+                                                                onMouseOut={(e) => {
+                                                                    e.target.style.backgroundColor = '#dc3545';
+                                                                }}
+                                                            >
+                                                                <i className="fa fa-lock" style={{ fontSize: '20px' }}></i>
                                                             </button>
+
+
                                                         ) : (
-                                                            <button onClick={() => handleUnblock(user.id)} style={{ margin: '5px', fontSize: '18px', color: '#28a745', border: 'none', background: 'none' }}>
-                                                                <i className="fa fa-unlock"></i>
+
+
+                                                            <button onClick={() => handleUnblock(user.id)}
+                                                                style={{
+                                                                    marginLeft: '20px',
+                                                                    backgroundColor: 'green',
+                                                                    color: '#fff',
+                                                                    padding: '8px 20px',
+                                                                    borderRadius: '10px',
+                                                                    border: 'none',
+                                                                    cursor: 'pointer',
+                                                                    fontSize: '16px',
+                                                                    fontWeight: 'bold',
+                                                                    boxShadow: '0 5px 10px rgba(220, 53, 69, 0.3)',
+                                                                    transition: 'all 0.3s ease',
+                                                                }}
+                                                                onMouseOver={(e) => {
+                                                                    e.target.style.backgroundColor = '#green';
+                                                                }}
+                                                                onMouseOut={(e) => {
+                                                                    e.target.style.backgroundColor = '#green';
+                                                                }}
+                                                            >
+                                                                <i className="fa fa-unlock" style={{ fontSize: '20px' }}></i>
                                                             </button>
+
                                                         )}
                                                     </td>
                                                 </tr>
@@ -193,7 +292,6 @@ const UserManagement = () => {
     );
 };
 
-// Edit User Form
 const EditUserForm = ({ user, onClose }) => {
     const [formData, setFormData] = useState({
         username: user.username,
@@ -207,6 +305,7 @@ const EditUserForm = ({ user, onClose }) => {
     });
 
     const [errors, setErrors] = useState({});
+    const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -219,6 +318,7 @@ const EditUserForm = ({ user, onClose }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
         try {
             const formDataToSend = new FormData();
             const userPayload = {
@@ -240,7 +340,6 @@ const EditUserForm = ({ user, onClose }) => {
             });
 
             if (response.status === 200) {
-                // Cập nhật lại danh sách người dùng ngay lập tức
                 alert('User updated successfully!');
                 onClose();
             }
@@ -249,68 +348,306 @@ const EditUserForm = ({ user, onClose }) => {
                 setErrors(error.response.data.errors || {});
             }
         }
+        setLoading(false);
     };
 
     return (
-        <div style={{ padding: '20px' }}>
-            <h2>Edit User</h2>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>Username</label>
-                    <input type="text" name="username" value={formData.username} onChange={handleChange} />
-                    {errors.username && <div>{errors.username}</div>}
-                </div>
-                <div>
-                    <label>Email</label>
-                    <input type="email" name="email" value={formData.email} onChange={handleChange} />
-                    {errors.email && <div>{errors.email}</div>}
-                </div>
-                <div>
-                    <label>Name</label>
-                    <input type="text" name="name" value={formData.name} onChange={handleChange} />
-                    {errors.name && <div>{errors.name}</div>}
-                </div>
-                <div>
-                    <label>Birthday</label>
-                    <input type="date" name="birthday" value={formData.birthday} onChange={handleChange} />
-                    {errors.birthday && <div>{errors.birthday}</div>}
-                </div>
-                <div>
-                    <label>Phone</label>
-                    <input type="text" name="phone" value={formData.phone} onChange={handleChange} />
-                    {errors.phone && <div>{errors.phone}</div>}
-                </div>
-                <div>
-                    <label>Role</label>
-                    <select name="role" value={formData.role} onChange={handleChange}>
-                        <option value="true">Admin</option>
-                        <option value="false">User</option>
-                    </select>
-                    {errors.role && <div>{errors.role}</div>}
-                </div>
-                <div>
-                    <label>Gender</label>
-                    <select name="gender" value={formData.gender} onChange={handleChange}>
-                        <option value="true">Male</option>
-                        <option value="false">Female</option>
-                    </select>
-                    {errors.gender && <div>{errors.gender}</div>}
-                </div>
-                <div>
-                    <label>Profile Image</label>
-                    <input type="file" onChange={handleFileChange} />
-                    {errors.file && <div>{errors.file}</div>}
-                </div>
-                <div>
-                    <button type="submit">Save</button>
-                    <button type="button" onClick={onClose}>Cancel</button>
-                </div>
-            </form>
+        <div style={{
+            position: 'fixed',
+            top: '0',
+            left: '0',
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: '9999',
+        }}>
+            <div style={{
+                backgroundColor: '#fff',
+                padding: '30px 40px',
+                borderRadius: '16px',
+                boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
+                textAlign: 'center',
+                width: '660px',
+                maxWidth: '90%',
+            }}>
+                <h3 style={{
+                    marginBottom: '25px',
+                    fontSize: '22px',
+                    fontWeight: 'bold',
+                }}>Edit User</h3>
+                <form onSubmit={handleSubmit} style={{ maxWidth: '600px', margin: '0 auto' }}>
+                    <div style={{ display: 'flex', gap: '20px' }}>
+                        <div style={{ flex: 1 }}>
+                            <label htmlFor="username" style={{ fontWeight: 'bold', marginBottom: '5px', color: '#333' }}>
+                                Username
+                            </label>
+                            <input
+                                type="text"
+                                id="username"
+                                name="username"
+                                value={formData.username}
+                                onChange={handleChange}
+                                style={{
+                                    padding: '10px',
+                                    fontSize: '16px',
+                                    borderRadius: '8px',
+                                    border: '1px solid #ccc',
+                                    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+                                    marginBottom: '10px',
+                                    width: '100%',
+                                    transition: 'border 0.3s ease, box-shadow 0.3s ease',
+                                }}
+                                onFocus={(e) => e.target.style.border = '1px solid #007bff'}
+                                onBlur={(e) => e.target.style.border = '1px solid #ccc'}
+                                onMouseEnter={(e) => e.target.style.boxShadow = '0 2px 8px rgba(0, 123, 255, 0.5)'}
+                                onMouseLeave={(e) => e.target.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.1)'}
+                            />
+                            {errors.username && <div className="text-danger" style={{ fontSize: '14px' }}>{errors.username}</div>}
+                        </div>
+
+                        <div style={{ flex: 1 }}>
+                            <label htmlFor="email" style={{ fontWeight: 'bold', marginBottom: '5px', color: '#333' }}>
+                                Email
+                            </label>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleChange}
+                                style={{
+                                    padding: '10px',
+                                    fontSize: '16px',
+                                    borderRadius: '8px',
+                                    border: '1px solid #ccc',
+                                    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+                                    marginBottom: '10px',
+                                    width: '100%',
+                                    transition: 'border 0.3s ease, box-shadow 0.3s ease',
+                                }}
+                                onFocus={(e) => e.target.style.border = '1px solid #007bff'}
+                                onBlur={(e) => e.target.style.border = '1px solid #ccc'}
+                                onMouseEnter={(e) => e.target.style.boxShadow = '0 2px 8px rgba(0, 123, 255, 0.5)'}
+                                onMouseLeave={(e) => e.target.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.1)'}
+                            />
+                            {errors.email && <div className="text-danger" style={{ fontSize: '14px' }}>{errors.email}</div>}
+                        </div>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '20px' }}>
+                        <div style={{ flex: 1 }}>
+                            <label htmlFor="name" style={{ fontWeight: 'bold', marginBottom: '5px', color: '#333' }}>
+                                Name
+                            </label>
+                            <input
+                                type="text"
+                                id="name"
+                                name="name"
+                                value={formData.name}
+                                onChange={handleChange}
+                                style={{
+                                    padding: '10px',
+                                    fontSize: '16px',
+                                    borderRadius: '8px',
+                                    border: '1px solid #ccc',
+                                    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+                                    marginBottom: '10px',
+                                    width: '100%',
+                                    transition: 'border 0.3s ease, box-shadow 0.3s ease',
+                                }}
+                                onFocus={(e) => e.target.style.border = '1px solid #007bff'}
+                                onBlur={(e) => e.target.style.border = '1px solid #ccc'}
+                                onMouseEnter={(e) => e.target.style.boxShadow = '0 2px 8px rgba(0, 123, 255, 0.5)'}
+                                onMouseLeave={(e) => e.target.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.1)'}
+                            />
+                            {errors.name && <div className="text-danger" style={{ fontSize: '14px' }}>{errors.name}</div>}
+                        </div>
+
+                        <div style={{ flex: 1 }}>
+                            <label htmlFor="birthday" style={{ fontWeight: 'bold', marginBottom: '5px', color: '#333' }}>
+                                Birthday
+                            </label>
+                            <input
+                                type="date"
+                                id="birthday"
+                                name="birthday"
+                                value={formData.birthday}
+                                onChange={handleChange}
+                                style={{
+                                    padding: '4px',
+                                    fontSize: '16px',
+                                    borderRadius: '8px',
+                                    border: '1px solid #ccc',
+                                    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+                                    marginBottom: '10px',
+                                    width: '100%',
+                                    transition: 'border 0.3s ease, box-shadow 0.3s ease',
+                                }}
+                                onFocus={(e) => e.target.style.border = '1px solid #007bff'}
+                                onBlur={(e) => e.target.style.border = '1px solid #ccc'}
+                                onMouseEnter={(e) => e.target.style.boxShadow = '0 2px 8px rgba(0, 123, 255, 0.5)'}
+                                onMouseLeave={(e) => e.target.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.1)'}
+                            />
+                            {errors.birthday && <div className="text-danger" style={{ fontSize: '14px' }}>{errors.birthday}</div>}
+                        </div>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '20px' }}>
+                        <div style={{ flex: 1 }}>
+                            <label htmlFor="phone" style={{ fontWeight: 'bold', marginBottom: '5px', color: '#333' }}>
+                                Phone
+                            </label>
+                            <input
+                                type="text"
+                                id="phone"
+                                name="phone"
+                                value={formData.phone}
+                                onChange={handleChange}
+                                style={{
+                                    padding: '10px',
+                                    fontSize: '16px',
+                                    borderRadius: '8px',
+                                    border: '1px solid #ccc',
+                                    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+                                    marginBottom: '10px',
+                                    width: '100%',
+                                    transition: 'border 0.3s ease, box-shadow 0.3s ease',
+                                }}
+                                onFocus={(e) => e.target.style.border = '1px solid #007bff'}
+                                onBlur={(e) => e.target.style.border = '1px solid #ccc'}
+                                onMouseEnter={(e) => e.target.style.boxShadow = '0 2px 8px rgba(0, 123, 255, 0.5)'}
+                                onMouseLeave={(e) => e.target.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.1)'}
+                            />
+                            {errors.phone && <div className="text-danger" style={{ fontSize: '14px' }}>{errors.phone}</div>}
+                        </div>
+
+                        <div style={{ flex: 1 }}>
+                            <label htmlFor="role" style={{ fontWeight: 'bold', marginBottom: '5px', color: '#333' }}>
+                                Role
+                            </label>
+                            <select
+                                name="role"
+                                value={formData.role}
+                                onChange={handleChange}
+                                style={{
+                                    padding: '13px',
+                                    fontSize: '16px',
+                                    borderRadius: '8px',
+                                    border: '1px solid #ccc',
+                                    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+                                    marginBottom: '10px',
+                                    width: '100%',
+                                }}
+                            >
+                                <option value="true">Admin</option>
+                                <option value="false">User</option>
+                            </select>
+                            {errors.role && <div className="text-danger" style={{ fontSize: '14px' }}>{errors.role}</div>}
+                        </div>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '20px' }}>
+                        <div style={{ flex: 1 }}>
+                            <label htmlFor="gender" style={{ fontWeight: 'bold', marginBottom: '5px', color: '#333' }}>
+                                Gender
+                            </label>
+                            <select
+                                name="gender"
+                                value={formData.gender}
+                                onChange={handleChange}
+                                style={{
+                                    padding: '13px',
+                                    fontSize: '16px',
+                                    borderRadius: '8px',
+                                    border: '1px solid #ccc',
+                                    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+                                    marginBottom: '10px',
+                                    width: '100%',
+                                }}
+                            >
+                                <option value="true">Male</option>
+                                <option value="false">Female</option>
+                            </select>
+                            {errors.gender && <div className="text-danger" style={{ fontSize: '14px' }}>{errors.gender}</div>}
+                        </div>
+
+                        <div style={{ flex: 1 }}>
+                            <label htmlFor="file" style={{ fontWeight: 'bold', marginBottom: '5px', color: '#333' }}>
+                                Profile Image
+                            </label>
+                            <input
+                                type="file"
+                                id="file"
+                                onChange={handleFileChange}
+                                style={{
+                                    padding: '9px',
+                                    fontSize: '16px',
+                                    borderRadius: '8px',
+                                    border: '1px solid #ccc',
+                                    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+                                    marginBottom: '10px',
+                                    width: '100%',
+                                }}
+                            />
+                            {errors.file && <div className="text-danger" style={{ fontSize: '14px' }}>{errors.file}</div>}
+                        </div>
+                    </div>
+
+
+                    <div
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            marginTop: '20px',
+                        }}
+                    >
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="btn btn-primary"
+                            style={{
+                                padding: '10px 20px',
+                                fontSize: '16px',
+                                fontWeight: 'bold',
+                                borderRadius: '8px',
+                                border: 'none',
+                                cursor: 'pointer',
+                                boxShadow: '0 5px 10px rgba(0, 123, 255, 0.3)',
+                                transition: 'all 0.3s ease',
+                            }}
+                        >
+                            Thêm
+                        </button>
+
+                        <button
+                            type="reset"
+                            className="btn btn-secondary"
+                            onClick={onClose}
+                            style={{
+                                padding: '10px 20px',
+                                fontSize: '16px',
+                                fontWeight: 'bold',
+                                borderRadius: '8px',
+                                border: 'none',
+                                cursor: 'pointer',
+                                boxShadow: '0 5px 10px rgba(0, 0, 0, 0.2)',
+                                transition: 'all 0.3s ease',
+                            }}
+                        >
+                            Đóng
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
+
     );
 };
 
-// Add User Form
+
 const AddUserForm = ({ onClose }) => {
     const [formData, setFormData] = useState({
         username: '',
@@ -324,6 +661,7 @@ const AddUserForm = ({ onClose }) => {
     });
 
     const [errors, setErrors] = useState({});
+    const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -336,6 +674,7 @@ const AddUserForm = ({ onClose }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
         try {
             const formDataToSend = new FormData();
             const userPayload = {
@@ -365,65 +704,494 @@ const AddUserForm = ({ onClose }) => {
                 setErrors(error.response.data.errors || {});
             }
         }
+        setLoading(false);
     };
 
     return (
-        <div style={{ padding: '20px' }}>
-            <h2>Add User</h2>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>Username</label>
-                    <input type="text" name="username" value={formData.username} onChange={handleChange} />
-                    {errors.username && <div>{errors.username}</div>}
-                </div>
-                <div>
-                    <label>Email</label>
-                    <input type="email" name="email" value={formData.email} onChange={handleChange} />
-                    {errors.email && <div>{errors.email}</div>}
-                </div>
-                <div>
-                    <label>Name</label>
-                    <input type="text" name="name" value={formData.name} onChange={handleChange} />
-                    {errors.name && <div>{errors.name}</div>}
-                </div>
-                <div>
-                    <label>Birthday</label>
-                    <input type="date" name="birthday" value={formData.birthday} onChange={handleChange} />
-                    {errors.birthday && <div>{errors.birthday}</div>}
-                </div>
-                <div>
-                    <label>Phone</label>
-                    <input type="text" name="phone" value={formData.phone} onChange={handleChange} />
-                    {errors.phone && <div>{errors.phone}</div>}
-                </div>
-                <div>
-                    <label>Role</label>
-                    <select name="role" value={formData.role} onChange={handleChange}>
-                        <option value="true">Admin</option>
-                        <option value="false">User</option>
-                    </select>
-                    {errors.role && <div>{errors.role}</div>}
-                </div>
-                <div>
-                    <label>Gender</label>
-                    <select name="gender" value={formData.gender} onChange={handleChange}>
-                        <option value="true">Male</option>
-                        <option value="false">Female</option>
-                    </select>
-                    {errors.gender && <div>{errors.gender}</div>}
-                </div>
-                <div>
-                    <label>Profile Image</label>
-                    <input type="file" onChange={handleFileChange} />
-                    {errors.file && <div>{errors.file}</div>}
-                </div>
-                <div>
-                    <button type="submit">Save</button>
-                    <button type="button" onClick={onClose}>Cancel</button>
-                </div>
-            </form>
+        <div style={{
+            position: 'fixed',
+            top: '0',
+            left: '0',
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.1)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: '9999',
+        }}>
+            <div style={{
+                backgroundColor: '#fff',
+                padding: '30px 40px',
+                borderRadius: '16px',
+                boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
+                textAlign: 'center',
+                width: '660px',
+                maxWidth: '90%',
+            }}>
+                <h3 style={{ marginBottom: '25px', fontSize: '22px', fontWeight: 'bold' }}>Add User</h3>
+
+                <form>
+                    <div className="form-group" style={{ display: 'flex', gap: '20px' }}>
+                        <div style={{ flex: 1 }}>
+                            <label
+                                htmlFor="username"
+                                style={{
+                                    fontWeight: 'bold',
+                                    marginBottom: '5px',
+                                    color: '#333',
+                                }}
+                            >
+                                Username
+                            </label>
+                            <input
+                                type="text"
+                                id="username"
+                                name="username"
+                                className="form-control"
+                                value={formData.username}
+                                onChange={handleChange}
+                                style={{
+                                    padding: '10px',
+                                    fontSize: '16px',
+                                    borderRadius: '8px',
+                                    border: '1px solid #ccc',
+                                    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+                                    marginBottom: '10px',
+                                    width: '100%',
+                                    transition: 'border 0.3s ease, box-shadow 0.3s ease',
+                                }}
+                                onFocus={(e) => (e.target.style.border = '1px solid #007bff')}
+                                onBlur={(e) => (e.target.style.border = '1px solid #ccc')}
+                                onMouseEnter={(e) =>
+                                    (e.target.style.boxShadow = '0 2px 8px rgba(0, 123, 255, 0.5)')
+                                }
+                                onMouseLeave={(e) =>
+                                    (e.target.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.1)')
+                                }
+                            />
+                            {errors.username && (
+                                <div className="text-danger" style={{ fontSize: '14px' }}>
+                                    {errors.username}
+                                </div>
+                            )}
+                        </div>
+
+                        <div style={{ flex: 1 }}>
+                            <label
+                                htmlFor="password"
+                                style={{
+                                    fontWeight: 'bold',
+                                    marginBottom: '5px',
+                                    color: '#333',
+                                }}
+                            >
+                                Mật khẩu
+                            </label>
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                className="form-control"
+                                value={formData.password}
+                                onChange={handleChange}
+                                style={{
+                                    padding: '10px',
+                                    fontSize: '16px',
+                                    borderRadius: '8px',
+                                    border: '1px solid #ccc',
+                                    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+                                    marginBottom: '10px',
+                                    width: '100%',
+                                    transition: 'border 0.3s ease, box-shadow 0.3s ease',
+                                }}
+                                onFocus={(e) => (e.target.style.border = '1px solid #007bff')}
+                                onBlur={(e) => (e.target.style.border = '1px solid #ccc')}
+                                onMouseEnter={(e) =>
+                                    (e.target.style.boxShadow = '0 2px 8px rgba(0, 123, 255, 0.5)')
+                                }
+                                onMouseLeave={(e) =>
+                                    (e.target.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.1)')
+                                }
+                            />
+                            {errors.password && (
+                                <div className="text-danger" style={{ fontSize: '14px' }}>
+                                    {errors.password}
+                                </div>
+                            )}
+                        </div>
+
+
+                    </div>
+
+                    <div className="form-group" style={{ display: 'flex', gap: '20px', marginTop: '10px' }}>
+
+                        <div style={{ flex: 1 }}>
+                            <label
+                                htmlFor="email"
+                                style={{
+                                    fontWeight: 'bold',
+                                    marginBottom: '5px',
+                                    color: '#333',
+                                }}
+                            >
+                                Email
+                            </label>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                className="form-control"
+                                value={formData.email}
+                                onChange={handleChange}
+                                style={{
+                                    padding: '10px',
+                                    fontSize: '16px',
+                                    borderRadius: '8px',
+                                    border: '1px solid #ccc',
+                                    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+                                    marginBottom: '10px',
+                                    width: '100%',
+                                    transition: 'border 0.3s ease, box-shadow 0.3s ease',
+                                }}
+                                onFocus={(e) => (e.target.style.border = '1px solid #007bff')}
+                                onBlur={(e) => (e.target.style.border = '1px solid #ccc')}
+                                onMouseEnter={(e) =>
+                                    (e.target.style.boxShadow = '0 2px 8px rgba(0, 123, 255, 0.5)')
+                                }
+                                onMouseLeave={(e) =>
+                                    (e.target.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.1)')
+                                }
+                            />
+                            {errors.email && (
+                                <div className="text-danger" style={{ fontSize: '14px' }}>
+                                    {errors.email}
+                                </div>
+                            )}
+                        </div>
+                        <div style={{ flex: 1 }}>
+                            <label
+                                htmlFor="name"
+                                style={{
+                                    fontWeight: 'bold',
+                                    marginBottom: '5px',
+                                    color: '#333',
+                                }}
+                            >
+                                Name
+                            </label>
+                            <input
+                                type="text"
+                                id="name"
+                                name="name"
+                                className="form-control"
+                                value={formData.name}
+                                onChange={handleChange}
+                                style={{
+                                    padding: '10px',
+                                    fontSize: '16px',
+                                    borderRadius: '8px',
+                                    border: '1px solid #ccc',
+                                    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+                                    marginBottom: '10px',
+                                    width: '100%',
+                                    transition: 'border 0.3s ease, box-shadow 0.3s ease',
+                                }}
+                                onFocus={(e) => (e.target.style.border = '1px solid #007bff')}
+                                onBlur={(e) => (e.target.style.border = '1px solid #ccc')}
+                                onMouseEnter={(e) =>
+                                    (e.target.style.boxShadow = '0 2px 8px rgba(0, 123, 255, 0.5)')
+                                }
+                                onMouseLeave={(e) =>
+                                    (e.target.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.1)')
+                                }
+                            />
+                            {errors.name && (
+                                <div className="text-danger" style={{ fontSize: '14px' }}>
+                                    {errors.name}
+                                </div>
+                            )}
+                        </div>
+
+
+                    </div>
+
+                    <div className="form-group" style={{ display: 'flex', gap: '20px', marginTop: '10px' }}>
+                        <div style={{ flex: 1 }}>
+                            <label
+                                htmlFor="birthday"
+                                style={{
+                                    fontWeight: 'bold',
+                                    marginBottom: '5px',
+                                    color: '#333',
+                                }}
+                            >
+                                Birthday
+                            </label>
+                            <input
+                                type="date"
+                                id="birthday"
+                                name="birthday"
+                                className="form-control"
+                                value={formData.birthday}
+                                onChange={handleChange}
+                                style={{
+                                    padding: '10px',
+                                    fontSize: '16px',
+                                    borderRadius: '8px',
+                                    border: '1px solid #ccc',
+                                    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+                                    marginBottom: '10px',
+                                    width: '100%',
+                                    transition: 'border 0.3s ease, box-shadow 0.3s ease',
+                                }}
+                                onFocus={(e) => (e.target.style.border = '1px solid #007bff')}
+                                onBlur={(e) => (e.target.style.border = '1px solid #ccc')}
+                                onMouseEnter={(e) =>
+                                    (e.target.style.boxShadow = '0 2px 8px rgba(0, 123, 255, 0.5)')
+                                }
+                                onMouseLeave={(e) =>
+                                    (e.target.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.1)')
+                                }
+                            />
+                            {errors.birthday && (
+                                <div className="text-danger" style={{ fontSize: '14px' }}>
+                                    {errors.birthday}
+                                </div>
+                            )}
+                        </div>
+                        <div style={{ flex: 1 }}>
+                            <label
+                                htmlFor="phone"
+                                style={{
+                                    fontWeight: 'bold',
+                                    marginBottom: '5px',
+                                    color: '#333',
+                                }}
+                            >
+                                Phone
+                            </label>
+                            <input
+                                type="text"
+                                id="phone"
+                                name="phone"
+                                className="form-control"
+                                value={formData.phone}
+                                onChange={handleChange}
+                                style={{
+                                    padding: '10px',
+                                    fontSize: '16px',
+                                    borderRadius: '8px',
+                                    border: '1px solid #ccc',
+                                    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+                                    marginBottom: '10px',
+                                    width: '100%',
+                                    transition: 'border 0.3s ease, box-shadow 0.3s ease',
+                                }}
+                                onFocus={(e) => (e.target.style.border = '1px solid #007bff')}
+                                onBlur={(e) => (e.target.style.border = '1px solid #ccc')}
+                                onMouseEnter={(e) =>
+                                    (e.target.style.boxShadow = '0 2px 8px rgba(0, 123, 255, 0.5)')
+                                }
+                                onMouseLeave={(e) =>
+                                    (e.target.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.1)')
+                                }
+                            />
+                            {errors.phone && (
+                                <div className="text-danger" style={{ fontSize: '14px' }}>
+                                    {errors.phone}
+                                </div>
+                            )}
+                        </div>
+
+
+                    </div>
+
+                    <div className="form-group" style={{ display: 'flex', gap: '20px', marginTop: '10px' }}>
+
+                        <div style={{ flex: 1 }}>
+                            <label
+                                htmlFor="role"
+                                style={{
+                                    fontWeight: 'bold',
+                                    marginBottom: '5px',
+                                    color: '#333',
+                                }}
+                            >
+                                Role
+                            </label>
+                            <select
+                                id="role"
+                                name="role"
+                                value={formData.role}
+                                onChange={handleChange}
+                                className="form-control"
+                                style={{
+                                    padding: '10px',
+                                    fontSize: '16px',
+                                    borderRadius: '8px',
+                                    border: '1px solid #ccc',
+                                    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+                                    marginBottom: '10px',
+                                    width: '100%',
+                                    transition: 'border 0.3s ease, box-shadow 0.3s ease',
+                                }}
+                            >
+                                <option value="">Select role</option>
+                                <option value="user">User</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                            {errors.role && (
+                                <div className="text-danger" style={{ fontSize: '14px' }}>
+                                    {errors.role}
+                                </div>
+                            )}
+                        </div>
+                        <div style={{ flex: 1 }}>
+                            <label
+                                htmlFor="gender"
+                                style={{
+                                    fontWeight: 'bold',
+                                    marginBottom: '5px',
+                                    color: '#333',
+                                }}
+                            >
+                                Gender
+                            </label>
+                            <select
+                                id="gender"
+                                name="gender"
+                                value={formData.gender}
+                                onChange={handleChange}
+                                className="form-control"
+                                style={{
+                                    padding: '10px',
+                                    fontSize: '16px',
+                                    borderRadius: '8px',
+                                    border: '1px solid #ccc',
+                                    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+                                    marginBottom: '10px',
+                                    width: '100%',
+                                    transition: 'border 0.3s ease, box-shadow 0.3s ease',
+                                }}
+                            >
+                                <option value="">Select gender</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                            </select>
+                            {errors.gender && (
+                                <div className="text-danger" style={{ fontSize: '14px' }}>
+                                    {errors.gender}
+                                </div>
+                            )}
+                        </div>
+
+
+                    </div>
+                    <div style={{ flex: 1 }}>
+                        <label
+                            htmlFor="img"
+                            style={{
+                                fontWeight: 'bold',
+                                marginBottom: '5px',
+                                color: '#333',
+                            }}
+                        >
+                            Profile Image
+                        </label>
+                        <input
+                            type="file"
+                            id="img"
+                            name="img"
+                            className="form-control"
+
+                            onChange={handleFileChange}
+
+
+
+
+
+                            style={{
+                                padding: '10px',
+                                fontSize: '16px',
+                                borderRadius: '8px',
+                                border: '1px solid #ccc',
+                                boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+                                marginBottom: '10px',
+                                width: '100%',
+                                transition: 'border 0.3s ease, box-shadow 0.3s ease',
+                            }}
+                        />
+                        {errors.img && (
+                            <div className="text-danger" style={{ fontSize: '14px' }}>
+                                {errors.img}
+                            </div>
+                        )}
+                    </div>
+                    <div style={{ marginTop: '20px' }}>
+                        <div
+                            style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                marginTop: '20px',
+                            }}
+                        >
+                            <button
+                                type="submit"
+                                className="btn btn-primary"
+                                style={{
+                                    padding: '10px 20px',
+                                    fontSize: '16px',
+                                    fontWeight: 'bold',
+                                    borderRadius: '8px',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    boxShadow: '0 5px 10px rgba(0, 123, 255, 0.3)',
+                                    transition: 'all 0.3s ease',
+                                }}
+                            >
+                                Thêm
+                            </button>
+
+                            <button
+                                type="reset"
+                                className="btn btn-secondary"
+                                onClick={onClose}
+                                style={{
+                                    padding: '10px 20px',
+                                    fontSize: '16px',
+                                    fontWeight: 'bold',
+                                    borderRadius: '8px',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    boxShadow: '0 5px 10px rgba(0, 0, 0, 0.2)',
+                                    transition: 'all 0.3s ease',
+                                }}
+                            >
+                                Đóng
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+
+
+            </div>
         </div>
     );
 };
 
+
+
 export default UserManagement;
+
+
+
+
+
+
+
+
+
+
+

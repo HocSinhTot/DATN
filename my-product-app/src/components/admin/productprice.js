@@ -4,7 +4,7 @@ import axios from 'axios';
 const ProductsPriceTable = () => {
   const [productsPrices, setProductsPrices] = useState([]);
 
-  // Fetch data khi component được render
+  // Fetch data when the component is rendered
   useEffect(() => {
     const fetchProductsPrices = async () => {
       try {
@@ -19,7 +19,7 @@ const ProductsPriceTable = () => {
   }, []);
 
   const handleEdit = (item) => {
-    // Thêm logic chỉnh sửa
+    // Logic chỉnh sửa
     console.log('Edit item:', item);
   };
 
@@ -29,101 +29,92 @@ const ProductsPriceTable = () => {
         await axios.delete(`http://localhost:8080/api/admin/products-price/${id.productId}/${id.capacityId}/${id.colorId}`);
         setProductsPrices(productsPrices.filter((item) => item.id !== id));
       } catch (error) {
-        console.error('Error deleting products price:', error);
+        console.error('Error deleting product price:', error);
       }
     }
   };
 
   return (
-    <div className="container">
-      <style>
-        {`
-          .container {
-            padding: 20px;
-          }
-
-          h2 {
-            text-align: center;
-            margin-bottom: 20px;
-          }
-
-          .table {
-            width: 100%;
-            border-collapse: collapse;
-          }
-
-          .table th,
-          .table td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: left;
-          }
-
-          .table th {
-            background-color: #007bff;
-          }
-
-          .table .btn {
-            padding: 5px 10px;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-          }
-
-          .table .btn-primary {
-            background-color: #007bff;
-            color: white;
-          }
-
-          .table .btn-danger {
-            background-color: #dc3545;
-            color: white;
-          }
-
-          .table .btn:hover {
-            opacity: 0.9;
-          }
-        `}
-      </style>
-      <h2>Products Prices</h2>
-      <table className="table">
-        <thead>
-          <tr>
-            <th>Product</th>
-            <th>Color</th>
-            <th>Capacity</th>
-            <th>Price</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {productsPrices.length > 0 ? (
-            productsPrices.map((item) => (
-              <tr key={`${item.id.productId}-${item.id.capacityId}-${item.id.colorId}`}>
-                <td>{item.product?.name || 'Unknown'}</td>
-                <td>{item.color?.name || 'N/A'}</td>
-                <td>{item.capacity?.name || 'N/A'}</td>
-                <td>{item.price}</td>
-                <td>
-                  <button onClick={() => handleEdit(item)} className="btn btn-primary">
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(item.id)}
-                    className="btn btn-danger"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="5">No data available</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+    <div className="be-wrapper be-fixed-sidebar" style={{ justifyContent: 'center', display: 'flex' }}>
+      <div className="be-content" style={{ width: '1100px' }}>
+        <div className="container-fluid">
+          <div className="card">
+            <div className="card-header">
+              <h5 className="card-title m-0" style={{ fontSize: '30px', fontWeight: '700' }}>Quản lý giá sản phẩm</h5>
+            </div>
+            <div className="card-body">
+              <table className="table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr>
+                    <th style={{ textAlign: 'center', padding: '12px', backgroundColor: '#007bff', color: '#fff' }}>Sản phẩm</th>
+                    <th style={{ textAlign: 'center', padding: '12px', backgroundColor: '#007bff', color: '#fff' }}>Màu sắc</th>
+                    <th style={{ textAlign: 'center', padding: '12px', backgroundColor: '#007bff', color: '#fff' }}>Dung lượng</th>
+                    <th style={{ textAlign: 'center', padding: '12px', backgroundColor: '#007bff', color: '#fff' }}>Giá</th>
+                    <th style={{ textAlign: 'center', padding: '12px', backgroundColor: '#007bff', color: '#fff' }}>Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {productsPrices.length > 0 ? (
+                    productsPrices.map((item) => (
+                      <tr key={`${item.id.productId}-${item.id.capacityId}-${item.id.colorId}`}>
+                        <td style={{ textAlign: 'center', padding: '12px' }}>{item.product?.name || 'Unknown'}</td>
+                        <td style={{ textAlign: 'center', padding: '12px' }}>{item.color?.name || 'N/A'}</td>
+                        <td style={{ textAlign: 'center', padding: '12px' }}>{item.capacity?.name || 'N/A'}</td>
+                        <td style={{ textAlign: 'center', padding: '12px' }}>{item.price}</td>
+                        <td style={{ textAlign: 'center', padding: '12px' }}>
+                          <button
+                            onClick={() => handleEdit(item)}
+                            style={{
+                              backgroundColor: '#ffc107',
+                              color: '#fff',
+                              padding: '12px 30px',
+                              borderRadius: '8px',
+                              border: 'none',
+                              cursor: 'pointer',
+                              fontSize: '16px',
+                              fontWeight: 'bold',
+                              boxShadow: '0 5px 10px rgba(255, 193, 7, 0.3)',
+                              transition: 'all 0.3s ease',
+                            }}
+                            onMouseOver={(e) => e.target.style.backgroundColor = '#e0a800'}
+                            onMouseOut={(e) => e.target.style.backgroundColor = '#ffc107'}
+                          >
+                            <i className="bi bi-pencil" style={{ fontSize: '20px' }}></i>
+                          </button>
+                          <button
+                            onClick={() => handleDelete(item.id)}
+                            style={{
+                              backgroundColor: '#dc3545',
+                              color: '#fff',
+                              padding: '12px 30px',
+                              borderRadius: '8px',
+                              border: 'none',
+                              cursor: 'pointer',
+                              fontSize: '16px',
+                              fontWeight: 'bold',
+                              boxShadow: '0 5px 10px rgba(220, 53, 69, 0.3)',
+                              transition: 'all 0.3s ease',
+                              marginLeft: '10px',
+                            }}
+                            onMouseOver={(e) => e.target.style.backgroundColor = '#a71d2a'}
+                            onMouseOut={(e) => e.target.style.backgroundColor = '#dc3545'}
+                          >
+                            <i className="bi bi-trash" style={{ fontSize: '20px' }}></i>
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="5" style={{ textAlign: 'center', padding: '20px' }}>Không có dữ liệu</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
