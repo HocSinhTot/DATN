@@ -3,13 +3,13 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 const BrandManagement = () => {
-    const [brands, setBrands] = useState([]);
+    const [brand, setBrand] = useState([]);
     const [popup, setPopup] = useState({ show: false, type: '', brand: null });
 
     useEffect(() => {
         fetch('http://localhost:8080/api/admin/brands')
             .then((response) => response.json())
-            .then((data) => setBrands(data))
+            .then((data) => setBrand(data))
             .catch((error) => console.error('Error fetching brand data:', error));
     }, []);
 
@@ -21,8 +21,8 @@ const BrandManagement = () => {
         try {
             const response = await axios.delete(`http://localhost:8080/api/admin/brands/${id}`);
             if (response.status === 200) {
-                alert('Brand deleted successfully!');
-                setBrands(brands.filter(brand => brand.id !== id));
+                alert('Xóa thương hiệu thành công!');
+                setBrand(brand.filter(brand => brand.id !== id));
             }
             closePopup();
         } catch (error) {
@@ -32,6 +32,29 @@ const BrandManagement = () => {
 
     const closePopup = () => {
         setPopup({ show: false, type: '', brand: null });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const formData = new FormData();
+            formData.append("brand", JSON.stringify({ name: popup.brand.name }));
+            const method = popup.type === 'edit' ? 'PUT' : 'POST';
+            const url = popup.type === 'edit'
+                ? `http://localhost:8080/api/admin/brands/${popup.brand.id}`
+                : 'http://localhost:8080/api/admin/brands';
+            
+            const response = await axios({ method, url, data: formData });
+            if (response.status === 200 || response.status === 201) {
+                alert(popup.type === 'edit' ? 'Cập nhật thương hiệu thành công!' : 'Thêm thương hiệu thành công!');
+            }
+
+            const updatedData = await axios.get('http://localhost:8080/api/admin/brands');
+            setBrand(updatedData.data);
+            closePopup();
+        } catch (error) {
+            console.error(`Error ${popup.type === 'edit' ? 'updating' : 'adding'} brand:`, error);
+        }
     };
 
     return (
@@ -73,8 +96,8 @@ const BrandManagement = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {brands.length > 0 ? (
-                                        brands.map((brand, index) => (
+                                    {brand.length > 0 ? (
+                                        brand.map((brand, index) => (
                                             <tr key={brand.id}>
                                                 <td style={{ padding: '15px', textAlign: 'center' }}>{index + 1}</td>
                                                 <td style={{ padding: '15px', textAlign: 'center' }}>{brand.name}</td>
@@ -170,20 +193,8 @@ const BrandManagement = () => {
                         </h3>
 
                         {popup.type !== 'delete' ? (
-                            // Form for Add/Edit Brand
-                            <form onSubmit={async (e) => {
-                                e.preventDefault();
-                                const formData = new FormData();
-                                formData.append("brand", JSON.stringify({ name: popup.brand.name }));
-                                const method = popup.type === 'edit' ? 'PUT' : 'POST';
-                                const url = popup.type === 'edit'
-                                    ? `http://localhost:8080/api/admin/brands/${popup.brand.id}`
-                                    : 'http://localhost:8080/api/admin/brands';
-                                await axios({ method, url, data: formData });
-                                const response = await axios.get('http://localhost:8080/api/admin/brands');
-                                setBrands(response.data);
-                                closePopup();
-                            }} style={{ maxWidth: '600px', margin: '0 auto' }}>
+                            // Form for Add/Edit Capacity
+                            <form onSubmit={handleSubmit} style={{ maxWidth: '600px', margin: '0 auto' }}>
                                 <div className="form-group">
                                     <label htmlFor="name" style={{ fontWeight: 600, fontSize: '20px' }}>Tên thương hiệu</label>
                                     <input

@@ -39,14 +39,14 @@ const Management = () => {
     const token = sessionStorage.getItem('token'); // Lấy token từ sessionStorage
 
     return {
-        method,
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,  // Thêm header Authorization
-        },
-        body: body ? JSON.stringify(body) : null,
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,  // Thêm header Authorization
+      },
+      body: body ? JSON.stringify(body) : null,
     };
-};
+  };
   useEffect(() => {
     // Fetch product data
     fetchProducts(currentPage, pageSize);
@@ -90,7 +90,7 @@ const Management = () => {
         method: "DELETE",
       })
         .then((response) => {
-          if (response.ok) {
+if (response.ok) {
             alert("Product deleted successfully!");
             setProductList(productList.filter((product) => product.id !== id));
           }
@@ -193,8 +193,7 @@ const Management = () => {
     setSearchTerm(""); // Clear search input
     fetchProducts(currentPage, pageSize); // Reload product list without search filter
   };
-
-  // Hàm sắp xếp theo quantity
+// Hàm sắp xếp theo quantity
   const sortProducts = (order) => {
     return [...productList].sort((a, b) => {
       if (order === "asc") {
@@ -290,7 +289,7 @@ const Management = () => {
                       boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
                       marginBottom: "10px",
                       width: "100%",
-                      transition: "border 0.3s ease, box-shadow 0.3s ease", // Add transition for hover effect
+transition: "border 0.3s ease, box-shadow 0.3s ease", // Add transition for hover effect
                     }}
                     onFocus={(e) =>
                       (e.target.style.border = "1px solid #007bff")
@@ -361,7 +360,7 @@ const Management = () => {
                       {errors.price}
                     </div>
                   )}
-                </div>
+</div>
 
                 {/* Số lượng */}
                 <div className="form-group">
@@ -440,7 +439,7 @@ const Management = () => {
                       boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
                       marginBottom: "10px",
                       width: "100%",
-                      transition: "border 0.3s ease, box-shadow 0.3s ease",
+transition: "border 0.3s ease, box-shadow 0.3s ease",
                     }}
                     onFocus={(e) =>
                       (e.target.style.border = "1px solid #007bff")
@@ -513,7 +512,7 @@ const Management = () => {
                   >
                     <option value="">-- Chọn thương hiệu --</option>
                     {brands.map((brand) => (
-                      <option key={brand.id} value={brand.id}>
+<option key={brand.id} value={brand.id}>
                         {brand.name}
                       </option>
                     ))}
@@ -594,7 +593,7 @@ const Management = () => {
                     transition: "all 0.3s ease",
                   }}
                 >
-                  {popup.type === "edit" ? "Cập nhật" : "Thêm mới"}
+{popup.type === "edit" ? "Cập nhật" : "Thêm mới"}
                 </button>
 
                 <button
@@ -669,7 +668,7 @@ const Management = () => {
                         fontSize: "16px",
                         borderRadius: "8px",
                         border: "1px solid #ddd",
-                        width: "300px",
+width: "300px",
                         boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
                         transition: "border 0.3s ease, box-shadow 0.3s ease",
                       }}
@@ -741,7 +740,7 @@ const Management = () => {
                       style={{
                         display: "flex",
                         alignItems: "center",
-                        gap: "10px",
+gap: "10px",
                       }}
                     >
 
@@ -812,7 +811,7 @@ const Management = () => {
                         sortedProducts.map((product, index) => (
                           <tr key={product.id}>
                             <td style={{ width: "20px" }}>{index + 1}</td>
-                            <td>{product.name}</td>
+<td>{product.name}</td>
 
                             <td>{product.price}</td>
                             <td
@@ -873,7 +872,7 @@ const Management = () => {
                                   boxShadow: '0 5px 10px rgba(220, 53, 69, 0.3)',
                                   transition: 'all 0.3s ease',
                                 }}
-                                onMouseOver={(e) => {
+onMouseOver={(e) => {
                                   e.target.style.backgroundColor = '#a71d2a';
                                 }}
                                 onMouseOut={(e) => {
@@ -942,7 +941,7 @@ const Management = () => {
                         backgroundColor: '#f0f0f0',
                         boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
                         display: 'inline-block',
-                        minWidth: '80px',
+minWidth: '80px',
                       }}
                     >
                       {currentPage + 1} / {totalPages}
