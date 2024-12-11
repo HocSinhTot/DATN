@@ -72,7 +72,7 @@ const UserManagement = () => {
                     }
                 })
                 .catch((error) => console.error('Error deleting user:', error))
-                .finally(() => setPopup({ show: false, message: '', onConfirm: null }));
+.finally(() => setPopup({ show: false, message: '', onConfirm: null }));
         });
     };
 
@@ -135,7 +135,7 @@ const UserManagement = () => {
                                                 <th style={{ textAlign: 'center' }} >STT</th>
                                                 <th style={{ textAlign: 'center' }} >Tên</th>
                                                 <th style={{ textAlign: 'center' }} >Email</th>
-                                                <th style={{ textAlign: 'center' }} >Ngày sinh</th>
+<th style={{ textAlign: 'center' }} >Ngày sinh</th>
                                                 <th style={{ textAlign: 'center' }} >Số điện thoại</th>
                                                 <th style={{ textAlign: 'center' }} >Vai trò</th>
                                                 <th style={{ textAlign: 'center' }} >Trạng thái</th>
@@ -147,16 +147,16 @@ const UserManagement = () => {
                                         <tbody>
                                             {userList.map((user, index) => (
                                                 <tr key={user.id}>
-                                                    <td>{index + 1}</td>
-                                                    <td>{user.username}</td>
-                                                    <td>{user.email}</td>
+                                                    <td style={{ padding: '0px' }}>{index + 1}</td>
+                                                    <td style={{ padding: '0px' }}>{user.username}</td>
+                                                    <td style={{ padding: '0px' }}>{user.email}</td>
 
-                                                    <td>{formatDate(user.birthday)}</td>
-                                                    <td>{user.phone}</td>
-                                                    <td>{user.role ? 'Admin' : 'User'}</td>
-                                                    <td>{user.status ? 'Active' : 'Inactive'}</td>
-                                                    <td>{user.gender ? 'Male' : 'Female'}</td>
-                                                    <td>
+                                                    <td style={{ padding: '0px' }}>{formatDate(user.birthday)}</td>
+                                                    <td style={{ padding: '0px' }}>{user.phone}</td>
+                                                    <td style={{ padding: '0px' }}>{user.role ? 'Admin' : 'User'}</td>
+                                                    <td style={{ padding: '0px' }}>{user.status ? 'Active' : 'Inactive'}</td>
+                                                    <td style={{ padding: '0px' }}>{user.gender ? 'Male' : 'Female'}</td>
+                                                    <td style={{ padding: '0px' }} >
                                                         <img
                                                             src={user.image ? `/assets/images/${user.image}` : '/assets/images/default_user_image.jpg'}
                                                             alt={user.name}
@@ -179,7 +179,7 @@ const UserManagement = () => {
                                                                 borderRadius: '10px',
                                                                 border: 'none',
                                                                 cursor: 'pointer',
-                                                                fontSize: '16px',
+fontSize: '16px',
                                                                 fontWeight: 'bold',
                                                                 boxShadow: '0 5px 10px rgba(255, 193, 7, 0.3)',
                                                                 transition: 'all 0.3s ease',
@@ -217,7 +217,7 @@ const UserManagement = () => {
                                                                 e.target.style.backgroundColor = '#dc3545';
                                                             }}
                                                         >
-                                                            <i className="bi bi-trash" style={{ fontSize: '20px' }}></i>
+<i className="bi bi-trash" style={{ fontSize: '20px' }}></i>
                                                         </button>
 
 
@@ -259,7 +259,7 @@ const UserManagement = () => {
                                                                     color: '#fff',
                                                                     padding: '8px 20px',
                                                                     borderRadius: '10px',
-                                                                    border: 'none',
+border: 'none',
                                                                     cursor: 'pointer',
                                                                     fontSize: '16px',
                                                                     fontWeight: 'bold',
@@ -327,7 +327,7 @@ const EditUserForm = ({ user, onClose }) => {
                 name: formData.name,
                 birthday: formData.birthday,
                 phone: formData.phone,
-                role: formData.role === 'true',
+role: formData.role === 'true',
                 gender: formData.gender === 'true',
             };
             formDataToSend.append('user', JSON.stringify(userPayload));
@@ -400,7 +400,7 @@ const EditUserForm = ({ user, onClose }) => {
                                     width: '100%',
                                     transition: 'border 0.3s ease, box-shadow 0.3s ease',
                                 }}
-                                onFocus={(e) => e.target.style.border = '1px solid #007bff'}
+onFocus={(e) => e.target.style.border = '1px solid #007bff'}
                                 onBlur={(e) => e.target.style.border = '1px solid #ccc'}
                                 onMouseEnter={(e) => e.target.style.boxShadow = '0 2px 8px rgba(0, 123, 255, 0.5)'}
                                 onMouseLeave={(e) => e.target.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.1)'}
@@ -450,7 +450,7 @@ const EditUserForm = ({ user, onClose }) => {
                                 onChange={handleChange}
                                 style={{
                                     padding: '10px',
-                                    fontSize: '16px',
+fontSize: '16px',
                                     borderRadius: '8px',
                                     border: '1px solid #ccc',
                                     boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
@@ -497,7 +497,7 @@ const EditUserForm = ({ user, onClose }) => {
 
                     <div style={{ display: 'flex', gap: '20px' }}>
                         <div style={{ flex: 1 }}>
-                            <label htmlFor="phone" style={{ fontWeight: 'bold', marginBottom: '5px', color: '#333' }}>
+<label htmlFor="phone" style={{ fontWeight: 'bold', marginBottom: '5px', color: '#333' }}>
                                 Phone
                             </label>
                             <input
@@ -550,7 +550,7 @@ const EditUserForm = ({ user, onClose }) => {
                     </div>
 
                     <div style={{ display: 'flex', gap: '20px' }}>
-                        <div style={{ flex: 1 }}>
+<div style={{ flex: 1 }}>
                             <label htmlFor="gender" style={{ fontWeight: 'bold', marginBottom: '5px', color: '#333' }}>
                                 Gender
                             </label>
@@ -611,7 +611,7 @@ const EditUserForm = ({ user, onClose }) => {
                             style={{
                                 padding: '10px 20px',
                                 fontSize: '16px',
-                                fontWeight: 'bold',
+fontWeight: 'bold',
                                 borderRadius: '8px',
                                 border: 'none',
                                 cursor: 'pointer',
@@ -652,6 +652,7 @@ const AddUserForm = ({ onClose }) => {
     const [formData, setFormData] = useState({
         username: '',
         email: '',
+        password: '',
         name: '',
         birthday: '',
         phone: '',
@@ -680,6 +681,7 @@ const AddUserForm = ({ onClose }) => {
             const userPayload = {
                 username: formData.username,
                 email: formData.email,
+                password: formData.password,
                 name: formData.name,
                 birthday: formData.birthday,
                 phone: formData.phone,
@@ -698,7 +700,7 @@ const AddUserForm = ({ onClose }) => {
             if (response.status === 200) {
                 alert('User added successfully!');
                 onClose();
-            }
+}
         } catch (error) {
             if (error.response) {
                 setErrors(error.response.data.errors || {});
@@ -731,7 +733,7 @@ const AddUserForm = ({ onClose }) => {
             }}>
                 <h3 style={{ marginBottom: '25px', fontSize: '22px', fontWeight: 'bold' }}>Add User</h3>
 
-                <form>
+                <form onSubmit={handleSubmit}>
                     <div className="form-group" style={{ display: 'flex', gap: '20px' }}>
                         <div style={{ flex: 1 }}>
                             <label
@@ -767,7 +769,7 @@ const AddUserForm = ({ onClose }) => {
                                     (e.target.style.boxShadow = '0 2px 8px rgba(0, 123, 255, 0.5)')
                                 }
                                 onMouseLeave={(e) =>
-                                    (e.target.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.1)')
+(e.target.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.1)')
                                 }
                             />
                             {errors.username && (
@@ -829,7 +831,7 @@ const AddUserForm = ({ onClose }) => {
                         <div style={{ flex: 1 }}>
                             <label
                                 htmlFor="email"
-                                style={{
+style={{
                                     fontWeight: 'bold',
                                     marginBottom: '5px',
                                     color: '#333',
@@ -888,7 +890,7 @@ const AddUserForm = ({ onClose }) => {
                                 value={formData.name}
                                 onChange={handleChange}
                                 style={{
-                                    padding: '10px',
+padding: '10px',
                                     fontSize: '16px',
                                     borderRadius: '8px',
                                     border: '1px solid #ccc',
@@ -945,7 +947,7 @@ const AddUserForm = ({ onClose }) => {
                                     width: '100%',
                                     transition: 'border 0.3s ease, box-shadow 0.3s ease',
                                 }}
-                                onFocus={(e) => (e.target.style.border = '1px solid #007bff')}
+onFocus={(e) => (e.target.style.border = '1px solid #007bff')}
                                 onBlur={(e) => (e.target.style.border = '1px solid #ccc')}
                                 onMouseEnter={(e) =>
                                     (e.target.style.boxShadow = '0 2px 8px rgba(0, 123, 255, 0.5)')
@@ -999,7 +1001,7 @@ const AddUserForm = ({ onClose }) => {
                             />
                             {errors.phone && (
                                 <div className="text-danger" style={{ fontSize: '14px' }}>
-                                    {errors.phone}
+{errors.phone}
                                 </div>
                             )}
                         </div>
@@ -1065,7 +1067,7 @@ const AddUserForm = ({ onClose }) => {
                                 onChange={handleChange}
                                 className="form-control"
                                 style={{
-                                    padding: '10px',
+padding: '10px',
                                     fontSize: '16px',
                                     borderRadius: '8px',
                                     border: '1px solid #ccc',
@@ -1136,8 +1138,9 @@ const AddUserForm = ({ onClose }) => {
                                 marginTop: '20px',
                             }}
                         >
-                            <button
+<button
                                 type="submit"
+                                disabled={loading}
                                 className="btn btn-primary"
                                 style={{
                                     padding: '10px 20px',
@@ -1145,12 +1148,13 @@ const AddUserForm = ({ onClose }) => {
                                     fontWeight: 'bold',
                                     borderRadius: '8px',
                                     border: 'none',
-                                    cursor: 'pointer',
-                                    boxShadow: '0 5px 10px rgba(0, 123, 255, 0.3)',
+                                    cursor: loading ? 'not-allowed' : 'pointer', // Khi loading thì không thể click
+                                    backgroundColor: loading ? '#ccc' : '#007bff', // Đổi màu khi loading
+                                    boxShadow: loading ? 'none' : '0 5px 10px rgba(0, 123, 255, 0.3)', // Đổi shadow khi loading
                                     transition: 'all 0.3s ease',
                                 }}
                             >
-                                Thêm
+                                {loading ? 'Đang thêm...' : 'Thêm'}
                             </button>
 
                             <button
@@ -1182,16 +1186,4 @@ const AddUserForm = ({ onClose }) => {
 };
 
 
-
 export default UserManagement;
-
-
-
-
-
-
-
-
-
-
-

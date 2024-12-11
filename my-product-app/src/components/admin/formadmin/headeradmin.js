@@ -284,9 +284,9 @@ export default function App() {
 									<li class="divider">Menu</li>
 									<li class="active"><a href="/admin"><i class="icon mdi mdi-home"></i><span>Trang
 										chủ</span></a></li>
-									<li><a href="/nguoidung"><i class="icon mdi mdi-view-list"></i><span>Quản lý người
+									<li><a href="/nguoidung"><i class="bi bi-person-circle"></i><span>    Quản lý người
 										dùng</span></a></li>
-									<li class="has-submenu"><a href="#"><i class="icon mdi mdi-view-list"></i><span>Quản
+									<li class="has-submenu"><a href="#"><i class="bi bi-phone-fill"></i><span>  Quản
 										lý sản
 										phẩm</span></a>
 										<ul class="submenu">
@@ -301,17 +301,13 @@ export default function App() {
 											<li><a href="/images"><span>Quản lý hình ảnh</span></a></li>
 										</ul>
 									</li>
-									<li><a href="/order"><i class="icon mdi mdi-view-list"></i><span>Quản
+									<li><a href="/order"><i class="bi bi-cart-fill"></i><span> Quản
 										lý đơn hàng</span></a></li>
-									<li><a href="evaluaes"><i class="icon mdi mdi-view-list"></i><span>Quản
+									<li><a href="evaluaes"><i class="bi bi-star-fill"></i><span> Quản
 										lý đánh giá</span></a></li>
-									<li><a href="favourite"><i class="icon mdi mdi-view-list"></i><span>Quản
+									<li><a href="favourite"><i class="bi bi-heart-fill"></i><span> Quản
 										lý yêu thích</span></a></li>
-									<li class="divider">Thống kê</li>
-									<li><a href="#"><i class="icon mdi mdi-chart-donut"></i><span>Doanh
-										thu</span></a></li>
-									<li><a href="#"><i class="icon mdi mdi-chart-donut"></i><span>Tồn
-										kho</span></a></li>
+									
 								</ul>
 
 							</div>
