@@ -36,8 +36,8 @@ public class ProductService {
         Pageable pageable = Pageable.unpaged();
         if (size != 0) {
             if (ascending != null) {
-                pageable = ascending 
-                        ? PageRequest.of(page, size, Sort.by("price").ascending()) 
+                pageable = ascending
+                        ? PageRequest.of(page, size, Sort.by("price").ascending())
                         : PageRequest.of(page, size, Sort.by("price").descending());
             } else {
                 pageable = PageRequest.of(page, size);
@@ -49,7 +49,8 @@ public class ProductService {
         BigDecimal maxPriceBigDecimal = (maxPrice != null) ? new BigDecimal(maxPrice) : null;
 
         // Truy vấn với các bộ lọc
-        return productRepository.findByFilters(categoryId, brandId, minPriceBigDecimal, maxPriceBigDecimal, keyword, pageable);
+        return productRepository.findByFilters(categoryId, brandId, minPriceBigDecimal, maxPriceBigDecimal, keyword,
+                pageable);
     }
 
     // Lấy sản phẩm theo ID
@@ -59,14 +60,14 @@ public class ProductService {
     }
 
     // Thêm chi tiết sản phẩm
-    public ProductsPriceModel addProductDetails(Integer productId, Integer colorId, Integer capacityId, BigDecimal price) {
+    public ProductsPriceModel addProductDetails(Integer productId, Integer colorId, Integer capacityId,
+            BigDecimal price) {
         ProductModel product = getProductById(productId);
 
         ProductsPriceId productsPriceId = new ProductsPriceId();
         productsPriceId.setProductId(productId);
         productsPriceId.setColorId(colorId);
         productsPriceId.setCapacityId(capacityId);
-
         ProductsPriceModel productPrice = new ProductsPriceModel();
         productPrice.setId(productsPriceId);
         productPrice.setProduct(product);
@@ -96,4 +97,9 @@ public class ProductService {
         Pageable pageable = PageRequest.of(page, size);
         return productRepository.findAll(pageable);
     }
+
+    public Long getTotalProducts() {
+        return productRepository.count(); // Đếm tổng số sản phẩm
+    }
+
 }

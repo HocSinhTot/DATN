@@ -16,7 +16,7 @@ public class OrderService {
 
     @Autowired
     private OrderRepository orderRepository;
-    
+
     @Autowired
     private OrderStatusRepository orderStatusRepository;
 
@@ -27,10 +27,11 @@ public class OrderService {
     public OrderStatusModel getOrderStatusByName(String name) {
         return orderStatusRepository.findByStatus(name);
     }
+
     public List<OrderModel> getAllOrders() {
         return orderRepository.findAll();
     }
-    
+
     public OrderModel getOrderById(int id) {
         return orderRepository.findById(id).orElse(null);
     }
@@ -43,7 +44,8 @@ public class OrderService {
             orderRepository.save(order);
         }
     }
-     public List<OrderStatusModel> getAllOrderStatuses() {
+
+    public List<OrderStatusModel> getAllOrderStatuses() {
         return orderStatusRepository.findAll(); // Giả sử bạn có một phương thức findAll trong repository
     }
 
@@ -51,5 +53,18 @@ public class OrderService {
         orderRepository.deleteById(orderId);
     }
 
-    
+    // tong
+
+    public Long getTotalOrders() {
+        return orderRepository.countTotalOrders();
+    }
+
+    public List<Object[]> getMonthlyRevenueByYearAndMonth(Integer year, Integer month) {
+        return orderRepository.getMonthlyRevenueByYearAndMonth(year, month);
+    }
+
+    public Double getTotalRevenue() {
+        return orderRepository.getTotalRevenue(); // Gọi phương thức trong repository
+    }
+
 }

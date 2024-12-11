@@ -174,7 +174,7 @@ export default function App() {
 			<div class="be-wrapper be-fixed-sidebar">
 
 				<nav class="navbar navbar-expand fixed-top be-top-header">
-					<div class="container-fluid">
+					<div class="container-fluid" style={{ background: '#157ed2' }}>
 						<div class="be-navbar-header">
 							<a class="navbar-brand" href="/admin"></a>
 
@@ -188,7 +188,7 @@ export default function App() {
 							</div>
 						</div>
 						<div class="page-title">
-							<a class="navbar-brand" href="/admin">Bảng Thống Kê</a>
+							<a class="navbar-brand" href="/admin" style={{ fontSize: '20px', color: 'black', fontWeight: '700' }}>Chào mừng đến vs trang Admin</a>
 						</div>
 						<div class="be-right-navbar">
 							<ul class="nav navbar-nav float-right be-user-nav">
@@ -307,7 +307,7 @@ export default function App() {
 										lý đánh giá</span></a></li>
 									<li><a href="favourite"><i class="bi bi-heart-fill"></i><span> Quản
 										lý yêu thích</span></a></li>
-									
+
 								</ul>
 
 							</div>
