@@ -28,6 +28,7 @@ export default function App() {
 				<link rel="stylesheet" type="text/css" href="assets/lib/jqvmap/jqvmap.min.css" />
 				<link rel="stylesheet" type="text/css" href="assets/lib/datetimepicker/css/bootstrap-datetimepicker.min.css" />
 				<link rel="stylesheet" href="assets/css/app.css" type="text/css" />
+
 				{/* Custom CSS */}
 				<style jsx="true">
 					{`
@@ -174,7 +175,7 @@ export default function App() {
 			<div class="be-wrapper be-fixed-sidebar">
 
 				<nav class="navbar navbar-expand fixed-top be-top-header">
-					<div class="container-fluid">
+					<div class="container-fluid" style={{ backgroundColor: '#157ed2' }}>
 						<div class="be-navbar-header">
 							<a class="navbar-brand" href="/admin"></a>
 

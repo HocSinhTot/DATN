@@ -63,4 +63,8 @@ public class OrderService {
         return orderRepository.getMonthlyRevenueByYearAndMonth(year, month);
     }
 
+    public Double getTotalRevenue() {
+        return orderRepository.getTotalRevenue(); // Gọi phương thức trong repository
+    }
+
 }

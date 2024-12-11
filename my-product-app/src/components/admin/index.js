@@ -1,119 +1,164 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { Helmet } from "react-helmet";
 
 const Dashboard = () => {
+  const [totalCustomers, setTotalCustomers] = useState(0);
   const [totalOrders, setTotalOrders] = useState(0);
-  const [monthlyRevenue, setMonthlyRevenue] = useState([]);
-  const [selectedYear, setSelectedYear] = useState('');
-  const [selectedMonth, setSelectedMonth] = useState('');
-  const [isDataAvailable, setIsDataAvailable] = useState(true);
-  const [loading, setLoading] = useState(false);  // Add loading state
-  const [error, setError] = useState(null);  // Add error state
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [totalRevenue, setTotalRevenue] = useState(0);
 
-  // Initialize years and months options
-  const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 5 }, (_, i) => currentYear - i); // Last 5 years
-  const months = Array.from({ length: 12 }, (_, i) => i + 1);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Fetch total orders when component mounts
     setLoading(true);
+
+    // Lấy tổng số đơn hàng
     axios.get("http://localhost:8080/api/orders/total")
       .then((response) => {
         setTotalOrders(response.data);
-        setLoading(false);
       })
       .catch((error) => {
-        console.error("Error fetching total orders:", error);
-        setError("Failed to fetch total orders.");
+        console.error("Lỗi khi lấy tổng số đơn hàng:", error);
+        setError("Không thể lấy tổng số đơn hàng.");
+      });
+
+    // Lấy tổng số người dùng
+    axios.get("http://localhost:8080/api/orders/total-users")
+      .then((response) => {
+        setTotalUsers(response.data);
+      })
+      .catch((error) => {
+        console.error("Lỗi khi lấy tổng số người dùng:", error);
+        setError("Không thể lấy tổng số người dùng.");
+      });
+
+    // Lấy tổng số sản phẩm
+    axios.get("http://localhost:8080/api/orders/total-products")
+      .then((response) => {
+        setTotalProducts(response.data);
+      })
+      .catch((error) => {
+        console.error("Lỗi khi lấy tổng số sản phẩm:", error);
+        setError("Không thể lấy tổng số sản phẩm.");
+      });
+
+    // Lấy tổng doanh thu
+    axios.get("http://localhost:8080/api/orders/total-revenue")
+      .then((response) => {
+        setTotalRevenue(response.data);
+      })
+      .catch((error) => {
+        console.error("Lỗi khi lấy tổng doanh thu:", error);
+        setError("Không thể lấy tổng doanh thu.");
+      })
+      .finally(() => {
         setLoading(false);
       });
   }, []);
 
-  const handleSearch = () => {
-    if (selectedYear && selectedMonth) {
-      setLoading(true);  // Start loading when fetching monthly revenue
-      axios.get(`http://localhost:8080/api/orders/monthly-revenue?year=${selectedYear}&month=${selectedMonth}`)
-        .then((response) => {
-          if (response.data.length === 0) {
-            setIsDataAvailable(false);
-          } else {
-            setIsDataAvailable(true);
-            setMonthlyRevenue(response.data);
-          }
-          setLoading(false);
-        })
-        .catch((error) => {
-          console.error("Error fetching monthly revenue:", error);
-          setIsDataAvailable(false);
-          setError("Failed to fetch monthly revenue.");
-          setLoading(false);
-        });
-    }
-  };
-
   return (
-    <div>
-      <h1 style={{ textAlign: 'center' }}>Dashboard</h1>
+    <div className="be-wrapper be-fixed-sidebar">
+      <Helmet>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+        <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <link rel="shortcut icon" href="assets/img/logo-fav.png" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+        <title>Bảng điều khiển Beagle</title>
+      </Helmet>
 
-      {loading ? (
-        <p style={{ textAlign: 'center' }}>Loading...</p>  // Display loading state
-      ) : (
-        <h2 style={{ textAlign: 'center' }}>Total Orders: {totalOrders}</h2>
-      )}
+      <div className="container mt-5">
+        <h1 className="text-center mb-5" style={{ fontSize: '36px', color: '#333' }}>Trang Quản lý</h1>
 
-      <div style={{ textAlign: 'center' }}>
-        <label htmlFor="year">Select Year: </label>
-        <select
-          id="year"
-          value={selectedYear}
-          onChange={(e) => setSelectedYear(e.target.value)}
-        >
-          <option value="">--Select Year--</option>
-          {years.map(year => (
-            <option key={year} value={year}>{year}</option>
-          ))}
-        </select>
-
-        <label htmlFor="month">Select Month: </label>
-        <select
-          id="month"
-          value={selectedMonth}
-          onChange={(e) => setSelectedMonth(e.target.value)}
-        >
-          <option value="">--Select Month--</option>
-          {months.map(month => (
-            <option key={month} value={month}>{month}</option>
-          ))}
-        </select>
-
-        <button onClick={handleSearch}>Search</button>
+        {loading ? (
+          <div className="d-flex justify-content-center">
+            <div className="spinner-border" role="status">
+              <span className="visually-hidden">Đang tải...</span>
+            </div>
+          </div>
+        ) : (
+          <div>
+            <div className="row mb-4">
+              {/* Card for Orders */}
+              <div className="col-md-3 mb-4">
+                <div className="card shadow-sm p-4 text-center">
+                  <h5 className="card-title">Tổng số đơn hàng</h5>
+                  <p className="card-text">{totalOrders}</p>
+                </div>
+              </div>
+              {/* Card for Users */}
+              <div className="col-md-3 mb-4">
+                <div className="card shadow-sm p-4 text-center">
+                  <h5 className="card-title">Tổng số người dùng</h5>
+                  <p className="card-text">{totalUsers}</p>
+                </div>
+              </div>
+              {/* Card for Products */}
+              <div className="col-md-3 mb-4">
+                <div className="card shadow-sm p-4 text-center">
+                  <h5 className="card-title">Tổng số sản phẩm</h5>
+                  <p className="card-text">{totalProducts}</p>
+                </div>
+              </div>
+              {/* Card for Revenue */}
+              <div className="col-md-3 mb-4">
+                <div className="card shadow-sm p-4 text-center">
+                  <h5 className="card-title">Tổng doanh thu</h5>
+                  <p className="card-text">{totalRevenue}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
-      <h3 style={{ textAlign: 'center' }}>Monthly Revenue</h3>
-      {error && <p style={{ textAlign: 'center', color: 'red' }}>{error}</p>}  {/* Display error message */}
-      {isDataAvailable ? (
-        <table style={{ width: '100%', textAlign: 'center', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr>
-              <th>Year</th>
-              <th>Month</th>
-              <th>Monthly Revenue</th>
-            </tr>
-          </thead>
-          <tbody>
-            {monthlyRevenue.map((data, index) => (
-              <tr key={index}>
-                <td>{data[0]}</td>
-                <td>{data[1]}</td>
-                <td>{data[2]}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <p style={{ textAlign: 'center', color: 'red' }}>No Data Available</p>
-      )}
+      <style>{`
+        .card {
+          transition: all 0.3s ease;
+          border-radius: 12px;
+        }
+
+        .card:hover {
+          transform: scale(1.05);
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+          cursor: pointer;
+        }
+
+        h1 {
+          font-size: 36px;
+          font-weight: bold;
+          color: #2c3e50;
+        }
+
+        .card-title {
+          font-size: 20px;
+          font-weight: 600;
+          color: #34495e;
+        }
+
+        .card-shadow {
+          box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .container {
+          padding: 40px;
+        }
+
+        .spinner-border {
+          color: #4CAF50;
+        }
+
+        .card-text {
+          font-size: 26px;
+          font-weight: 700;
+          color: #1abc9c;
+        }
+      `}</style>
     </div>
   );
 };

@@ -12,8 +12,6 @@ import java.util.Map;
 import java.util.Random;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import javax.servlet.http.HttpServletRequest;
-
 
 /**
  *
@@ -22,30 +20,31 @@ import javax.servlet.http.HttpServletRequest;
 public class VnPayConfig {
 
     public static String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-    // public static String vnp_ReturnUrl = "http://localhost:8080/vnpay_jsp/vnpay_return.jsp";
+    // public static String vnp_ReturnUrl =
+    // "http://localhost:8080/vnpay_jsp/vnpay_return.jsp";
     public static String vnp_Version = "2.1.0";
     public static String vnp_Command = "pay";
-    
+
     public static String vnp_TmnCode = "IFWBY6H3";
     public static String secretKey = "PB3V3SEW3E253Y6O20CJMY22T3JB1XJ6";
     public static String vnp_ApiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
 
     // public static String md5(String message) {
-    //     String digest = null;
-    //     try {
-    //         MessageDigest md = MessageDigest.getInstance("MD5");
-    //         byte[] hash = md.digest(message.getBytes("UTF-8"));
-    //         StringBuilder sb = new StringBuilder(2 * hash.length);
-    //         for (byte b : hash) {
-    //             sb.append(String.format("%02x", b & 0xff));
-    //         }
-    //         digest = sb.toString();
-    //     } catch (UnsupportedEncodingException ex) {
-    //         digest = "";
-    //     } catch (NoSuchAlgorithmException ex) {
-    //         digest = "";
-    //     }
-    //     return digest;
+    // String digest = null;
+    // try {
+    // MessageDigest md = MessageDigest.getInstance("MD5");
+    // byte[] hash = md.digest(message.getBytes("UTF-8"));
+    // StringBuilder sb = new StringBuilder(2 * hash.length);
+    // for (byte b : hash) {
+    // sb.append(String.format("%02x", b & 0xff));
+    // }
+    // digest = sb.toString();
+    // } catch (UnsupportedEncodingException ex) {
+    // digest = "";
+    // } catch (NoSuchAlgorithmException ex) {
+    // digest = "";
+    // }
+    // return digest;
     // }
 
     public static String Sha256(String message) {
@@ -66,7 +65,7 @@ public class VnPayConfig {
         return digest;
     }
 
-    //Util for VNPAY
+    // Util for VNPAY
     public static String hashAllFields(Map fields) {
         List fieldNames = new ArrayList(fields.keySet());
         Collections.sort(fieldNames);
@@ -84,9 +83,9 @@ public class VnPayConfig {
                 sb.append("&");
             }
         }
-        return hmacSHA512(secretKey,sb.toString());
+        return hmacSHA512(secretKey, sb.toString());
     }
-    
+
     public static String hmacSHA512(final String key, final String data) {
         try {
 
@@ -109,7 +108,7 @@ public class VnPayConfig {
             return "";
         }
     }
-    
+
     public static String getIpAddress(jakarta.servlet.http.HttpServletRequest request) {
         String ipAdress;
         try {

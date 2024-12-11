@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import JAVA6.service.OrderService;
+import JAVA6.service.ProductService;
 import JAVA6.service.UsersService; // Make sure you have this service
 import io.jsonwebtoken.lang.Collections;
 
@@ -20,6 +21,9 @@ public class TongController {
     private OrderService orderService;
     @Autowired
     private UsersService usersService; // Add this to access user data
+
+    @Autowired
+    private ProductService productService; // Add this to access user data
 
     @GetMapping("/total")
     public ResponseEntity<Long> getTotalOrders() {
@@ -42,4 +46,18 @@ public class TongController {
         }
         return ResponseEntity.badRequest().body(Collections.emptyList());
     }
+
+    @GetMapping("/total-products")
+    public ResponseEntity<Long> getTotalProducts() {
+        Long totalProducts = productService.getTotalProducts(); // Tạo phương thức này trong ProductService
+        return ResponseEntity.ok(totalProducts);
+
+    }
+
+    @GetMapping("/total-revenue")
+    public ResponseEntity<Double> getTotalRevenue() {
+        Double totalRevenue = orderService.getTotalRevenue(); // Tạo phương thức getTotalRevenue() trong OrderService
+        return ResponseEntity.ok(totalRevenue);
+    }
+
 }

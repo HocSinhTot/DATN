@@ -30,4 +30,7 @@ public interface OrderRepository extends JpaRepository<OrderModel, Integer> {
 			"ORDER BY Year DESC, Month DESC")
 	List<Object[]> getMonthlyRevenueByYearAndMonth(@Param("year") Integer year, @Param("month") Integer month);
 
+	@Query("SELECT SUM(o.total) FROM OrderModel o")
+	Double getTotalRevenue();
+
 }
