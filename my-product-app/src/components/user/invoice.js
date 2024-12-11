@@ -62,28 +62,29 @@ const InvoicePage = () => {
 
   const handleSubmitPayment = async (event) => {
     event.preventDefault();
-
+  
     if (!address) {
       alert("Vui lòng nhập địa chỉ giao hàng.");
       return;
     }
-
+  
     // Tính tổng tiền sau khi áp dụng mã giảm giá
     const totalAfterDiscount = totalAmount - discountAmount;
-
-    if (payMethod === "2") {
+  
+    if (payMethod === "2") {  // Phương thức thanh toán VNPay
       try {
         const response = await fetch(
-          `http://localhost:8080/api/payment/vnpay?amount=${totalAfterDiscount}`,
+          `http://localhost:8080/api/payment/vnpay?amount=${totalAfterDiscount}&userId=${userId}&address=${address}`,
           {
             method: "GET",
           }
         );
-
+  
         if (response.ok) {
           const data = await response.json();
           if (data.code === "00" && data.data) {
-            window.location.href = data.data;
+            // Điều hướng đến URL thanh toán VNPay
+            window.location.href = data.data;  // Chuyển hướng đến trang thanh toán VNPay
           } else {
             alert("Không thể tạo URL thanh toán VNPay.");
           }
@@ -93,7 +94,7 @@ const InvoicePage = () => {
       } catch (error) {
         alert("Đã xảy ra lỗi: " + error.message);
       }
-    } else {
+    } else {  // Phương thức thanh toán COD
       const paymentData = { userId, address, payMethod, totalAmount: totalAfterDiscount };
       try {
         const response = await fetch(
@@ -104,13 +105,10 @@ const InvoicePage = () => {
             body: JSON.stringify(paymentData),
           }
         );
-
+  
         if (response.ok) {
           alert("Thanh toán COD thành công!");
-
-          // Chuyển hướng về trang index (trang chủ)
           navigate("/");  // Điều hướng về trang chủ
-
         } else {
           alert("Thanh toán COD thất bại.");
         }
@@ -119,6 +117,7 @@ const InvoicePage = () => {
       }
     }
   };
+  
 
   return (
     <div style={{ margin: "20px" }}>

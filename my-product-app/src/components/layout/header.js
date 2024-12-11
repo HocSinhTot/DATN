@@ -371,8 +371,6 @@ const Header = ({ setKeyword, setCategoryId }) => {
                     <li className="dropdown mega-menu"><Link style={{    padding: '15px 20px 0 20px',height: '54px'}} to="/categorys" onClick={() => handleCategoryClick(2)} className="dropdown-toggle" data-toggle="dropdown">Laptop</Link></li>
                     <li className="dropdown mega-menu"><Link style={{    padding: '15px 20px 0 20px',height: '54px'}} to="/categorys"  onClick={() => handleCategoryClick(3)} className="dropdown-toggle" data-toggle="dropdown">Máy tính bảng</Link></li>
                     <li className="dropdown mega-menu"><Link style={{    padding: '15px 20px 0 20px',height: '54px'}} to="/categorys" onClick={() => handleCategoryClick(4)} className="dropdown-toggle" data-toggle="dropdown">Phụ kiện</Link></li>
-                    <li className="dropdown yamm-fw"><Link style={{    padding: '15px 20px 0 20px',height: '54px'}} to="/introduce" className="dropdown-toggle">Giới thiệu</Link></li>
-                    <li className="dropdown yamm-fw"><Link style={{    padding: '15px 20px 0 20px',height: '54px'}}  to="/contact" className="dropdown-toggle">Liên hệ</Link></li>
                     <li className="dropdown yamm-fw"><Link style={{    padding: '15px 20px 0 20px',height: '54px'}} to="/categorys" onClick={() => handleCategoryClick()} className="dropdown-toggle">Sản phẩm</Link></li>
                   </ul>
                 </div>

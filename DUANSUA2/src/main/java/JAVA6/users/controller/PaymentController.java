@@ -29,6 +29,8 @@ public class PaymentController {
     @GetMapping("/vnpay")
     public ResponseEntity<Map<String, Object>> processVNPayPayment(
         @RequestParam(name = "amount", required = true) long amount,
+        @RequestParam(name = "userId", required = true) int userId,
+        @RequestParam(name = "address", required = true) String address,
             @RequestParam(name = "bankCode", required = false, defaultValue = "NCB") String bankCode,
             @RequestParam(name = "language", required = false, defaultValue = "vn") String language,
             HttpServletRequest request) {
@@ -43,10 +45,12 @@ public class PaymentController {
             vnp_Params.put("vnp_Version", VnPayConfig.vnp_Version);
             vnp_Params.put("vnp_Command", VnPayConfig.vnp_Command);
             vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
+            
             vnp_Params.put("vnp_Amount", String.valueOf(amount*100)); // Nhân với 100 để chuyển đổi sang tiền xu
             vnp_Params.put("vnp_CurrCode", "VND");
             vnp_Params.put("vnp_IpAddr", vnpIpAddr);
-
+            
+            vnp_Params.put("vnp_Bill_Address", address);
             if (bankCode != null && !bankCode.isEmpty()) {
                 vnp_Params.put("vnp_BankCode", bankCode);
             }
@@ -55,7 +59,7 @@ public class PaymentController {
             String orderInfo = "Thanhtoandonhang" + vnp_TxnRef;
             String encodedOrderInfo = URLEncoder.encode(orderInfo, StandardCharsets.UTF_8);
             vnp_Params.put("vnp_OrderType", "110000");  // Ví dụ mã danh mục hàng hóa
-            vnp_Params.put("vnp_ReturnUrl", "http://localhost:3000/api/cart/order/vnpayReturn");  // URL của bạn
+            vnp_Params.put("vnp_ReturnUrl", "http://localhost:8080/api/cart/order/vnpayReturn?userId=4");  // URL của bạn
 
             vnp_Params.put("vnp_OrderInfo", encodedOrderInfo);
             vnp_Params.put("vnp_Locale", language);
