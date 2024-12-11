@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,6 +27,8 @@ public class LoginController {
 
     @Autowired
     private JwtTokenUtil jwtUtils;
+@Autowired
+private PasswordEncoder passwordEncoder;
 
     // Đăng nhập và gửi thông tin người dùng về frontend
     @PostMapping("/login")
@@ -46,7 +49,7 @@ public class LoginController {
             }
     
             // Kiểm tra mật khẩu
-            if (user.getPassword().equals(password)) {
+            if (passwordEncoder.matches(password, user.getPassword())) {
                 boolean isAdmin = user.isRole(); // Kiểm tra quyền admin
                 int userId = user.getId();
     
