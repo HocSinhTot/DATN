@@ -59,6 +59,14 @@ const Dashboard = () => {
       });
   }, []);
 
+  // Format the revenue to VND
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+    }).format(amount);
+  };
+
   return (
     <div className="be-wrapper be-fixed-sidebar">
       <Helmet>
@@ -107,9 +115,12 @@ const Dashboard = () => {
               </div>
               {/* Card for Revenue */}
               <div className="col-md-3 mb-4">
-                <div className="card shadow-sm p-4 text-center">
+                <div className="card shadow-sm p-4 text-center" style={{
+                  width: '214px',
+                  height: '107px'
+                }}>
                   <h5 className="card-title">Tổng doanh thu</h5>
-                  <p className="card-text">{totalRevenue}</p>
+                  <p className="card-text">{formatCurrency(totalRevenue)}</p>
                 </div>
               </div>
             </div>
