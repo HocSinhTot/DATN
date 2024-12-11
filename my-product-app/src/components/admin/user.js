@@ -652,6 +652,7 @@ const AddUserForm = ({ onClose }) => {
     const [formData, setFormData] = useState({
         username: '',
         email: '',
+        password: '',
         name: '',
         birthday: '',
         phone: '',
@@ -680,6 +681,7 @@ const AddUserForm = ({ onClose }) => {
             const userPayload = {
                 username: formData.username,
                 email: formData.email,
+                password: formData.password,
                 name: formData.name,
                 birthday: formData.birthday,
                 phone: formData.phone,
@@ -731,7 +733,7 @@ const AddUserForm = ({ onClose }) => {
             }}>
                 <h3 style={{ marginBottom: '25px', fontSize: '22px', fontWeight: 'bold' }}>Add User</h3>
 
-                <form>
+                <form onSubmit={handleSubmit}>
                     <div className="form-group" style={{ display: 'flex', gap: '20px' }}>
                         <div style={{ flex: 1 }}>
                             <label
@@ -1138,6 +1140,7 @@ const AddUserForm = ({ onClose }) => {
                         >
                             <button
                                 type="submit"
+                                disabled={loading}
                                 className="btn btn-primary"
                                 style={{
                                     padding: '10px 20px',
@@ -1145,12 +1148,13 @@ const AddUserForm = ({ onClose }) => {
                                     fontWeight: 'bold',
                                     borderRadius: '8px',
                                     border: 'none',
-                                    cursor: 'pointer',
-                                    boxShadow: '0 5px 10px rgba(0, 123, 255, 0.3)',
+                                    cursor: loading ? 'not-allowed' : 'pointer', // Khi loading thì không thể click
+                                    backgroundColor: loading ? '#ccc' : '#007bff', // Đổi màu khi loading
+                                    boxShadow: loading ? 'none' : '0 5px 10px rgba(0, 123, 255, 0.3)', // Đổi shadow khi loading
                                     transition: 'all 0.3s ease',
                                 }}
                             >
-                                Thêm
+                                {loading ? 'Đang thêm...' : 'Thêm'}
                             </button>
 
                             <button
@@ -1180,7 +1184,6 @@ const AddUserForm = ({ onClose }) => {
         </div>
     );
 };
-
 
 
 export default UserManagement;

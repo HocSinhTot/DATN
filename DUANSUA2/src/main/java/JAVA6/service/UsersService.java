@@ -16,4 +16,8 @@ public class UsersService {
     public List<UserModel> getAllNguoiDung() {
         return nguoiDungRepository.findAll();
     }
+
+    public long getTotalCustomers() {
+        return nguoiDungRepository.count(); // Đếm tổng số bản ghi trong bảng Users
+    }
 }

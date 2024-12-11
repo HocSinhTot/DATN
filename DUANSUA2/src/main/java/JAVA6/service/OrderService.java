@@ -59,4 +59,8 @@ public class OrderService {
         return orderRepository.countTotalOrders();
     }
 
+    public List<Object[]> getMonthlyRevenueByYearAndMonth(Integer year, Integer month) {
+        return orderRepository.getMonthlyRevenueByYearAndMonth(year, month);
+    }
+
 }

@@ -1,121 +1,121 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
-const index = () => {
+const Dashboard = () => {
+  const [totalOrders, setTotalOrders] = useState(0);
+  const [monthlyRevenue, setMonthlyRevenue] = useState([]);
+  const [selectedYear, setSelectedYear] = useState('');
+  const [selectedMonth, setSelectedMonth] = useState('');
+  const [isDataAvailable, setIsDataAvailable] = useState(true);
+  const [loading, setLoading] = useState(false);  // Add loading state
+  const [error, setError] = useState(null);  // Add error state
+
+  // Initialize years and months options
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 5 }, (_, i) => currentYear - i); // Last 5 years
+  const months = Array.from({ length: 12 }, (_, i) => i + 1);
+
+  useEffect(() => {
+    // Fetch total orders when component mounts
+    setLoading(true);
+    axios.get("http://localhost:8080/api/orders/total")
+      .then((response) => {
+        setTotalOrders(response.data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching total orders:", error);
+        setError("Failed to fetch total orders.");
+        setLoading(false);
+      });
+  }, []);
+
+  const handleSearch = () => {
+    if (selectedYear && selectedMonth) {
+      setLoading(true);  // Start loading when fetching monthly revenue
+      axios.get(`http://localhost:8080/api/orders/monthly-revenue?year=${selectedYear}&month=${selectedMonth}`)
+        .then((response) => {
+          if (response.data.length === 0) {
+            setIsDataAvailable(false);
+          } else {
+            setIsDataAvailable(true);
+            setMonthlyRevenue(response.data);
+          }
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error("Error fetching monthly revenue:", error);
+          setIsDataAvailable(false);
+          setError("Failed to fetch monthly revenue.");
+          setLoading(false);
+        });
+    }
+  };
+
   return (
-    <div className="be-wrapper be-fixed-sidebar">
-      {/* Header */}
-      <nav className="navbar navbar-expand fixed-top be-top-header">
-        <div className="container-fluid">
-          <div className="be-navbar-header">
-            <a className="navbar-brand" href="/admin"></a>
-          </div>
-          <div className="page-title">
-            <a className="navbar-brand" href="/admin">
-              Bảng Thống Kê
-            </a>
-          </div>
-          <div className="be-right-navbar">
-            <ul className="nav navbar-nav float-right be-user-nav">
-              <li className="nav-item dropdown">
-                <a
-                  className="nav-link dropdown-toggle"
-                  href="#"
-                  data-toggle="dropdown"
-                  role="button"
-                  aria-expanded="false"
-                >
-                  <span className="user-name">Tên người dùng</span>
-                </a>
-                <div className="dropdown-menu" role="menu">
-                  <div className="user-info">
-                    <div style={{ color: "white" }}>
-                      Xin chào, <span>Tên người dùng</span>!
-                    </div>
-                  </div>
-                  <a className="dropdown-item" href="pages-profile.html">
-                    <span className="icon mdi mdi-face"></span>Tài khoản
-                  </a>
-                  <a className="dropdown-item" href="#">
-                    <span className="icon mdi mdi-settings"></span>Cài đặt
-                  </a>
-                  <a className="dropdown-item" href="/logoutadmin">
-                    <span className="icon mdi mdi-power"></span>Đăng xuất
-                  </a>
-                </div>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
+    <div>
+      <h1 style={{ textAlign: 'center' }}>Dashboard</h1>
 
-      {/* Main Content */}
-      <div className="be-content">
-        <div className="main-content container-fluid">
-          <div className="row">
-            <div className="col-12 col-lg-6 col-xl-3">
-              <div className="widget widget-tile">
-                <div className="chart sparkline" id="spark1"></div>
-                <div className="data-info">
-                  <div className="desc">Người dùng Mới</div>
-                  <div className="value">
-                    <span className="indicator indicator-equal mdi mdi-chevron-right"></span>
-                    <span className="number">113</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {/* Thêm các widget khác ở đây */}
-          </div>
+      {loading ? (
+        <p style={{ textAlign: 'center' }}>Loading...</p>  // Display loading state
+      ) : (
+        <h2 style={{ textAlign: 'center' }}>Total Orders: {totalOrders}</h2>
+      )}
 
-          <div className="row">
-            <div className="col-md-12">
-              <div className="widget widget-fullwidth be-loading">
-                <div className="widget-head">
-                  <span className="title">Chuyển động Gần đây</span>
-                </div>
-                <div className="widget-chart-container">
-                  <div id="main-chart" style={{ height: "260px" }}></div>
-                </div>
-              </div>
-            </div>
-          </div>
+      <div style={{ textAlign: 'center' }}>
+        <label htmlFor="year">Select Year: </label>
+        <select
+          id="year"
+          value={selectedYear}
+          onChange={(e) => setSelectedYear(e.target.value)}
+        >
+          <option value="">--Select Year--</option>
+          {years.map(year => (
+            <option key={year} value={year}>{year}</option>
+          ))}
+        </select>
 
-          {/* Bảng */}
-          <div className="row">
-            <div className="col-12 col-lg-6">
-              <div className="card card-table">
-                <div className="card-header">
-                  <div className="title">Mua hàng</div>
-                </div>
-                <div className="card-body table-responsive">
-                  <table className="table table-striped table-borderless">
-                    <thead>
-                      <tr>
-                        <th>Sản phẩm</th>
-                        <th className="number">Giá</th>
-                        <th>Ngày</th>
-                        <th>Trạng thái</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>Sony Xperia M4</td>
-                        <td className="number">$149</td>
-                        <td>23 Tháng 8, 2018</td>
-                        <td className="text-success">Higi</td>
-                      </tr>
-                      {/* Thêm các hàng khác */}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-            {/* Thêm bảng khác nếu cần */}
-          </div>
-        </div>
+        <label htmlFor="month">Select Month: </label>
+        <select
+          id="month"
+          value={selectedMonth}
+          onChange={(e) => setSelectedMonth(e.target.value)}
+        >
+          <option value="">--Select Month--</option>
+          {months.map(month => (
+            <option key={month} value={month}>{month}</option>
+          ))}
+        </select>
+
+        <button onClick={handleSearch}>Search</button>
       </div>
+
+      <h3 style={{ textAlign: 'center' }}>Monthly Revenue</h3>
+      {error && <p style={{ textAlign: 'center', color: 'red' }}>{error}</p>}  {/* Display error message */}
+      {isDataAvailable ? (
+        <table style={{ width: '100%', textAlign: 'center', borderCollapse: 'collapse' }}>
+          <thead>
+            <tr>
+              <th>Year</th>
+              <th>Month</th>
+              <th>Monthly Revenue</th>
+            </tr>
+          </thead>
+          <tbody>
+            {monthlyRevenue.map((data, index) => (
+              <tr key={index}>
+                <td>{data[0]}</td>
+                <td>{data[1]}</td>
+                <td>{data[2]}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <p style={{ textAlign: 'center', color: 'red' }}>No Data Available</p>
+      )}
     </div>
   );
 };
 
-export default index;
+export default Dashboard;

@@ -10,12 +10,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import JAVA6.service.OrderService;
+import JAVA6.service.UsersService; // Make sure you have this service
+import io.jsonwebtoken.lang.Collections;
 
 @RestController
 @RequestMapping("/api/orders")
 public class TongController {
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private UsersService usersService; // Add this to access user data
 
     @GetMapping("/total")
     public ResponseEntity<Long> getTotalOrders() {
@@ -23,4 +27,19 @@ public class TongController {
         return ResponseEntity.ok(totalOrders);
     }
 
+    @GetMapping("/total-users") // New endpoint to fetch total users
+    public ResponseEntity<Long> getTotalUsers() {
+        Long totalUsers = usersService.getTotalCustomers(); // Ensure this method exists in your service
+        return ResponseEntity.ok(totalUsers);
+    }
+
+    @GetMapping("/monthly-revenue")
+    public ResponseEntity<List<Object[]>> getMonthlyRevenue(@RequestParam(required = false) Integer year,
+            @RequestParam(required = false) Integer month) {
+        if (year != null && month != null) {
+            List<Object[]> revenueData = orderService.getMonthlyRevenueByYearAndMonth(year, month);
+            return ResponseEntity.ok(revenueData);
+        }
+        return ResponseEntity.badRequest().body(Collections.emptyList());
+    }
 }
