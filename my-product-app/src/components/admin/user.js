@@ -102,7 +102,7 @@ const UserManagement = () => {
                                 <div className="card-header">
 
                                     <h5 className="card-title m-0" style={{ fontSize: '30px', fontWeight: '700' }}>Quản lý khách hàng</h5>
-                                    <button
+                                    {/* <button
                                         className="btn btn-light"
                                         style={{
                                             marginTop: '18px',
@@ -120,7 +120,7 @@ const UserManagement = () => {
                                         onClick={handleAddUser}
                                     >
                                         <i className="bi bi-plus-circle" style={{ fontSize: '32px' }}></i>
-                                    </button>
+                                    </button> */}
 
 
 
