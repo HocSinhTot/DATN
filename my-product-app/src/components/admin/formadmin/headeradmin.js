@@ -308,7 +308,7 @@ export default function App() {
 									<li><a href="favourite"><i class="icon mdi mdi-view-list"></i><span>Quản
 										lý yêu thích</span></a></li>
 									<li class="divider">Thống kê</li>
-									<li><a href="#"><i class="icon mdi mdi-chart-donut"></i><span>Doanh
+									<li><a href="totalRevenue"><i class="icon mdi mdi-chart-donut"></i><span>Doanh
 										thu</span></a></li>
 									<li><a href="#"><i class="icon mdi mdi-chart-donut"></i><span>Tồn
 										kho</span></a></li>
