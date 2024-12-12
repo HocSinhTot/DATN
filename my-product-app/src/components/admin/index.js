@@ -15,44 +15,41 @@ const Dashboard = () => {
   useEffect(() => {
     setLoading(true);
 
-    // Lấy tổng số đơn hàng
+    // Fetch total data
     axios.get("http://localhost:8080/api/orders/total")
       .then((response) => {
         setTotalOrders(response.data);
       })
       .catch((error) => {
-        console.error("Lỗi khi lấy tổng số đơn hàng:", error);
-        setError("Không thể lấy tổng số đơn hàng.");
+        console.error("Error fetching total orders:", error);
+        setError("Unable to fetch total orders.");
       });
 
-    // Lấy tổng số người dùng
     axios.get("http://localhost:8080/api/orders/total-users")
       .then((response) => {
         setTotalUsers(response.data);
       })
       .catch((error) => {
-        console.error("Lỗi khi lấy tổng số người dùng:", error);
-        setError("Không thể lấy tổng số người dùng.");
+        console.error("Error fetching total users:", error);
+        setError("Unable to fetch total users.");
       });
 
-    // Lấy tổng số sản phẩm
     axios.get("http://localhost:8080/api/orders/total-products")
       .then((response) => {
         setTotalProducts(response.data);
       })
       .catch((error) => {
-        console.error("Lỗi khi lấy tổng số sản phẩm:", error);
-        setError("Không thể lấy tổng số sản phẩm.");
+        console.error("Error fetching total products:", error);
+        setError("Unable to fetch total products.");
       });
 
-    // Lấy tổng doanh thu
     axios.get("http://localhost:8080/api/orders/total-revenue")
       .then((response) => {
         setTotalRevenue(response.data);
       })
       .catch((error) => {
-        console.error("Lỗi khi lấy tổng doanh thu:", error);
-        setError("Không thể lấy tổng doanh thu.");
+        console.error("Error fetching total revenue:", error);
+        setError("Unable to fetch total revenue.");
       })
       .finally(() => {
         setLoading(false);
@@ -77,11 +74,10 @@ const Dashboard = () => {
         <meta name="author" content="" />
         <link rel="shortcut icon" href="assets/img/logo-fav.png" />
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
-        <title>Bảng điều khiển Beagle</title>
+        <title>Dashboard</title>
       </Helmet>
 
       <div className="container mt-5">
-        <h1 className="text-center mb-5" style={{ fontSize: '36px', color: '#333' }}>Trang Quản lý</h1>
 
         {loading ? (
           <div className="d-flex justify-content-center">
@@ -90,38 +86,37 @@ const Dashboard = () => {
             </div>
           </div>
         ) : (
-          <div>
-            <div className="row mb-4">
-              {/* Card for Orders */}
-              <div className="col-md-3 mb-4">
-                <div className="card shadow-sm p-4 text-center">
-                  <h5 className="card-title">Tổng số đơn hàng</h5>
-                  <p className="card-text">{totalOrders}</p>
-                </div>
+          <div className="row mb-4">
+            {/* Card for Orders */}
+            <div className="col-md-3 mb-4">
+              <div className="card shadow-lg p-4 text-center bg-gradient text-primary" style={{ width: '200px' }}>
+                <i className="bi bi-cart-fill mb-3" style={{ fontSize: "2rem" }}></i>
+                <h5 className="card-title">Tổng số đơn hàng</h5>
+                <p className="card-text">{totalOrders}</p>
               </div>
-              {/* Card for Users */}
-              <div className="col-md-3 mb-4">
-                <div className="card shadow-sm p-4 text-center">
-                  <h5 className="card-title">Tổng số người dùng</h5>
-                  <p className="card-text">{totalUsers}</p>
-                </div>
+            </div>
+            {/* Card for Users */}
+            <div className="col-md-3 mb-4">
+              <div className="card shadow-lg p-4 text-center bg-gradient text-info" style={{ width: '200px' }}>
+                <i className="bi bi-person-fill mb-3" style={{ fontSize: "2rem" }}></i>
+                <h5 className="card-title">Tổng người dùng</h5>
+                <p className="card-text">{totalUsers}</p>
               </div>
-              {/* Card for Products */}
-              <div className="col-md-3 mb-4">
-                <div className="card shadow-sm p-4 text-center">
-                  <h5 className="card-title">Tổng số sản phẩm</h5>
-                  <p className="card-text">{totalProducts}</p>
-                </div>
+            </div>
+            {/* Card for Products */}
+            <div className="col-md-3 mb-4">
+              <div className="card shadow-lg p-4 text-center bg-gradient text-warning" style={{ width: '200px' }}>
+                <i className="bi bi-box-fill mb-3" style={{ fontSize: "2rem" }}></i>
+                <h5 className="card-title">Tổng số sản phẩm</h5>
+                <p className="card-text">{totalProducts}</p>
               </div>
-              {/* Card for Revenue */}
-              <div className="col-md-3 mb-4">
-                <div className="card shadow-sm p-4 text-center" style={{
-                  width: '214px',
-                  height: '107px'
-                }}>
-                  <h5 className="card-title">Tổng doanh thu</h5>
-                  <p className="card-text">{formatCurrency(totalRevenue)}</p>
-                </div>
+            </div>
+            {/* Card for Revenue */}
+            <div className="col-md-3 mb-4">
+              <div className="card shadow-lg p-4 text-center bg-gradient text-success">
+                <i className="bi bi-currency-dollar mb-3" style={{ fontSize: "2rem" }}></i>
+                <h5 className="card-title">Tổng doanh thu</h5>
+                <p className="card-text">{formatCurrency(totalRevenue)}</p>
               </div>
             </div>
           </div>
@@ -132,6 +127,7 @@ const Dashboard = () => {
         .card {
           transition: all 0.3s ease;
           border-radius: 12px;
+          background-color: #ffffff;
         }
 
         .card:hover {
@@ -140,34 +136,46 @@ const Dashboard = () => {
           cursor: pointer;
         }
 
-        h1 {
-          font-size: 36px;
+        .card-title {
+          font-size: 18px;
           font-weight: bold;
           color: #2c3e50;
         }
 
-        .card-title {
-          font-size: 20px;
-          font-weight: 600;
-          color: #34495e;
+        .card-text {
+          font-size: 24px;
+          font-weight: 700;
         }
 
-        .card-shadow {
-          box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+        .bg-gradient {
+          background: linear-gradient(145deg, #f7f7f7, #e9e9e9);
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
         .container {
-          padding: 40px;
+          padding: 30px;
+        }
+
+        h1 {
+          font-size: 36px;
+          font-weight: bold;
+          color: #34495e;
         }
 
         .spinner-border {
-          color: #4CAF50;
+          color: #2ecc71;
         }
 
-        .card-text {
-          font-size: 26px;
-          font-weight: 700;
-          color: #1abc9c;
+        .text-center {
+          color: #2c3e50;
+        }
+
+        .row {
+          margin-top: 30px;
+        }
+
+        .col-md-3 {
+          margin-bottom: 20px;
         }
       `}</style>
     </div>
