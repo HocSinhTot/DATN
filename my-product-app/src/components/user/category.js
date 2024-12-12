@@ -9,7 +9,7 @@ const Category = ({ keyword, categoryId: headerCategoryId, setCategoryId }) => {
   const [currentPage, setCurrentPage] = useState(1); // Trang hiện tại
   const [totalPages, setTotalPages] = useState(1); // Tổng số trang
   const [categoryId, setCategoryIdLocal] = useState(headerCategoryId); // Danh mục trong trang, mặc định là giá trị từ Header
-  const itemsPerPage = 16; // 4 hàng x 4 sản phẩm
+  const itemsPerPage = 20; // 4 hàng x 4 sản phẩm
   const [minPrice, setMinPrice] = useState(null);
   const [maxPrice, setMaxPrice] = useState(null);
   const [sort, setSort] = useState(null);
@@ -211,14 +211,10 @@ const Category = ({ keyword, categoryId: headerCategoryId, setCategoryId }) => {
 
 
   return (
-    <div className="body-content outer-top-xs">
+    <div className="container-fluid">
       <div
         style={{
-          width: '100%',
-          maxWidth: '1400px', // Tùy chỉnh chiều rộng tối đa nếu cần
-          margin: '0 auto', // Căn giữa
-          paddingLeft: '15px', // Khoảng cách bên trái
-          paddingRight: '15px', // Khoảng cách bên phải
+         
         }}
       >
 
@@ -231,6 +227,7 @@ const Category = ({ keyword, categoryId: headerCategoryId, setCategoryId }) => {
               width: '100%', // Đảm bảo chiều rộng của div chiếm toàn bộ chiều rộng
               maxWidth: '1500px', // Bạn có thể thay đổi maxWidth theo ý muốn
               margin: '0 auto', // Căn giữa phần tử
+              backgroundColor: 'white',
             }}
 
 
@@ -243,17 +240,19 @@ const Category = ({ keyword, categoryId: headerCategoryId, setCategoryId }) => {
 
 
           >
-            <div id="category" className="category-carousel hidden-xs">
-              <div className="item">
-                <div className="image" style={{ height: "100% " }}>
-                  <img
-                    src="assets/images/banners/cmm.webp"
-                    alt=""
-                    className="img-responsive"
-                  />
-                </div>
-              </div>
-            </div>
+           <div id="category" className="category-carousel hidden-xs">
+  <div className="item">
+    <div className="image" style={{ height: "380px" }}> 
+      <img
+        src="https://cdn.kalvo.com/uploads/img/gallery/63607-tecno-camon-30s-pro-4.jpg"
+        alt=""
+        style={{ width: "100%", height: "100%" }} 
+        className="img-responsive"
+      />
+    </div>
+  </div>
+</div>
+
             <div
               className="clearfix filters-container"
               style={{
@@ -262,7 +261,7 @@ const Category = ({ keyword, categoryId: headerCategoryId, setCategoryId }) => {
                 gap: '15px',
                 marginBottom: '20px',
                 padding: '15px',
-                backgroundColor: '#f1f1f1',
+                backgroundColor: 'white',
                 borderRadius: '8px',
               }}
             >
@@ -356,8 +355,8 @@ const Category = ({ keyword, categoryId: headerCategoryId, setCategoryId }) => {
                         {currentProducts.length > 0 ? (
                           currentProducts.map((product) => {
                             const firstImageUrl =
-                              product.productsImages.length > 0
-                                ? `/assets/images/${product.productsImages[0].image.url}`
+                              product.images.length > 0
+                                ? `/assets/images/${product.images[0].url}`
                                 : 'default-image.jpg';
 
                             return (

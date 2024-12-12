@@ -54,7 +54,7 @@ const ProductDetail = () => {
 
             // Đặt ảnh đầu tiên của màu này làm ảnh lớn ban đầu
             if (images.length > 0) {
-              setCurrentImage(images[0].image.url);
+              setCurrentImage(images[0].url);
             }
           }
         })
@@ -97,7 +97,7 @@ const ProductDetail = () => {
 
     // Cập nhật ảnh lớn theo màu mới
     if (images.length > 0) {
-      setCurrentImage(images[0].image.url);
+      setCurrentImage(images[0].url);
     }
   };
   const navigate = useNavigate();  // Use useNavigate instead of useHistory
@@ -184,8 +184,8 @@ const ProductDetail = () => {
         className="mySwiper">
                     {similarProducts.length > 0 ? (
                       similarProducts.map((product) => {
-                        const firstImageUrl = product.productsImages.length > 0
-                          ? `/assets/images/${product.productsImages[0].image.url}`
+                        const firstImageUrl = product.images.length > 0
+                          ? `/assets/images/${product.images[0].url}`
                           : 'default-image.jpg';
 
                         return (
