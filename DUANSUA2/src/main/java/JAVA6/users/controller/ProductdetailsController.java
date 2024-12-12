@@ -17,7 +17,6 @@ import JAVA6.Model.ColorModel;
 import JAVA6.Model.ImageModel;
 
 import JAVA6.repository.ProductdetailsRepository;
-import JAVA6.service.ImagesService;
 import JAVA6.service.ProductDetailsService;
 
 
@@ -28,8 +27,7 @@ public class ProductdetailsController {
     @Autowired
     private ProductDetailsService productDetailsService;
 
-    @Autowired
-    private ImagesService imagesService;
+
 
     @Autowired
     private ProductdetailsRepository productdetailsRepository;
