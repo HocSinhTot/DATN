@@ -35,46 +35,45 @@ public class OrderController {
         return ResponseEntity.ok(orderList); // Return orders as JSON
     }
 
-     // API to get all order statuses
-     @GetMapping("/orderStatuses")
-     public ResponseEntity<List<OrderStatusModel>> listOrderStatuses() {
-         List<OrderStatusModel> statuses = orderService.getAllOrderStatuses();
-         return ResponseEntity.ok(statuses); // Return order statuses as JSON
-     }
-     @PostMapping("/{orderId}/updateStatus")
-     public ResponseEntity<String> updateOrderStatus(
-         @PathVariable Integer orderId, // Thêm @PathVariable để nhận orderId từ URL
-         @RequestBody OrderStatusUpdateRequest request) {
-         
-         orderService.updateOrderStatus(orderId, request.getStatusId()); // Sử dụng orderId từ URL
-         return ResponseEntity.ok("Order status updated successfully");
-     }
+    // API to get all order statuses
+    @GetMapping("/orderStatuses")
+    public ResponseEntity<List<OrderStatusModel>> listOrderStatuses() {
+        List<OrderStatusModel> statuses = orderService.getAllOrderStatuses();
+        return ResponseEntity.ok(statuses); // Return order statuses as JSON
+    }
 
-  
+    @PostMapping("/{orderId}/updateStatus")
+    public ResponseEntity<String> updateOrderStatus(
+            @PathVariable Integer orderId, // Thêm @PathVariable để nhận orderId từ URL
+            @RequestBody OrderStatusUpdateRequest request) {
+
+        orderService.updateOrderStatus(orderId, request.getStatusId()); // Sử dụng orderId từ URL
+        return ResponseEntity.ok("Order status updated successfully");
+    }
 
     // DTO class to handle status update request (for POST method)
     public static class OrderStatusUpdateRequest {
-    private Integer orderId;
-    private Integer statusId;
+        private Integer orderId;
+        private Integer statusId;
 
-    // Getters and Setters
-    public Integer getOrderId() {
-    return orderId;
-    }
+        // Getters and Setters
+        public Integer getOrderId() {
+            return orderId;
+        }
 
-    public void setOrderId(Integer orderId) {
-    this.orderId = orderId;
-    }
+        public void setOrderId(Integer orderId) {
+            this.orderId = orderId;
+        }
 
-    public Integer getStatusId() {
-    return statusId;
-    }
+        public Integer getStatusId() {
+            return statusId;
+        }
 
-    public void setStatusId(Integer statusId) {
-    this.statusId = statusId;
+        public void setStatusId(Integer statusId) {
+            this.statusId = statusId;
+        }
     }
-    }
-      // // API to get details of a specific order
+    // // API to get details of a specific order
     // @GetMapping("/{orderId}/details")
     // public ResponseEntity<OrderDetailsResponse>
     // viewOrderDetails(@PathVariable("orderId") int orderId) {

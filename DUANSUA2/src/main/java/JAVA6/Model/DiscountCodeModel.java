@@ -6,9 +6,8 @@ import java.time.LocalDate;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Data
+
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "DiscountCode")
 public class DiscountCodeModel {
@@ -21,9 +20,6 @@ public class DiscountCodeModel {
     @Column(name = "code", nullable = false)
     private String code;
 
-    @ManyToOne
-    @JoinColumn(name = "discount_type_id")
-    private DiscountTypeModel discountType;
 
     @Column(name = "value", nullable = false)
     private BigDecimal value;
@@ -33,14 +29,14 @@ public class DiscountCodeModel {
 
     @Column(name = "end_date", nullable = false)
     private Date endDate;
-
-    // Phương thức này trả về tỷ lệ giảm giá dưới dạng phần trăm
-    public BigDecimal getDiscountPercentage() {
-        if (discountType != null && discountType.getId() == 1) { // Giả sử 1 là loại giảm giá phần trăm
-            return value != null ? value.divide(BigDecimal.valueOf(100)) : BigDecimal.ZERO;
-        }
-        return BigDecimal.ZERO; // Nếu không phải loại phần trăm, trả về 0
+// Phương thức này trả về tỷ lệ giảm giá dưới dạng phần trăm
+public BigDecimal getDiscountPercentage() {
+    if (value != null && value.compareTo(BigDecimal.ZERO) > 0) { 
+        // Kiểm tra giá trị không null và lớn hơn 0
+        return value.divide(BigDecimal.valueOf(100));
     }
+    return BigDecimal.ZERO; // Nếu giá trị không hợp lệ, trả về 0
+}
 
     // Phương thức kiểm tra ngày hết hạn của mã giảm giá
     public boolean isValid() {
@@ -52,12 +48,6 @@ public class DiscountCodeModel {
         return !currentDate.isBefore(start) && !currentDate.isAfter(end);
     }
 
-	public int getDiscountTypeId() {
-		// Kiểm tra discountType có null hay không, nếu có trả về 0 hoặc giá trị mặc định khác
-		if (discountType != null) {
-			return discountType.getId();
-		}
-		return 0; // Trả về giá trị mặc định nếu discountType là null
-	}
+	
 	
 }

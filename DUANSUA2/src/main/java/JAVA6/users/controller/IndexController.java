@@ -15,7 +15,7 @@ import JAVA6.Model.CategoryModel;
 import JAVA6.Model.ImageModel;
 import JAVA6.Model.BrandModel;
 import JAVA6.Model.ProductModel;
-import JAVA6.service.ImagesService;
+
 import JAVA6.service.ProductService;
 import JAVA6.service.BrandService;
 import JAVA6.service.CategoryService;
@@ -35,8 +35,7 @@ public class IndexController {
     @Autowired
     private CategoryService categoryService;
 
-    @Autowired
-    private ImagesService imagesService;
+
 
     @Autowired
     private ProductdetailsRepository productdetailsRepository;

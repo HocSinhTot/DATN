@@ -1,63 +1,61 @@
-package JAVA6.service;
+// package JAVA6.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
+// import java.util.List;
+// import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+// import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.stereotype.Service;
 
-import JAVA6.Model.CapacityModel;
-import JAVA6.Model.ImageModel;
-import JAVA6.Model.ProductsImagesModel;
-import JAVA6.Model.ProductsImagesModel.ProductsImagesId;
-import JAVA6.repository.ImageRepository;
-import JAVA6.repository.ProductsImagesRepository;
+// import JAVA6.Model.CapacityModel;
+// import JAVA6.Model.ImageModel;
 
-@Service
-public class ImagesService {
+// import JAVA6.repository.ImageRepository;
 
-    @Autowired
-    private ProductsImagesRepository productsImagesRepository;
-    @Autowired
-    private ImageRepository imageRepository;
+// @Service
+// public class ImagesService {
 
-    // Sửa phương thức để tìm hình ảnh theo ID
-    public ImageModel getImageById(int productId, int imageId, int colorId) {
-        // Tạo đối tượng ProductsImagesId để sử dụng làm khóa chính
-        ProductsImagesId id = new ProductsImagesId(productId, imageId, colorId);
+//     @Autowired
+//     private ProductsImagesRepository productsImagesRepository;
+//     @Autowired
+//     private ImageRepository imageRepository;
 
-        // Tìm kiếm bằng ProductsImagesId
-        return productsImagesRepository.findById(id)
-                .map(productsImages -> productsImages.getImage()) // Trả về ImageModel nếu tìm thấy
-                .orElse(null); // Trả về null nếu không tìm thấy
-    }
+//     // Sửa phương thức để tìm hình ảnh theo ID
+//     public ImageModel getImageById(int productId, int imageId, int colorId) {
+//         // Tạo đối tượng ProductsImagesId để sử dụng làm khóa chính
+//         ProductsImagesId id = new ProductsImagesId(productId, imageId, colorId);
 
-    // Lấy danh sách hình ảnh theo productId
-    public List<ImageModel> getImagesByProductId(Integer productId) {
-        // Tìm tất cả các bản ghi trong ProductsImagesModel liên kết với productId
-        List<ProductsImagesModel> productsImages = productsImagesRepository.findByProductId(productId);
+//         // Tìm kiếm bằng ProductsImagesId
+//         return productsImagesRepository.findById(id)
+//                 .map(productsImages -> productsImages.getImage()) // Trả về ImageModel nếu tìm thấy
+//                 .orElse(null); // Trả về null nếu không tìm thấy
+//     }
 
-        // Chuyển đổi từ ProductsImagesModel sang ImageModel
-        return productsImages.stream()
-                .map(ProductsImagesModel::getImage)
-                .collect(Collectors.toList());
-    }
+//     // Lấy danh sách hình ảnh theo productId
+//     public List<ImageModel> getImagesByProductId(Integer productId) {
+//         // Tìm tất cả các bản ghi trong ProductsImagesModel liên kết với productId
+//         List<ImagesModel> productsImages = productsImagesRepository.findByProductId(productId);
 
-    public List<ImageModel> getAllImages() {
-        // TODO Auto-generated method stub
-        return imageRepository.findAll();
-    }
+//         // Chuyển đổi từ ProductsImagesModel sang ImageModel
+//         return productsImages.stream()
+//                 .map(ProductsImagesModel::getImage)
+//                 .collect(Collectors.toList());
+//     }
+
+//     public List<ImageModel> getAllImages() {
+//         // TODO Auto-generated method stub
+//         return imageRepository.findAll();
+//     }
 
 
-    public void saveColor(ImageModel image) {
-        imageRepository.save(image);
-    }
+//     public void saveColor(ImageModel image) {
+//         imageRepository.save(image);
+//     }
 
-    public ImageModel getImageById(Integer id) {
-        return imageRepository.findById(id).orElse(null);
-    }
+//     public ImageModel getImageById(Integer id) {
+//         return imageRepository.findById(id).orElse(null);
+//     }
 
-    public void deleteImage(Integer id) {
-        imageRepository.deleteById(id);
-    }
-}
+//     public void deleteImage(Integer id) {
+//         imageRepository.deleteById(id);
+//     }
+// }

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';  
+import React, { useState } from 'react';
 import './App.css';
-import { Route, Routes, Navigate } from 'react-router-dom';  
+import { Route, Routes, Navigate } from 'react-router-dom';
 import Index from './components/user/index';
 import Cart from './components/user/cart';
 import Login from './components/accounts/login';
@@ -30,11 +30,16 @@ import EvaluaesAmin from './components/admin/evaluaes';
 import ProductsPrice from './components/admin/productprice';
 import ProductsImage from './components/admin/productimages';
 
+import ThongkeAdmin from './components/admin/Thongke';
+
 
 import OrderAmin from './components/admin/order';
 
 import OrderHistory from './components/user/order';
 import ProtectedRoute from './ProtectedRoute';
+
+
+
 
 
 
@@ -76,23 +81,23 @@ function App() {
 
         {/* Các route yêu cầu đăng nhập */}
         <Route path="/account" element={
-           <ProtectedRoute roles={['ROLE_USER', 'ROLE_ADMIN']}>
+          <ProtectedRoute roles={['ROLE_USER', 'ROLE_ADMIN']}>
             <>
               <Header setKeyword={setKeyword} setCategoryId={setCategoryId} />
               <Account />
               <Footer />
             </>
-            </ProtectedRoute>
-          } />
-            {/* Các route yêu cầu đăng nhập */}
- 
-          <Route path="/change" element={
-           <ProtectedRoute roles={['ROLE_USER', 'ROLE_ADMIN']}>
+          </ProtectedRoute>
+        } />
+        {/* Các route yêu cầu đăng nhập */}
+
+        <Route path="/change" element={
+          <ProtectedRoute roles={['ROLE_USER', 'ROLE_ADMIN']}>
             <>
-              <Change  />
+              <Change />
             </>
-            </ProtectedRoute>
-          } />
+          </ProtectedRoute>
+        } />
 
         <Route path="/history" element={
           <ProtectedRoute roles={['ROLE_USER', 'ROLE_ADMIN']}>
@@ -101,19 +106,19 @@ function App() {
               <OrderHistory />
               <Footer />
             </>
-            </ProtectedRoute>
+          </ProtectedRoute>
         } />
         <Route path="/like" element={
-            <ProtectedRoute roles={['ROLE_USER', 'ROLE_ADMIN']}>
+          <ProtectedRoute roles={['ROLE_USER', 'ROLE_ADMIN']}>
             <>
               <Header setKeyword={setKeyword} setCategoryId={setCategoryId} />
               <Favorite />
               <Footer />
             </>
-            </ProtectedRoute>
+          </ProtectedRoute>
         } />
         <Route path="/cart" element={
-            <ProtectedRoute roles={['ROLE_USER', 'ROLE_ADMIN']}>
+          <ProtectedRoute roles={['ROLE_USER', 'ROLE_ADMIN']}>
             <>
               <Header setKeyword={setKeyword} setCategoryId={setCategoryId} />
               <Cart />
@@ -122,15 +127,15 @@ function App() {
           </ProtectedRoute>
         } />
         <Route path="/invoice" element={
-            <ProtectedRoute roles={['ROLE_USER', 'ROLE_ADMIN']}>
+          <ProtectedRoute roles={['ROLE_USER', 'ROLE_ADMIN']}>
             <>
               <Header setKeyword={setKeyword} setCategoryId={setCategoryId} />
               <Invoice />
               <Footer />
             </>
-            </ProtectedRoute>
+          </ProtectedRoute>
         } />
-        <Route path="/vnPay" element={  <ProtectedRoute roles={['ROLE_USER', 'ROLE_ADMIN']}><VnPay /></ProtectedRoute>} />
+        <Route path="/vnPay" element={<ProtectedRoute roles={['ROLE_USER', 'ROLE_ADMIN']}><VnPay /></ProtectedRoute>} />
 
         {/* Routes cho admin (yêu cầu quyền admin) */}
         <Route path="/admin" element={
@@ -139,27 +144,27 @@ function App() {
               <Headeradmin />
               <Indexadmin />
             </>
-         </ProtectedRoute>
+          </ProtectedRoute>
         } />
         <Route path="/nguoidung" element={
-           <ProtectedRoute roles={['ROLE_ADMIN']}>
+          <ProtectedRoute roles={['ROLE_ADMIN']}>
             <>
               <Headeradmin />
               <UserAdmin />
             </>
-            </ProtectedRoute>
+          </ProtectedRoute>
         } />
-      
+
         <Route path="/products" element={
-           <ProtectedRoute roles={['ROLE_ADMIN']}>
+          <ProtectedRoute roles={['ROLE_ADMIN']}>
             <>
               <Headeradmin />
               <ProductAdmin />
             </>
-         </ProtectedRoute>
+          </ProtectedRoute>
         } />
         <Route path="/category" element={
-           <ProtectedRoute roles={['ROLE_ADMIN']}>
+          <ProtectedRoute roles={['ROLE_ADMIN']}>
             <>
               <Headeradmin />
               <CategoryAmin />
@@ -167,15 +172,15 @@ function App() {
           </ProtectedRoute>
         } />
         <Route path="/brands" element={
-            <ProtectedRoute roles={['ROLE_ADMIN']}>
+          <ProtectedRoute roles={['ROLE_ADMIN']}>
             <>
               <Headeradmin />
               <BrandsAmin />
             </>
-         </ProtectedRoute>
+          </ProtectedRoute>
         } />
         <Route path="/color" element={
-            <ProtectedRoute roles={['ROLE_ADMIN']}>
+          <ProtectedRoute roles={['ROLE_ADMIN']}>
             <>
               <Headeradmin />
               <ColorAmin />
@@ -183,7 +188,7 @@ function App() {
           </ProtectedRoute>
         } />
         <Route path="/capacity" element={
-            <ProtectedRoute roles={['ROLE_ADMIN']}>
+          <ProtectedRoute roles={['ROLE_ADMIN']}>
             <>
               <Headeradmin />
               <CapacityAmin />
@@ -191,55 +196,69 @@ function App() {
           </ProtectedRoute>
         } />
         <Route path="/images" element={
-           <ProtectedRoute roles={['ROLE_ADMIN']}>
+          <ProtectedRoute roles={['ROLE_ADMIN']}>
             <>
               <Headeradmin />
               <ImagesAmin />
             </>
-            </ProtectedRoute>
+          </ProtectedRoute>
         } />
         <Route path="/order" element={
-            <ProtectedRoute roles={['ROLE_ADMIN']}>
+          <ProtectedRoute roles={['ROLE_ADMIN']}>
             <>
               <Headeradmin />
               <OrderAmin />
             </>
-            </ProtectedRoute>
+          </ProtectedRoute>
         } />
         <Route path="/favourite" element={
-           <ProtectedRoute roles={['ROLE_ADMIN']}>
+          <ProtectedRoute roles={['ROLE_ADMIN']}>
             <>
               <Headeradmin />
               <FavouriteAmin />
             </>
           </ProtectedRoute>
         } />
-        
+
         <Route path="/evaluaes" element={
-           <ProtectedRoute roles={['ROLE_ADMIN']}>
+          <ProtectedRoute roles={['ROLE_ADMIN']}>
             <>
               <Headeradmin />
               <EvaluaesAmin />
             </>
-            </ProtectedRoute>
+          </ProtectedRoute>
         } />
-         <Route path="/products-prices" element={
-           <ProtectedRoute roles={['ROLE_ADMIN']}>
+        <Route path="/products-prices" element={
+          <ProtectedRoute roles={['ROLE_ADMIN']}>
             <>
               <Headeradmin />
               <ProductsPrice />
             </>
-            </ProtectedRoute>
+          </ProtectedRoute>
         } />
-         <Route path="/products-images" element={
-           <ProtectedRoute roles={['ROLE_ADMIN']}>
+        <Route path="/products-images" element={
+          <ProtectedRoute roles={['ROLE_ADMIN']}>
             <>
               <Headeradmin />
               <ProductsImage />
             </>
-            </ProtectedRoute>
+          </ProtectedRoute>
+        } />
+
+        <Route path="/totalRevenue" element={
+          <ProtectedRoute roles={['ROLE_ADMIN']}>
+            <>
+              <Headeradmin />
+              <ThongkeAdmin />
+            </>
+          </ProtectedRoute>
         } />
       </Routes>
+
+
+
+
+
     </div>
   );
 }

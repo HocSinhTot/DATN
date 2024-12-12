@@ -26,7 +26,7 @@ import JAVA6.service.BrandService;
 import JAVA6.service.CapacityService;
 import JAVA6.service.CategoryService;
 import JAVA6.service.ColorService;
-import JAVA6.service.ImagesService;
+// import JAVA6.service.ImagesService;
 import JAVA6.service.UserService;
 
 import java.io.IOException;
@@ -44,7 +44,7 @@ public class ImageController {
     @Autowired
     private ImageRepository imageRepository ;
 
-    private  ImagesService imagesService;
+    // private  ImagesService imagesService;
 
     // Lấy danh sách tất cả người dùng
     @GetMapping
