@@ -51,7 +51,7 @@ public class CapacityController {
         if (capacity.isEmpty()) {
             return ResponseEntity.noContent().build(); // Trả về 204 nếu danh sách rỗng
         }
-        return ResponseEntity.ok(capacity); // Trả về danh sách người dùng
+        return ResponseEntity.ok(capacity); // Trả về danh sách dung lượng
     }
 
     // Lấy thông tin người dùng theo ID
@@ -66,7 +66,7 @@ public class CapacityController {
                 .orElse(ResponseEntity.notFound().build()); // Trả về 404 nếu không tìm thấy
     }
 
-    // Thêm người dùng mới hoặc khách hàng
+    // Thêm dung lượng
 @PostMapping
 public ResponseEntity<String> createCapacity(
         @RequestPart("capacity") String capacityJson) {

@@ -161,41 +161,41 @@ const CapacityManagement = () => {
                 </div>
             </div>
 
-            {/* Modal Popup */}
-            {popup.show && (
-                <div style={{
-                    position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
-                    backgroundColor: 'rgba(0, 0, 0, 0.7)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 9999
-                }}>
+                {/* Modal Popup */}
+                {popup.show && (
                     <div style={{
-                        backgroundColor: '#fff', padding: '30px 40px', borderRadius: '16px', boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)', textAlign: 'center', width: '660px', maxWidth: '90%'
+                        position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+                        backgroundColor: 'rgba(0, 0, 0, 0.7)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 9999
                     }}>
-                        <h3>{popup.type === 'edit' ? 'Edit Capacity' : 'Add Capacity'}</h3>
-                        <form onSubmit={handleSubmit} style={{ maxWidth: '600px', margin: '0 auto' }}>
-                            <div className="form-group">
-                                <label htmlFor="name">Capacity Name</label>
-                                <input
-                                    type="text"
-                                    id="name"
-                                    name="name"
-                                    className={`form-control ${errors.name ? 'is-invalid' : ''}`}
-                                    value={formData.name}
-                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    required
-                                />
-                                {errors.name && <div className="invalid-feedback">{errors.name}</div>}
-                            </div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
-                                <button type="submit" className="btn btn-primary">
-                                    {popup.type === 'edit' ? 'Update' : 'Add'}
-                                </button>
-                                <button type="button" onClick={closeModal} className="btn btn-secondary">Close</button>
-                            </div>
-                        </form>
+                        <div style={{
+                            backgroundColor: '#fff', padding: '30px 40px', borderRadius: '16px', boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)', textAlign: 'center', width: '660px', maxWidth: '90%'
+                        }}>
+                            <h3>{popup.type === 'edit' ? 'Edit Capacity' : 'Add Capacity'}</h3>
+                            <form onSubmit={handleSubmit} style={{ maxWidth: '600px', margin: '0 auto' }}>
+                                <div className="form-group">
+                                    <label htmlFor="name">Capacity Name</label>
+                                    <input
+                                        type="text"
+                                        id="name"
+                                        name="name"
+                                        className={`form-control ${errors.name ? 'is-invalid' : ''}`}
+                                        value={formData.name}
+                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                        required
+                                    />
+                                    {errors.name && <div className="invalid-feedback">{errors.name}</div>}
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
+                                    <button type="submit" className="btn btn-primary">
+                                        {popup.type === 'edit' ? 'Update' : 'Add'}
+                                    </button>
+                                    <button type="button" onClick={closeModal} className="btn btn-secondary">Close</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )}
+            </div>
     );
 };
 
