@@ -118,10 +118,7 @@ public class ProductModel {
 				'}';
 	}
 
-	public List<ImageModel> getImages() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'getImages'");
-	}
+
 
     
 }

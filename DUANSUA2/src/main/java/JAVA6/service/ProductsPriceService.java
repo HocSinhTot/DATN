@@ -20,10 +20,10 @@ public class ProductsPriceService {
         return productsPriceRepository.findAll();
     }
 
-    // Lấy ProductsPrice theo productId
-    public List<ProductsPriceModel> getProductsPricesByProductId(Integer productId) {
-        return productsPriceRepository.findByIdProductId(productId);
-    }
+    // // Lấy ProductsPrice theo productId
+    // public List<ProductsPriceModel> getProductsPricesByProductId(Integer productId) {
+    //     return productsPriceRepository.findByIdProductId(productId);
+    // }
 
     // Tạo mới ProductsPrice
     public ProductsPriceModel createProductsPrice(ProductsPriceModel productsPrice) {

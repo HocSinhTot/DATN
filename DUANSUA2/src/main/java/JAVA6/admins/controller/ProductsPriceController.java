@@ -27,18 +27,18 @@ public class ProductsPriceController {
         }
     }
 
-    @GetMapping("/product/{productId}")
-    public ResponseEntity<List<ProductsPriceModel>> getProductsPricesByProductId(@PathVariable Integer productId) {
-        try {
-            List<ProductsPriceModel> result = productsPriceService.getProductsPricesByProductId(productId);
-            if (result.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            }
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
+    // @GetMapping("/product/{productId}")
+    // public ResponseEntity<List<ProductsPriceModel>> getProductsPricesByProductId(@PathVariable Integer productId) {
+    //     try {
+    //         List<ProductsPriceModel> result = productsPriceService.getProductsPricesByProductId(productId);
+    //         if (result.isEmpty()) {
+    //             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    //         }
+    //         return ResponseEntity.ok(result);
+    //     } catch (Exception e) {
+    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    //     }
+    // }
 
     @PostMapping
     public ResponseEntity<ProductsPriceModel> createProductsPrice(@RequestBody ProductsPriceModel productsPrice) {

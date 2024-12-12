@@ -73,12 +73,16 @@ const Management = () => {
     fetch(`http://localhost:8080/api/admin/products?page=${page}&size=${size}`)
       .then((response) => response.json())
       .then((data) => {
-        setProductList(data.content);
-        setTotalPages(data.totalPages);
+        if (Array.isArray(data.content)) {
+          setProductList(data.content);
+          setTotalPages(data.totalPages);
+        } else {
+          console.error("API response does not contain a valid 'content' array.");
+        }
       })
       .catch((error) => console.error("Error fetching products:", error));
   };
-
+  
   const handlePageSizeChange = (e) => {
     setPageSize(Number(e.target.value));
     setCurrentPage(0); // Reset về trang đầu tiên khi thay đổi số sản phẩm mỗi trang
@@ -194,15 +198,25 @@ if (response.ok) {
     fetchProducts(currentPage, pageSize); // Reload product list without search filter
   };
 // Hàm sắp xếp theo quantity
-  const sortProducts = (order) => {
-    return [...productList].sort((a, b) => {
-      if (order === "asc") {
-        return a.quantity - b.quantity; // Tăng dần
-      } else {
-        return b.quantity - a.quantity; // Giảm dần
-      }
-    });
-  };
+const sortProducts = (order) => {
+  if (!Array.isArray(productList) || productList.length === 0) {
+    console.error("productList is either not an array or is empty.");
+    return [];
+  }
+
+  return [...productList].sort((a, b) => {
+    const quantityA = a.quantity ?? 0; // Đảm bảo rằng giá trị là số
+    const quantityB = b.quantity ?? 0; // Đảm bảo rằng giá trị là số
+
+    if (order === "asc") {
+      return quantityA - quantityB; // Tăng dần
+    } else {
+      return quantityB - quantityA; // Giảm dần
+    }
+  });
+};
+
+
 
   // Hàm thay đổi thứ tự sắp xếp khi nhấn nút
   const toggleSortOrder = () => {
