@@ -43,7 +43,19 @@ public class ProductModel {
 	@JoinColumn(name = "brand_id", nullable = false)
 	
 	private BrandModel brand;
-
+	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@JsonManagedReference
+	private List<ImageModel> images;
+	
+	// Getter và Setter
+	public List<ImageModel> getImages() {
+		return images;
+	}
+	
+	public void setImages(List<ImageModel> images) {
+		this.images = images;
+	}
+	
 	// Phương thức tính giá tổng cộng nếu cần
 	public BigDecimal getTotalPrice() {
 		return price.multiply(BigDecimal.valueOf(quantity));
@@ -117,11 +129,5 @@ public class ProductModel {
 				", brand=" + (brand != null ? brand.getName() : "N/A") + // Lấy tên thương hiệu
 				'}';
 	}
-
-	public List<ImageModel> getImages() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'getImages'");
-	}
-
     
 }

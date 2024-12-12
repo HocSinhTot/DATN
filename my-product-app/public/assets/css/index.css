@@ -19,11 +19,14 @@
  
 .container-fluid {
     flex-direction: row; /* Đặt hàng ngang */
+    backgroundColor:white;
 }
 
 .row {
     align-items: stretch; /* Đảm bảo các phần tử con có cùng chiều cao */
+    marginTop: "-30px"
 }
+
 
 .image {
   width: 100%;
@@ -38,6 +41,7 @@
 }
 .container-fluid {
     padding: 0;
+    width: 100%;
 }
 
 

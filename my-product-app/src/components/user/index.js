@@ -203,8 +203,8 @@ const Index = () => {
   return (
     <>
     
-        <div className="container-fluid">
-          <div className="row">
+        <div className="container-fluid" style={{backgroundColor:"white"}}>
+          <div className="row" style={{marginTop: "-30px"}}>
             {/* Sidebar Section */}
             <div className="col-xs-12 col-sm-12 col-md-3 sidebar" style={{        width: '8%'}}>
               <SideMenu />
@@ -222,9 +222,9 @@ const Index = () => {
 
             </div>
 
-            <div className="col-xs-12 col-sm-12 col-md-9 homebanner-holder" style={{        width: '87%'}}>
+            <div className="col-xs-12 col-sm-12 col-md-9 homebanner-holder" style={{        width: '100%'}}>
 
-      <div id="hero" style={{paddingTop:'16px'}}>
+      <div id="hero" style={{paddingTop:'0px'}}>
         <Swiper
         autoplay={{
           delay: 2500,
@@ -395,7 +395,7 @@ const Index = () => {
       <div className="tab-pane in active" id="all">
         <div className="product-slider">
           <Swiper
-        slidesPerView={4}
+        slidesPerView={5}
         spaceBetween={30}
         loop={true}
         pagination={{
@@ -406,8 +406,8 @@ const Index = () => {
         className="mySwiper">
            {Array.isArray(products.all) && products.all.length > 0 ? (
   products.all.map((product) => {
-    const firstImageUrl = product.productsImages && product.productsImages.length > 0
-    ? `/assets/images/${product.productsImages[0].image.url}`
+    const firstImageUrl = product.images && product.images.length > 0
+    ? `/assets/images/${product.images[0].url}`
     : 'default-image.jpg';
   
     
@@ -513,20 +513,20 @@ const Index = () => {
     </div>
               </div>
               <div className="wide-banners wow fadeInUp outer-bottom-xs">
-                <div className="row">
-                  <div className="col-md-7 col-sm-6">
+                <div className="row " >
+                  <div className="col-md-7 col-sm-5 ">
                     <div className="wide-banner cnt-strip">
                       <div className="image">
                         <img className="img-responsive" src="\assets\\images\banners\bannerdt4.webp"
-                          alt="" />
+                          alt=""  style={{ height: '80%' }}/>
                       </div>
 
                     </div>
                   </div>
-                  <div className="col-md-5 col-sm-6">
+                  <div className="col-md-5 col-sm-5">
                     <div className="wide-banner cnt-strip">
                       <div className="image">
-                        <img className="img-responsive" src="\assets\\images\banners\bannerdt3.jpg"
+                        <img className="img-responsive" src="\assets\\images\banners\bannerdt3.jpg" style={{ height: '80%' }}
                           alt="" />
                       </div>
                     </div>
@@ -538,7 +538,7 @@ const Index = () => {
                 <h3 className="section-title">ĐIỆN THOẠI GIÁ RẺ</h3>
                 <div className="product-slider">
           <Swiper
-        slidesPerView={4}
+        slidesPerView={5}
         spaceBetween={30}
         loop={true}
         pagination={{
@@ -549,8 +549,8 @@ const Index = () => {
         className="mySwiper">
            {Array.isArray(products.cheap) && products.cheap.length > 0 ? (
   products.phonesCheap.map((product) => {
-    const firstImageUrl = product.productsImages && product.productsImages.length > 0
-    ? `/assets/images/${product.productsImages[0].image.url}`
+    const firstImageUrl = product.images && product.images.length > 0
+    ? `/assets/images/${product.images[0].url}`
     : 'default-image.jpg';
   
     
@@ -570,7 +570,7 @@ const Index = () => {
                               transition: 'transform 0.3s ease-in-out',
                             }}
                             src={firstImageUrl}
-                            alt={product.name}
+                            alt={firstImageUrl}
                             className="img-responsive"
                           />
                         </a>
@@ -659,7 +659,7 @@ const Index = () => {
                   <div className="col-md-12">
                     <div className="wide-banner cnt-strip">
                       <div className="image">
-                        <img className="img-responsive" style={{width : "1500px",height:"391px"}} src="\assets\\images\banners\bannerdt2.jpg"
+                        <img className="img-responsive" style={{width : "100%",height:"100%"}} src="https://content.vodafone.co.nz/dims4/default/d98478e/2147483647/strip/true/crop/2360x640+0+0/resize/1640x445!/quality/90/?url=http%3A%2F%2Fvodafonenz-brightspot.s3.amazonaws.com%2F3d%2F7e%2Fbc19d8a74fcea1c2532b2199c4b0%2Fcbu-presale-family-page-hello-banner-desktop-banner-iphone-12-pro-no-cta-copy-2x.png"
                           alt="" />
                       </div>
                      
@@ -677,7 +677,7 @@ const Index = () => {
                 <div className="product-slider">
             <div>
           <Swiper
-        slidesPerView={4}
+        slidesPerView={5}
         spaceBetween={30}
         loop={true}
         pagination={{
@@ -688,8 +688,8 @@ const Index = () => {
         className="mySwiper">
             {Array.isArray(products.accessoriesDiscount) && products.accessoriesDiscount.length > 0 ? (
   products.accessoriesDiscount.map((product) => {
-    const firstImageUrl = product.productsImages && product.productsImages.length > 0
-  ? `/assets/images/${product.productsImages[0].image.url}`
+    const firstImageUrl = product.images && product.images.length > 0
+  ? `/assets/images/${product.images[0].url}`
   : 'default-image.jpg';
 
     

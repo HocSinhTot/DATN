@@ -6,17 +6,22 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import JAVA6.Model.ImageModel;
 import JAVA6.Model.ProductModel;
 
 import JAVA6.Model.ProductsPriceModel;
-
+import JAVA6.repository.ImageRepository;
 import JAVA6.repository.ProductRepository;
 
 import JAVA6.repository.ProductsPriceRepository;
 import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +29,9 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final ProductsPriceRepository productsPriceRepository;
-   
+    @Autowired
+    private ImageRepository imageRepository;
+
 
     // Lấy sản phẩm theo các tiêu chí lọc với phân trang
     public Page<ProductModel> getProductsByFilters(
