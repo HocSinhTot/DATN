@@ -37,16 +37,6 @@ public class TongController {
         return ResponseEntity.ok(totalUsers);
     }
 
-    @GetMapping("/monthly-revenue")
-    public ResponseEntity<List<Object[]>> getMonthlyRevenue(@RequestParam(required = false) Integer year,
-            @RequestParam(required = false) Integer month) {
-        if (year != null && month != null) {
-            List<Object[]> revenueData = orderService.getMonthlyRevenueByYearAndMonth(year, month);
-            return ResponseEntity.ok(revenueData);
-        }
-        return ResponseEntity.badRequest().body(Collections.emptyList());
-    }
-
     @GetMapping("/total-products")
     public ResponseEntity<Long> getTotalProducts() {
         Long totalProducts = productService.getTotalProducts(); // Tạo phương thức này trong ProductService
@@ -59,5 +49,20 @@ public class TongController {
         Double totalRevenue = orderService.getTotalRevenue(); // Tạo phương thức getTotalRevenue() trong OrderService
         return ResponseEntity.ok(totalRevenue);
     }
+
+    
+        @GetMapping("/monthly-revenue")
+    public ResponseEntity<List<Object[]>> getMonthlyRevenueByYear(@RequestParam("year") Integer year) {
+        List<Object[]> monthlyRevenue = orderService.getMonthlyRevenueByYear(year);
+        return ResponseEntity.ok(monthlyRevenue);
+    
+    
+    }
+
+
+
+
+
+    
 
 }
