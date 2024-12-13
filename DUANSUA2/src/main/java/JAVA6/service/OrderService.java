@@ -59,12 +59,14 @@ public class OrderService {
         return orderRepository.countTotalOrders();
     }
 
-    public List<Object[]> getMonthlyRevenueByYearAndMonth(Integer year, Integer month) {
-        return orderRepository.getMonthlyRevenueByYearAndMonth(year, month);
-    }
-
     public Double getTotalRevenue() {
         return orderRepository.getTotalRevenue(); // Gọi phương thức trong repository
     }
 
+    public List<Object[]> getMonthlyRevenueByYear(Integer year) {
+        return orderRepository.getMonthlyRevenueByYear(year);
+    }
+
+    
 }
+
