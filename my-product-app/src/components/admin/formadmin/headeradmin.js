@@ -189,6 +189,15 @@ export default function App() {
 .left-sidebar-wrapper .sidebar-elements li a {
   transition: background-color 0.3s ease !important, color 0.3s ease !important;
 }
+.be-content{
+padding-top:100px;}
+
+.card-header{
+background: linear-gradient(90deg, rgb(44, 62, 80), rgb(52, 73, 94));
+}
+
+th{
+background: linear-gradient(90deg, rgb(44, 62, 80), rgb(52, 73, 94));}
 
 
 		
