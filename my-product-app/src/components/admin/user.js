@@ -89,7 +89,7 @@ const UserManagement = () => {
             )}
             <div className="be-wrapper be-fixed-sidebar" style={{ paddingTop: '0px' }}>
                 <div className="be-content">
-                    <div className="container-fluid" style={{ padding: '20px', backgroundColor: '#f9f9f9' }}>
+                    <div className="container-fluid" style={{ padding: '15px', backgroundColor: '#f9f9f9' }}>
                         <div className="content">
                             <div className="card">
                                 <div
@@ -146,16 +146,16 @@ const UserManagement = () => {
                                         <tbody>
                                             {userList.map((user, index) => (
                                                 <tr key={user.id}>
-                                                    <td style={{ padding: '20px' }}>{index + 1}</td>
-                                                    <td style={{ padding: '20px' }}>{user.username}</td>
-                                                    <td style={{ padding: '20px' }}>{user.email}</td>
+                                                    <td style={{ padding: '15px' }}>{index + 1}</td>
+                                                    <td style={{ padding: '15px' }}>{user.username}</td>
+                                                    <td style={{ padding: '15px' }}>{user.email}</td>
 
-                                                    <td style={{ padding: '20px' }}>{formatDate(user.birthday)}</td>
-                                                    <td style={{ padding: '20px' }}>{user.phone}</td>
-                                                    <td style={{ padding: '20px' }}>{user.role ? 'Quản lý' : 'Khách hàng'}</td>
-                                                    <td style={{ padding: '20px' }}>{user.status ? 'Mở' : 'Khóa'}</td>
-                                                    <td style={{ padding: '20px' }}>{user.gender ? 'Nam' : 'Nữ'}</td>
-                                                    <td style={{ padding: '20px' }} >
+                                                    <td style={{ padding: '15px' }}>{formatDate(user.birthday)}</td>
+                                                    <td style={{ padding: '15px' }}>{user.phone}</td>
+                                                    <td style={{ padding: '15px' }}>{user.role ? 'Quản lý' : 'Khách hàng'}</td>
+                                                    <td style={{ padding: '15px' }}>{user.status ? 'Mở' : 'Khóa'}</td>
+                                                    <td style={{ padding: '15px' }}>{user.gender ? 'Nam' : 'Nữ'}</td>
+                                                    <td style={{ padding: '15px' }} >
                                                         <img
                                                             src={user.image ? `/assets/images/${user.image}` : '/assets/images/default_user_image.jpg'}
                                                             alt={user.name}
@@ -174,7 +174,7 @@ const UserManagement = () => {
                                                             style={{
                                                                 backgroundColor: '#ffc107',
                                                                 color: '#fff',
-                                                                padding: '8px 20px',
+                                                                padding: '8px 15px',
                                                                 borderRadius: '10px',
                                                                 border: 'none',
                                                                 cursor: 'pointer',
@@ -190,23 +190,23 @@ const UserManagement = () => {
                                                                 e.target.style.backgroundColor = '#ffc107';
                                                             }}
                                                         >
-                                                            <i className="bi bi-pencil" style={{ fontSize: '20px' }}></i>
+                                                            <i className="bi bi-pencil" style={{ fontSize: '15px' }}></i>
                                                         </button>
 
 
 
                                                         <button onClick={() => handleDelete(user.id)}
                                                             style={{
-                                                                marginLeft: '20px',
+                                                                marginLeft: '15px',
                                                                 backgroundColor: '#dc3545',
                                                                 color: '#fff',
-                                                                padding: '8px 20px',
+                                                                padding: '8px 15px',
                                                                 borderRadius: '10px',
                                                                 border: 'none',
                                                                 cursor: 'pointer',
                                                                 fontSize: '16px',
                                                                 fontWeight: 'bold',
-                                                                boxShadow: '0 5px 10px rgba(220, 53, 69, 0.3)',
+                                                                boxShadow: '0 5px 10px rgba(215, 53, 69, 0.3)',
                                                                 transition: 'all 0.3s ease',
                                                             }}
                                                             onMouseOver={(e) => {
@@ -216,7 +216,7 @@ const UserManagement = () => {
                                                                 e.target.style.backgroundColor = '#dc3545';
                                                             }}
                                                         >
-                                                            <i className="bi bi-trash" style={{ fontSize: '20px' }}></i>
+                                                            <i className="bi bi-trash" style={{ fontSize: '15px' }}></i>
                                                         </button>
 
 
@@ -225,16 +225,16 @@ const UserManagement = () => {
 
                                                             <button onClick={() => handleBlock(user.id)}
                                                                 style={{
-                                                                    marginLeft: '20px',
+                                                                    marginLeft: '15px',
                                                                     backgroundColor: '#dc3545',
                                                                     color: '#fff',
-                                                                    padding: '8px 20px',
+                                                                    padding: '8px 15px',
                                                                     borderRadius: '10px',
                                                                     border: 'none',
                                                                     cursor: 'pointer',
                                                                     fontSize: '16px',
                                                                     fontWeight: 'bold',
-                                                                    boxShadow: '0 5px 10px rgba(220, 53, 69, 0.3)',
+                                                                    boxShadow: '0 5px 10px rgba(215, 53, 69, 0.3)',
                                                                     transition: 'all 0.3s ease',
                                                                 }}
                                                                 onMouseOver={(e) => {
@@ -244,7 +244,7 @@ const UserManagement = () => {
                                                                     e.target.style.backgroundColor = '#dc3545';
                                                                 }}
                                                             >
-                                                                <i className="fa fa-lock" style={{ fontSize: '20px' }}></i>
+                                                                <i className="fa fa-lock" style={{ fontSize: '15px' }}></i>
                                                             </button>
 
 
@@ -253,16 +253,16 @@ const UserManagement = () => {
 
                                                             <button onClick={() => handleUnblock(user.id)}
                                                                 style={{
-                                                                    marginLeft: '20px',
+                                                                    marginLeft: '15px',
                                                                     backgroundColor: 'green',
                                                                     color: '#fff',
-                                                                    padding: '8px 20px',
+                                                                    padding: '8px 15px',
                                                                     borderRadius: '10px',
                                                                     border: 'none',
                                                                     cursor: 'pointer',
                                                                     fontSize: '16px',
                                                                     fontWeight: 'bold',
-                                                                    boxShadow: '0 5px 10px rgba(220, 53, 69, 0.3)',
+                                                                    boxShadow: '0 5px 10px rgba(215, 53, 69, 0.3)',
                                                                     transition: 'all 0.3s ease',
                                                                 }}
                                                                 onMouseOver={(e) => {
@@ -272,7 +272,7 @@ const UserManagement = () => {
                                                                     e.target.style.backgroundColor = '#green';
                                                                 }}
                                                             >
-                                                                <i className="fa fa-unlock" style={{ fontSize: '20px' }}></i>
+                                                                <i className="fa fa-unlock" style={{ fontSize: '15px' }}></i>
                                                             </button>
 
                                                         )}
@@ -338,7 +338,7 @@ const EditUserForm = ({ user, setUserList, onClose }) => {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
 
-            if (response.status === 200) {
+            if (response.status === 150) {
                 alert('User updated successfully!');
 
                 // Cập nhật danh sách người dùng ngay sau khi cập nhật thành công
@@ -373,7 +373,7 @@ const EditUserForm = ({ user, setUserList, onClose }) => {
                 backgroundColor: '#fff',
                 padding: '30px 40px',
                 borderRadius: '16px',
-                boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
+                boxShadow: '0 15px 40px rgba(0, 0, 0, 0.3)',
                 textAlign: 'center',
                 width: '660px',
                 maxWidth: '90%',
@@ -384,7 +384,7 @@ const EditUserForm = ({ user, setUserList, onClose }) => {
                     fontWeight: 'bold',
                 }}>Sửa người dùng</h3>
                 <form onSubmit={handleSubmit} style={{ maxWidth: '600px', margin: '0 auto' }}>
-                    <div style={{ display: 'flex', gap: '20px' }}>
+                    <div style={{ display: 'flex', gap: '15px' }}>
                         <div style={{ flex: 1 }}>
                             <label htmlFor="username" style={{ fontWeight: 'bold', marginBottom: '5px', color: '#333' }}>
                                 Tên người dùng
@@ -442,7 +442,7 @@ const EditUserForm = ({ user, setUserList, onClose }) => {
                         </div>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '20px' }}>
+                    <div style={{ display: 'flex', gap: '15px' }}>
                         <div style={{ flex: 1 }}>
                             <label htmlFor="name" style={{ fontWeight: 'bold', marginBottom: '5px', color: '#333' }}>
                                 Tên
@@ -500,7 +500,7 @@ const EditUserForm = ({ user, setUserList, onClose }) => {
                         </div>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '20px' }}>
+                    <div style={{ display: 'flex', gap: '15px' }}>
                         <div style={{ flex: 1 }}>
                             <label htmlFor="phone" style={{ fontWeight: 'bold', marginBottom: '5px', color: '#333' }}>
                                 Số điện thoại
@@ -554,7 +554,7 @@ const EditUserForm = ({ user, setUserList, onClose }) => {
                         </div>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '20px' }}>
+                    <div style={{ display: 'flex', gap: '15px' }}>
                         <div style={{ flex: 1 }}>
                             <label htmlFor="gender" style={{ fontWeight: 'bold', marginBottom: '5px', color: '#333' }}>
                                 Giới tính
@@ -606,7 +606,7 @@ const EditUserForm = ({ user, setUserList, onClose }) => {
                         style={{
                             display: 'flex',
                             justifyContent: 'space-between',
-                            marginTop: '20px',
+                            marginTop: '15px',
                         }}
                     >
                         <button
@@ -614,7 +614,7 @@ const EditUserForm = ({ user, setUserList, onClose }) => {
                             disabled={loading}
                             className="btn btn-primary"
                             style={{
-                                padding: '10px 20px',
+                                padding: '10px 15px',
                                 fontSize: '16px',
                                 fontWeight: 'bold',
                                 borderRadius: '8px',
@@ -632,7 +632,7 @@ const EditUserForm = ({ user, setUserList, onClose }) => {
                             className="btn btn-secondary"
                             onClick={onClose}
                             style={{
-                                padding: '10px 20px',
+                                padding: '10px 15px',
                                 fontSize: '16px',
                                 fontWeight: 'bold',
                                 borderRadius: '8px',

@@ -20,10 +20,10 @@ public class ImageModel {
 	private int id;
 
 	
-	@ManyToOne
-	@JoinColumn(name = "product_id", nullable = false)
-	@JsonBackReference
-	private ProductModel product;
+	@ManyToOne(fetch = FetchType.EAGER)
+@JoinColumn(name = "product_id", nullable = false)
+@JsonBackReference
+private ProductModel product;
 	
 	// Getter và Setter
 	public ProductModel getProduct() {

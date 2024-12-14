@@ -86,38 +86,37 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createProduct(
-            @RequestPart("product") String productJson) {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            ProductModel product = mapper.readValue(productJson, ProductModel.class);
-
-            // Kiểm tra dữ liệu hợp lệ
-            if (product.getName() == null || product.getName().isEmpty()) {
-                return ResponseEntity.badRequest().body("Name is required.");
-            }
-            if (product.getDescription() == null || product.getDescription().isEmpty()) {
-                return ResponseEntity.badRequest().body("Description is required.");
-            }
-            if (product.getPrice() == null) {
-                return ResponseEntity.badRequest().body("Price is required.");
-            }
-            if (product.getQuantity() <= 0) {
-                return ResponseEntity.badRequest().body("Quantity is required.");
-            }
-            if (product.getBrand() == null) {
-                return ResponseEntity.badRequest().body("Brand is required.");
-            }
-            if (product.getCategory() == null) {
-                return ResponseEntity.badRequest().body("Category is required.");
-            }
-            productRepository.save(product);
-            return ResponseEntity.ok("Products (or customer) created successfully.");
-        } catch (IOException e) {
-            logger.error("Error processing request: ", e);
-            return ResponseEntity.status(500).body("Error creating product: " + e.getMessage());
+public ResponseEntity<String> createProduct(@RequestBody ProductModel product) {
+    try {
+        // Kiểm tra dữ liệu hợp lệ
+        if (product.getName() == null || product.getName().isEmpty()) {
+            return ResponseEntity.badRequest().body("Name is required.");
         }
+        if (product.getDescription() == null || product.getDescription().isEmpty()) {
+            return ResponseEntity.badRequest().body("Description is required.");
+        }
+        if (product.getPrice() == null) {
+            return ResponseEntity.badRequest().body("Price is required.");
+        }
+        if (product.getQuantity() <= 0) {
+            return ResponseEntity.badRequest().body("Quantity is required.");
+        }
+        if (product.getBrand() == null) {
+            return ResponseEntity.badRequest().body("Brand is required.");
+        }
+        if (product.getCategory() == null) {
+            return ResponseEntity.badRequest().body("Category is required.");
+        }
+
+        // Lưu sản phẩm vào cơ sở dữ liệu
+        productRepository.save(product);
+        return ResponseEntity.ok("Product created successfully.");
+    } catch (Exception e) {
+        logger.error("Error processing request: ", e);
+        return ResponseEntity.status(500).body("Error creating product: " + e.getMessage());
     }
+}
+
 
     @PutMapping("/{id}")
     public ResponseEntity<String> updateProduct(

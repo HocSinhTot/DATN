@@ -379,7 +379,6 @@ background: linear-gradient(90deg, rgb(44, 62, 80), rgb(52, 73, 94));}
 										<ul className="submenu" style={{ listStyleType: 'none', padding: '0', margin: '0' }}>
 											<li><a href="/products" style={{ color: 'black', textDecoration: 'none', padding: '15px 20px', borderRadius: '5px', transition: 'background-color 0.3s ease' }}><span>Quản lý sản phẩm</span></a></li>
 											<li><a href="/products-prices" style={{ color: 'black', textDecoration: 'none', padding: '15px 20px', borderRadius: '5px', transition: 'background-color 0.3s ease' }}><span>Quản lý sản phẩm dung lượng</span></a></li>
-											<li><a href="/products-images" style={{ color: 'black', textDecoration: 'none', padding: '15px 20px', borderRadius: '5px', transition: 'background-color 0.3s ease' }}><span>Quản lý sản phẩm hình ảnh</span></a></li>
 											<li><a href="/category" style={{ color: 'black', textDecoration: 'none', padding: '15px 20px', borderRadius: '5px', transition: 'background-color 0.3s ease' }}><span>Quản lý danh mục</span></a></li>
 											<li><a href="/brands" style={{ color: 'black', textDecoration: 'none', padding: '15px 20px', borderRadius: '5px', transition: 'background-color 0.3s ease' }}><span>Quản lý thương hiệu</span></a></li>
 											<li><a href="/color" style={{ color: 'black', textDecoration: 'none', padding: '15px 20px', borderRadius: '5px', transition: 'background-color 0.3s ease' }}><span>Quản lý màu</span></a></li>

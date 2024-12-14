@@ -35,6 +35,8 @@ public class ProductModel {
 	@Column(name = "quantity", nullable = false)
 	private int quantity;
 
+	
+
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "categories_id", nullable = false)
 	private CategoryModel category;
@@ -43,9 +45,8 @@ public class ProductModel {
 	@JoinColumn(name = "brand_id", nullable = false)
 	
 	private BrandModel brand;
-	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@JsonManagedReference
-	private List<ImageModel> images;
+	@OneToMany(mappedBy = "product")
+    private List<ImageModel> images;
 	
 	// Getter và Setter
 	public List<ImageModel> getImages() {

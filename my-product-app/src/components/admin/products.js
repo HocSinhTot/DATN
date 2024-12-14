@@ -152,45 +152,49 @@ const Management = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     const productPayload = {
-      name: formData.name,
-      description: formData.description,
-      price: formData.price,
-      quantity: formData.quantity,
-      brand: formData.brand,
-      category: formData.category,
+        name: formData.name,
+        description: formData.description,
+        price: Number(formData.price),
+        quantity: Number(formData.quantity),
+        brand: formData.brand,
+        category: formData.category,
     };
 
-    console.log("Product Payload:", productPayload); // Thêm log để kiểm tra
     const method = isEditMode ? "PUT" : "POST";
     const url = isEditMode
         ? `http://localhost:8080/api/admin/products/${currentProductId}`
         : "http://localhost:8080/api/admin/products";
 
     try {
-      const response = await axios({
-        method,
-        url,
-        data: productPayload,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+        const response = await axios({
+            method,
+            url,
+            data: productPayload, // Gửi dưới dạng JSON
+            headers: {
+                "Content-Type": "application/json", // Đảm bảo là application/json
+                'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
+            },
+        });
 
-      if (response.status === 200 || response.status === 201) {
-        alert("Sản phẩm đã được cập nhật/thêm thành công!");
-        setIsPopupOpen(false);
-        fetchProducts(currentPage, pageSize);
-      }
+        if (response.status === 200 || response.status === 201) {
+            alert("Sản phẩm đã được cập nhật/thêm thành công!");
+            setIsPopupOpen(false);
+            fetchProducts(currentPage, pageSize);
+        }
     } catch (error) {
-      if (error.response) {
-        setErrors(error.response.data.errors || {});
-      } else {
-        console.error("Unexpected error:", error);
-      }
+        if (error.response) {
+            console.error("Server Error:", error.response.data);
+            alert("Lỗi từ máy chủ: " + JSON.stringify(error.response.data));
+        } else {
+            console.error("Unexpected error:", error);
+            alert("Lỗi bất ngờ xảy ra.");
+        }
     }
-  };
+};
+
+
 
   const handleReset = () => {
     setSearchTerm(""); // Clear search input
