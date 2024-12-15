@@ -8,12 +8,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import JAVA6.Model.ImageModel;
+import JAVA6.Model.ProductDetailsModel;
 import JAVA6.Model.ProductModel;
 
 import JAVA6.Model.ProductsPriceModel;
 import JAVA6.repository.ImageRepository;
 import JAVA6.repository.ProductRepository;
-
+import JAVA6.repository.ProductdetailsRepositoryy;
 import JAVA6.repository.ProductsPriceRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -31,8 +32,14 @@ public class ProductService {
     private final ProductsPriceRepository productsPriceRepository;
     @Autowired
     private ImageRepository imageRepository;
+    @Autowired
+    private ProductdetailsRepositoryy productDetailsRepository;
 
-
+public ProductDetailsModel getProductDetailsById(int productDetailId) {
+        // Tìm chi tiết sản phẩm trong cơ sở dữ liệu
+        return productDetailsRepository.findById(productDetailId)
+                .orElse(null); // Trả về null nếu không tìm thấy
+    }
     // Lấy sản phẩm theo các tiêu chí lọc với phân trang
     public Page<ProductModel> getProductsByFilters(
             Integer categoryId, Integer brandId, Boolean ascending, Integer minPrice,

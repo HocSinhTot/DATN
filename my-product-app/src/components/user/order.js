@@ -71,6 +71,7 @@ const OrderHistory = () => {
       setOrderDetails(null);
       const response = await fetch(`http://localhost:8080/api/history/${orderId}`);
       if (!response.ok) throw new Error('Failed to fetch order details');
+      
       const data = await response.json();
       setOrderDetails(data);
     } catch (err) {
@@ -300,10 +301,12 @@ const OrderHistory = () => {
                     e.currentTarget.style.boxShadow = '0 4px 10px rgba(0, 0, 0, 0.1)'; // Quay lại bóng đổ ban đầu
                   }}
                 >
-                  <strong style={{ color: '#4a90e2' }}>Sản phẩm:</strong> {detail.product.name}
+                  <strong style={{ color: '#4a90e2' }}>Sản phẩm:</strong> {detail.product.product.name} <br/>
+                  <strong style={{ color: '#4a90e2' }}>Màu sắc:</strong> {detail.product.color.name} <br/>
+                  <strong style={{ color: '#4a90e2' }}>Dung lượng:</strong> {detail.product.capacity.name}
                   <div style={{ textAlign: 'center', margin: '15px 0' }}>
                     <img
-                      src={`/assets/images/${detail.product.productsImages[0].image.url}`}
+                      src={`/assets/images/${detail.product.product.images[0].url}`}
                       alt={detail.product.name}
                       style={{
                         maxWidth: '150px',

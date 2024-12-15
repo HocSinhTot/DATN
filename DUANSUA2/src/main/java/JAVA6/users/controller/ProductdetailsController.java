@@ -37,6 +37,11 @@ public class ProductdetailsController {
         List<Map<String, Object>> capacities = productDetailsService.getProductCapacitiesAndPrices(productId);
         return ResponseEntity.ok(capacities);
     }
+    @GetMapping("/{id}/colors")
+    public ResponseEntity<List<Map<String, Object>>> getProductColors(@PathVariable("id") int productId) {
+        List<Map<String, Object>> colors = productDetailsService.getProductColor(productId);
+        return ResponseEntity.ok(colors);
+    }
     @GetMapping("/checkStock/{id}")
     public ResponseEntity<Map<String, Object>> checkStock(@PathVariable("id") int productId) {
         // Tìm sản phẩm theo productId

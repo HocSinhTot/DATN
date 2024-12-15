@@ -1,5 +1,6 @@
 package JAVA6.Model;
 
+import java.math.BigDecimal;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -17,7 +18,7 @@ public class ProductDetailsModel {
     private ProductModel product;
 
     @ManyToOne
-    @JoinColumn(name = "color_id", nullable = false) // Khóa ngoại tới ColorModel
+    @JoinColumn(name = "product_color_id", nullable = false) // Khóa ngoại tới ColorModel
     private ColorModel color;
 
     @ManyToOne
@@ -26,43 +27,26 @@ public class ProductDetailsModel {
 
     @Column(name = "totalquantity", nullable = false)
     private int totalQuantity;
-    public int getId() {
-        return id;
+
+    public BigDecimal getPrice() {
+        return productPrice != null ? productPrice.getPrice() : BigDecimal.ZERO;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    // Phương thức để lấy thông tin về dung lượng
+    public String getCapacity() {
+        return productPrice != null ? productPrice.getCapacity().getName() : "Không xác định";
+    }
+    public int getCapacityy() {
+        return productPrice != null ? productPrice.getCapacity().getId() : null;
     }
 
-    public ProductModel getProduct() {
-        return product;
-    }
-
-    public void setProduct(ProductModel product) {
-        this.product = product;
-    }
-
-    public ColorModel getColor() {
-        return color;
-    }
-
+    // Phương thức setColor với kiểu ColorModel
     public void setColor(ColorModel color) {
         this.color = color;
     }
 
-    public ProductsPriceModel getProductPrice() {
-        return productPrice;
-    }
-
+    // Phương thức setProductPrice với kiểu ProductsPriceModel
     public void setProductPrice(ProductsPriceModel productPrice) {
         this.productPrice = productPrice;
-    }
-
-    public int getTotalQuantity() {
-        return totalQuantity;
-    }
-
-    public void setTotalQuantity(int totalQuantity) {
-        this.totalQuantity = totalQuantity;
     }
 }
