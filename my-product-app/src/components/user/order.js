@@ -11,7 +11,35 @@ const OrderHistory = () => {
   const [orderIdToCancel, setOrderIdToCancel] = useState(null);
 
   const userId = sessionStorage.getItem('userId');
+  const [rating, setRating] = useState(0); // State cho số sao
+  const [reviewText, setReviewText] = useState(""); // State cho text review
+  const [images, setImages] = useState([null, null, null]); // State cho hình ảnh
 
+  // Xử lý click chọn sao
+  const handleRating = (index) => {
+    setRating(index + 1);
+  };
+
+  // Xử lý upload ảnh
+  const handleImageChange = (index, e) => {
+    const newImages = [...images];
+    newImages[index] = URL.createObjectURL(e.target.files[0]);
+    setImages(newImages);
+  };
+
+
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  // Mở Popup
+  const handleOpenPopup = () => {
+    setIsOpen(true);
+  };
+
+  // Đóng Popup
+  const handleClosePopup = () => {
+    setIsOpen(false);
+  };
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -99,7 +127,7 @@ const OrderHistory = () => {
 
   const formatDate = (date) => {
     const d = new Date(date);
-return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1)
+    return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1)
       .toString()
       .padStart(2, '0')}/${d.getFullYear()}`;
   };
@@ -114,6 +142,10 @@ return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1)
       </div>
     );
   if (error) return <div>Error: {error}</div>;
+
+
+
+
 
   return (
     <div
@@ -131,7 +163,7 @@ return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1)
         <h2 style={{ textAlign: 'center', color: '#333', fontSize: '2.5rem' }}>
           Đơn hàng của bạn
         </h2>
-
+        <button onClick={handleOpenPopup}>Sửa sản phẩm</button>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'center' }}>
           {orders.map((order) => (
             <div
@@ -182,7 +214,7 @@ return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1)
               <button
                 onClick={() => fetchOrderDetails(order.id)}
                 style={{
-width: "100%", // Chiều rộng nút phủ toàn bộ
+                  width: "100%", // Chiều rộng nút phủ toàn bộ
                   padding: "12px", // Khoảng cách bên trong lớn hơn để nhìn cân đối
                   marginTop: "10px", // Khoảng cách phía trên
                   border: "none", // Xóa viền
@@ -254,7 +286,7 @@ width: "100%", // Chiều rộng nút phủ toàn bộ
                     padding: '20px',
                     backgroundColor: '#f4f8fb',
                     borderRadius: '10px',
-boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+                    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
                     fontSize: '16px',
                     color: '#333',
                     transition: 'all 0.3s ease',
@@ -307,7 +339,7 @@ boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
                   e.target.style.boxShadow = "0 8px 15px rgba(90, 98, 104, 0.4)"; // Tăng đổ bóng khi hover
                 }}
                 onMouseOut={(e) => {
-e.target.style.backgroundColor = "#6c757d"; // Trả về màu nền ban đầu
+                  e.target.style.backgroundColor = "#6c757d"; // Trả về màu nền ban đầu
                   e.target.style.boxShadow = "0 5px 10px rgba(108, 117, 125, 0.3)"; // Trả về bóng ban đầu
                 }}
               >
@@ -390,7 +422,7 @@ e.target.style.backgroundColor = "#6c757d"; // Trả về màu nền ban đầu
                   border: "none", // Xóa viền
                   borderRadius: "10px", // Bo góc mềm mại
                   color: "#fff", // Chữ trắng
-fontWeight: "bold", // Chữ đậm
+                  fontWeight: "bold", // Chữ đậm
                   cursor: "pointer", // Hiển thị con trỏ khi hover
                   fontSize: "16px", // Cỡ chữ
                   boxShadow: "0 5px 10px rgba(231, 76, 60, 0.3)", // Hiệu ứng đổ bóng
@@ -439,6 +471,170 @@ fontWeight: "bold", // Chữ đậm
           </div>
         )}
       </div>
+
+
+
+      {isOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 1000
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: 'white',
+              padding: '20px',
+              borderRadius: '8px',
+              width: '400px',
+              boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
+              textAlign: 'center'
+            }}
+          >
+            <div
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                background: "rgba(0, 0, 0, 0.6)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                zIndex: 1000,
+              }}
+            >
+              <div
+                style={{
+                  background: "#fff",
+                  width: "500px",
+                  padding: "20px",
+                  borderRadius: "8px",
+                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+                  textAlign: "center",
+                }}
+              >
+                <h2>ĐÁNH GIÁ SẢN PHẨM</h2>
+
+                {/* Thông tin sản phẩm */}
+                <div style={{ display: "flex", alignItems: "center", marginBottom: "15px", justifyContent: "center" }}>
+                  <img
+                    src="https://via.placeholder.com/60"
+                    alt="Converse 03"
+                    style={{ width: "60px", height: "60px", marginRight: "10px" }}
+                  />
+                  <span style={{ fontSize: "18px", fontWeight: "bold" }}>Converse 03</span>
+                </div>
+
+                {/* Star Rating */}
+                <div style={{ margin: "10px 0" }}>
+                  {[...Array(5)].map((_, index) => (
+                    <span
+                      key={index}
+                      onClick={() => handleRating(index)}
+                      style={{
+                        fontSize: "30px",
+                        cursor: "pointer",
+                        color: index < rating ? "orange" : "lightgray",
+                      }}
+                    >
+                      ★
+                    </span>
+                  ))}
+                </div>
+
+                {/* Textarea */}
+                <textarea
+                  placeholder="Hãy chia sẻ những trải nghiệm của bạn về sản phẩm này"
+                  value={reviewText}
+                  onChange={(e) => setReviewText(e.target.value)}
+                  style={{
+                    width: "100%",
+                    height: "80px",
+                    marginTop: "10px",
+                    padding: "10px",
+                    border: "1px solid #ccc",
+                    borderRadius: "4px",
+                    resize: "none",
+                  }}
+                />
+
+                {/* Upload hình ảnh */}
+                <div style={{ display: "flex", justifyContent: "space-between", margin: "15px 0" }}>
+                  {images.map((image, index) => (
+                    <label
+                      key={index}
+                      style={{
+                        width: "100px",
+                        height: "100px",
+                        border: "1px dashed #ccc",
+                        borderRadius: "4px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <input
+                        type="file"
+                        accept="image/*"
+                        style={{ display: "none" }}
+                        onChange={(e) => handleImageChange(index, e)}
+                      />
+                      {image ? (
+                        <img
+                          src={image}
+                          alt={`Upload ${index + 1}`}
+                          style={{ maxWidth: "100%", maxHeight: "100%", borderRadius: "4px" }}
+                        />
+                      ) : (
+                        <span>Thêm ảnh {index + 1}</span>
+                      )}
+                    </label>
+                  ))}
+                </div>
+
+                {/* Button */}
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <button
+                    style={{
+                      padding: "10px 20px",
+                      background: "#ccc",
+                      color: "#333",
+                      border: "none",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Trở lại
+                  </button>
+                  <button
+                    style={{
+                      padding: "10px 20px",
+                      background: "#e53935",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Hoàn thành
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

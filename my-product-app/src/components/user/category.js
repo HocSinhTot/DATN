@@ -214,7 +214,7 @@ const Category = ({ keyword, categoryId: headerCategoryId, setCategoryId }) => {
     <div className="container-fluid">
       <div
         style={{
-         
+
         }}
       >
 
@@ -225,9 +225,10 @@ const Category = ({ keyword, categoryId: headerCategoryId, setCategoryId }) => {
             className="col-md-12"
             style={{
               width: '100%', // Đảm bảo chiều rộng của div chiếm toàn bộ chiều rộng
-              maxWidth: '1500px', // Bạn có thể thay đổi maxWidth theo ý muốn
+              maxWidth: '1530px', // Bạn có thể thay đổi maxWidth theo ý muốn
               margin: '0 auto', // Căn giữa phần tử
               backgroundColor: 'white',
+              paddingLeft: '190px'
             }}
 
 
@@ -240,18 +241,18 @@ const Category = ({ keyword, categoryId: headerCategoryId, setCategoryId }) => {
 
 
           >
-           <div id="category" className="category-carousel hidden-xs">
-  <div className="item">
-    <div className="image" style={{ height: "380px" }}> 
-      <img
-        src="https://cdn.kalvo.com/uploads/img/gallery/63607-tecno-camon-30s-pro-4.jpg"
-        alt=""
-        style={{ width: "100%", height: "100%" }} 
-        className="img-responsive"
-      />
-    </div>
-  </div>
-</div>
+            <div id="category" className="category-carousel hidden-xs">
+              <div className="item">
+                <div className="image" style={{ height: "380px" }}>
+                  <img
+                    src="https://cdn.kalvo.com/uploads/img/gallery/63607-tecno-camon-30s-pro-4.jpg"
+                    alt=""
+                    style={{ width: "100%", height: "100%" }}
+                    className="img-responsive"
+                  />
+                </div>
+              </div>
+            </div>
 
             <div
               className="clearfix filters-container"
