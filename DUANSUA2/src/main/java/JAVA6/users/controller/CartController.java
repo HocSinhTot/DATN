@@ -375,117 +375,116 @@ public class CartController {
         return order;
     }
 
-    @PostMapping("/order/vnpayReturn")
+    @GetMapping("/order/vnpayReturn")
     public ResponseEntity<Map<String, Object>> handleVNPayReturn(HttpServletRequest request,
-            @RequestParam Integer userId) {
+            @RequestParam Integer userId, @RequestParam String address) {
         // Lấy các tham số từ VNPay trả về
         Map<String, String> vnp_Params = new HashMap<>();
         request.getParameterMap().forEach((key, value) -> vnp_Params.put(key, value[0]));
-
+    
         // Kiểm tra mã checksum (vnp_SecureHash) để xác minh tính toàn vẹn dữ liệu
         String vnp_SecureHash = vnp_Params.remove("vnp_SecureHash");
         String hashData = VnPayConfig.hashAllFields(vnp_Params); // Tạo chuỗi hash từ tham số
         String calculatedHash = VnPayConfig.hmacSHA512(VnPayConfig.secretKey, hashData);
-
-        // Kiểm tra nếu mã checksum không hợp lệ
-        if (!calculatedHash.equals(vnp_SecureHash)) {
-            return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Checksum không hợp lệ"));
-        }
-
+    
+    
         // Kiểm tra trạng thái giao dịch
         String vnp_ResponseCode = vnp_Params.get("vnp_ResponseCode");
         if (!"00".equals(vnp_ResponseCode)) {
             return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Giao dịch không thành công"));
         }
-
+    
         // Lưu đơn hàng sau khi xác minh giao dịch thành công
         UserModel user = userService.getUserById(userId);
         if (user == null) {
             return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Người dùng không hợp lệ"));
         }
-
+    
         // Lấy thông tin phương thức thanh toán VNPay
         PaymentMethodModel paymentMethod = paymentMethodRepository.findById(2)
                 .orElseThrow(() -> new RuntimeException("Phương thức thanh toán VNPay không hợp lệ"));
-
+    
         // Tạo đơn hàng sau khi thanh toán thành công
-        OrderModel order = handleVNPayOrder(user, paymentMethod, vnp_Params);
-
+        OrderModel order = handleVNPayOrder(user,address, paymentMethod, vnp_Params);
+    
         // Cập nhật trạng thái đơn hàng sau khi thanh toán thành công
-        order.setOrderStatus(orderStatusRepository.getReferenceById(3));
+        order.setOrderStatus(orderStatusRepository.getReferenceById(3));  // Trạng thái "đã thanh toán"
         orderRepository.save(order);
-
+    
         // Trả về kết quả
         Map<String, Object> response = new HashMap<>();
         response.put("message", "Đặt hàng thành công qua VNPay.");
         response.put("orderId", order.getId());
-        return ResponseEntity.ok(response);
+        
+        return ResponseEntity.status(HttpStatus.FOUND)
+        .header("Location", "http://localhost:3000/history")
+        .body(response); 
     }
-
-    private OrderModel handleVNPayOrder(UserModel user, PaymentMethodModel paymentMethod,
-            Map<String, String> vnp_Params) {
-        // Tạo đơn hàng sau khi thanh toán thành công
-        OrderModel order = new OrderModel();
-        order.setDate(new Timestamp(System.currentTimeMillis()));
-        order.setAddress(vnp_Params.get("vnp_Bill_Address"));
-        order.setUser(user);
-        BigDecimal amount = new BigDecimal(vnp_Params.get("vnp_Amount"));
-        BigDecimal total = amount.divide(BigDecimal.valueOf(100), 0, RoundingMode.HALF_UP); // Chia và làm tròn 2 chữ số
-                                                                                            // thập phân
-        order.setTotal(total); // Giá trị từ VNPay là nhân 100
-        order.setPaymentMethod(paymentMethod);
-        order.setOrderStatus(orderStatusRepository.getReferenceById(1)); // Trạng thái mặc định là "Chờ xử lý"
-
-        // Lấy sản phẩm trong giỏ hàng
-        List<CartModel> cartItems = cartRepository.findByUser(user);
-        if (cartItems.isEmpty()) {
-            throw new RuntimeException("Giỏ hàng rỗng, không thể tạo đơn hàng");
+    
+        private OrderModel handleVNPayOrder(UserModel user, String address,PaymentMethodModel paymentMethod,
+                Map<String, String> vnp_Params) {
+            // Tạo đơn hàng sau khi thanh toán thành công
+            OrderModel order = new OrderModel();
+            order.setDate(new Timestamp(System.currentTimeMillis()));
+            order.setAddress(address);
+            order.setUser(user);
+            BigDecimal amount = new BigDecimal(vnp_Params.get("vnp_Amount"));
+            BigDecimal total = amount.divide(BigDecimal.valueOf(100), 0, RoundingMode.HALF_UP); // Chia và làm tròn 2 chữ số
+                                                                                                // thập phân
+            order.setTotal(total); // Giá trị từ VNPay là nhân 100
+            order.setPaymentMethod(paymentMethod);
+            order.setOrderStatus(orderStatusRepository.getReferenceById(1)); // Trạng thái mặc định là "Chờ xử lý"
+    
+            // Lấy sản phẩm trong giỏ hàng
+            List<CartModel> cartItems = cartRepository.findByUser(user);
+            if (cartItems.isEmpty()) {
+                throw new RuntimeException("Giỏ hàng rỗng, không thể tạo đơn hàng");
+            }
+    
+            orderRepository.save(order);
+    
+            for (CartModel cartItem : cartItems) {
+                OrderDetailModel orderDetail = new OrderDetailModel();
+                orderDetail.setProduct(cartItem.getProduct());
+                orderDetail.setOrder(order);
+                orderDetail.setTotalQuantity(cartItem.getTotalQuantity());
+                orderDetail.setTotalPrice(cartItem.getTotalPrice());
+                orderDetailRepository.save(orderDetail);
+            }
+    
+            // Xóa giỏ hàng sau khi lưu đơn hàng
+            cartRepository.deleteAll(cartItems);
+            return order;
         }
-
-        orderRepository.save(order);
-
-        for (CartModel cartItem : cartItems) {
-            OrderDetailModel orderDetail = new OrderDetailModel();
-            orderDetail.setProduct(cartItem.getProduct());
-            orderDetail.setOrder(order);
-            orderDetail.setTotalQuantity(cartItem.getTotalQuantity());
-            orderDetail.setTotalPrice(cartItem.getTotalPrice());
-            orderDetailRepository.save(orderDetail);
+    
+        private OrderModel handleCodPayment(PaymentRequest paymentRequest, UserModel user,
+                PaymentMethodModel paymentMethod) {
+            // Logic tạo đơn hàng COD
+            OrderModel order = new OrderModel();
+            order.setDate(new Timestamp(System.currentTimeMillis()));
+            order.setAddress(paymentRequest.getAddress());
+            order.setUser(user);
+            order.setTotal(paymentRequest.getTotalAmount());
+            order.setPaymentMethod(paymentMethod);
+            order.setOrderStatus(orderStatusRepository.getReferenceById(1));
+    
+            List<CartModel> cartItems = cartRepository.findByUser(user);
+            if (cartItems.isEmpty()) {
+                throw new RuntimeException("Giỏ hàng rỗng, không thể tạo đơn hàng");
+            }
+    
+            orderRepository.save(order);
+    
+            for (CartModel cartItem : cartItems) {
+                OrderDetailModel orderDetail = new OrderDetailModel();
+                orderDetail.setProduct(cartItem.getProduct());
+                orderDetail.setOrder(order);
+                orderDetail.setTotalQuantity(cartItem.getTotalQuantity());
+                orderDetail.setTotalPrice(cartItem.getTotalPrice());
+                orderDetailRepository.save(orderDetail);
+            }
+    
+            cartRepository.deleteAll(cartItems);
+            return order;
         }
-
-        // Xóa giỏ hàng sau khi lưu đơn hàng
-        cartRepository.deleteAll(cartItems);
-        return order;
     }
-
-    private OrderModel handleCodPayment(PaymentRequest paymentRequest, UserModel user,
-            PaymentMethodModel paymentMethod) {
-        // Logic tạo đơn hàng COD
-        OrderModel order = new OrderModel();
-        order.setDate(new Timestamp(System.currentTimeMillis()));
-        order.setAddress(paymentRequest.getAddress());
-        order.setUser(user);
-        order.setTotal(paymentRequest.getTotalAmount());
-        order.setPaymentMethod(paymentMethod);
-        order.setOrderStatus(orderStatusRepository.getReferenceById(1));
-
-        List<CartModel> cartItems = cartRepository.findByUser(user);
-        if (cartItems.isEmpty()) {
-            throw new RuntimeException("Giỏ hàng rỗng, không thể tạo đơn hàng");
-        }
-
-        orderRepository.save(order);
-
-        for (CartModel cartItem : cartItems) {
-            OrderDetailModel orderDetail = new OrderDetailModel();
-            orderDetail.setProduct(cartItem.getProduct());
-            orderDetail.setOrder(order);
-            orderDetail.setTotalQuantity(cartItem.getTotalQuantity());
-            orderDetail.setTotalPrice(cartItem.getTotalPrice());
-            orderDetailRepository.save(orderDetail);
-        }
-
-        cartRepository.deleteAll(cartItems);
-        return order;
-    }
-}

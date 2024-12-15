@@ -21,7 +21,6 @@ public class HistoryController {
 
     @Autowired
     private HistoryService historyService;
-
     @Autowired
     private OrderDetailService orderDetailService;
 
