@@ -197,6 +197,9 @@ const OrderHistory = () => {
                   <strong>Địa chỉ:</strong> {order.address}
                 </p>
                 <p>
+                  <strong>Phương thức thanh toán:</strong> {order.paymentMethod.methods}
+                </p>
+                <p>
                   <strong>Trạng thái:</strong>{' '}
                   <span
                     style={{
@@ -303,7 +306,7 @@ const OrderHistory = () => {
                 >
                   <strong style={{ color: '#4a90e2' }}>Sản phẩm:</strong> {detail.product.product.name} <br/>
                   <strong style={{ color: '#4a90e2' }}>Màu sắc:</strong> {detail.product.color.name} <br/>
-                  <strong style={{ color: '#4a90e2' }}>Dung lượng:</strong> {detail.product.capacity.name}
+                  <strong style={{ color: '#4a90e2' }}>Dung lượng:</strong> {detail.product.productPrice.capacity.name}
                   <div style={{ textAlign: 'center', margin: '15px 0' }}>
                     <img
                       src={`/assets/images/${detail.product.product.images[0].url}`}
