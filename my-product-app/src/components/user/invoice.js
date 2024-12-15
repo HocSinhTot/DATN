@@ -20,7 +20,8 @@ const InvoicePage = () => {
   useEffect(() => {
     if (invoiceData) {
       setUserId(invoiceData.userId);
-      setCartItems(invoiceData.cartItems);
+      setCartItems(invoiceData.items);
+     
       setTotalAmount(invoiceData.totalAmount);
     } else {
       setErrorMessage("Không có dữ liệu hóa đơn.");
@@ -149,30 +150,58 @@ const InvoicePage = () => {
               <tr style={{ backgroundColor: "#f8f9fa" }}>
                 <th style={{ border: "1px solid #ddd", padding: "10px" }}>Sản phẩm</th>
                 <th style={{ border: "1px solid #ddd", padding: "10px" }}>Ảnh</th>
+                <th style={{ border: "1px solid #ddd", padding: "10px" }}>Màu sắc</th>
+                <th style={{ border: "1px solid #ddd", padding: "10px" }}>Dung lượng</th>
                 <th style={{ border: "1px solid #ddd", padding: "10px" }}>Giá</th>
                 <th style={{ border: "1px solid #ddd", padding: "10px" }}>Số lượng</th>
                 <th style={{ border: "1px solid #ddd", padding: "10px" }}>Thành tiền</th>
               </tr>
             </thead>
             <tbody>
-              {cartItems.map((item) => (
-                <tr key={item.id}>
-                  <td style={{ border: "1px solid #ddd", padding: "10px" }}>{item.name}</td>
-                  <td style={{ border: "1px solid #ddd", padding: "10px" }}>
-                    <img src={`/assets/images/${item.image}`} alt={item.name} style={{ maxWidth: "100px" }} />
-                  </td>
-                  <td style={{ border: "1px solid #ddd", padding: "10px" }}>{item.price}</td>
-                  <td style={{ border: "1px solid #ddd", padding: "10px" }}>{item.quantity}</td>
-                  <td style={{ border: "1px solid #ddd", padding: "10px" }}>{item.price * item.quantity}</td>
-                </tr>
-              ))}
+            {cartItems && cartItems.length > 0 ? (
+  cartItems.map((item) => (
+    <tr key={item.id}>
+      <td style={{ border: "1px solid #ddd", padding: "10px" }}>{item.name}</td>
+      <td style={{ border: "1px solid #ddd", padding: "10px" }}>
+        <img src={`/assets/images/${item.image}`} alt={item.name} style={{ maxWidth: "100px" }} />
+      </td>
+      <td style={{ border: "1px solid #ddd", padding: "10px" }}>{item.color}</td>
+      <td style={{ border: "1px solid #ddd", padding: "10px" }}>{item.capacity}</td>
+      <td style={{ border: "1px solid #ddd", padding: "10px" }}>  {new Intl.NumberFormat('vi-VN', {
+                  style: 'currency',
+                  currency: 'VND',
+                }).format(item.price)}</td>
+      <td style={{ border: "1px solid #ddd", padding: "10px" }}>{item.quantity}</td>
+      <td style={{ border: "1px solid #ddd", padding: "10px" }}>{new Intl.NumberFormat('vi-VN', {
+                  style: 'currency',
+                  currency: 'VND',
+                }).format(item.price * item.quantity)}</td>
+    </tr>
+  ))
+) : (
+  <tr>
+    <td colSpan="5" style={{ textAlign: "center", padding: "10px" }}>
+      Không có sản phẩm nào trong giỏ hàng.
+    </td>
+  </tr>
+)}
+
             </tbody>
           </table>
 
           <div>
-            <p>Tổng cộng: {totalAmount} VND</p>
-            {discountAmount > 0 && <p>Giảm giá: {discountAmount} VND</p>}
-            <p><strong>Tổng tiền sau giảm giá: {totalAmount - discountAmount} VND</strong></p>
+            <p>Tổng cộng: {new Intl.NumberFormat('vi-VN', {
+                  style: 'currency',
+                  currency: 'VND',
+                }).format(totalAmount)} </p>
+            {discountAmount > 0 && <p>Giảm giá:{new Intl.NumberFormat('vi-VN', {
+                  style: 'currency',
+                  currency: 'VND',
+                }).format(discountAmount)} </p>}
+            <p><strong>Tổng tiền sau giảm giá: {new Intl.NumberFormat('vi-VN', {
+                  style: 'currency',
+                  currency: 'VND',
+                }).format(totalAmount - discountAmount)}</strong></p>
           </div>
 
           {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}

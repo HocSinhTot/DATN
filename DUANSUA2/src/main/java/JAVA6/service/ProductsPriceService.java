@@ -8,6 +8,7 @@ import JAVA6.Model.ProductsPriceModel;
 import JAVA6.repository.ProductsPriceRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductsPriceService {
@@ -46,4 +47,11 @@ public class ProductsPriceService {
     // public void deleteProductsPrice(ProductsPriceModel id) {
     //     productsPriceRepository.deleteById(id);
     // }
+    public ProductsPriceModel getPriceByProductAndCapacity(int productId, int capacityId) {
+        Optional<ProductsPriceModel> productsPrice = productsPriceRepository.findByProduct_IdAndCapacity_Id(productId, capacityId);
+        if (productsPrice.isEmpty()) {
+            throw new RuntimeException("Không tìm thấy giá cho sản phẩm và dung lượng này: productId=" + productId + ", capacityId=" + capacityId);
+        }
+        return productsPrice.get();
+    }
 }

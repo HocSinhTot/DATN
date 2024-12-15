@@ -30,6 +30,9 @@ public class ProductDetailsService {
     public List<Map<String, Object>> getProductCapacitiesAndPrices(int productId) {
         return productDetailsRepository.findCapacitiesAndPricesByProductId(productId);
     }
+    public List<Map<String, Object>> getProductColor(int productId) {
+        return productDetailsRepository.findProductColor(productId);
+    }
 
     public List<ProductModel> getSimilarProducts(int productId) {
         ProductModel product = productDetailsRepository.findById(productId).orElse(null);

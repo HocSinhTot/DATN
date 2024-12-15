@@ -3,6 +3,8 @@ package JAVA6.Model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 @Entity
 @Table(name = "ProductsPrice")
@@ -20,8 +22,8 @@ public class ProductsPriceModel {
     @JoinColumn(name = "capacity_id", referencedColumnName = "id", nullable = false)
     private CapacityModel capacity;
 
-    @Column(name = "price", nullable = false)
-    private double price;
+    @Column(name = "price", nullable = false) // Định dạng tiền tệ
+    private BigDecimal price;
 
     // Getter and Setter for id
     public int getId() {
@@ -51,11 +53,11 @@ public class ProductsPriceModel {
     }
 
     // Getter and Setter for price
-    public double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 }
