@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Popup from './Popup';  // Giả sử bạn đã có một component Popup
 
-
+import Swal from 'sweetalert2';
 const UserManagement = () => {
     const [userList, setUserList] = useState([]);
     const [popup, setPopup] = useState({ show: false, message: '', onConfirm: null });
@@ -31,14 +31,30 @@ const UserManagement = () => {
             })
                 .then((response) => {
                     if (response.ok) {
+                        Swal.fire({
+                            title: 'Thành công!',
+                            text: 'Khóa người dùng thành công.',
+                            icon: 'success',
+                            confirmButtonText: 'OK',
+                            timer: 3000,
+                            timerProgressBar: true,
+                        });
+
                         setUserList(userList.map((user) => (user.id === id ? { ...user, status: false } : user)));
                     }
                 })
-                .catch((error) => console.error('Error blocking user:', error))
+                .catch((error) => {
+                    console.error('Error blocking user:', error);
+                    Swal.fire({
+                        title: 'Lỗi!',
+                        text: 'Có lỗi xảy ra khi khóa người dùng.',
+                        icon: 'error',
+                        confirmButtonText: 'OK',
+                    });
+                })
                 .finally(() => setPopup({ show: false, message: '', onConfirm: null }));
         });
     };
-
     const handleUnblock = (id) => {
         openPopup('Bạn có chắc chắn muốn mở khóa người dùng này không?', () => {
             fetch(`http://localhost:8080/api/admin/users/${id}/unblock`, {
@@ -46,14 +62,30 @@ const UserManagement = () => {
             })
                 .then((response) => {
                     if (response.ok) {
+                        Swal.fire({
+                            title: 'Thành công!',
+                            text: 'Mở khóa người dùng thành công.',
+                            icon: 'success',
+                            confirmButtonText: 'OK',
+                            timer: 3000,
+                            timerProgressBar: true,
+                        });
+
                         setUserList(userList.map((user) => (user.id === id ? { ...user, status: true } : user)));
                     }
                 })
-                .catch((error) => console.error('Error unblocking user:', error))
+                .catch((error) => {
+                    console.error('Error unblocking user:', error);
+                    Swal.fire({
+                        title: 'Lỗi!',
+                        text: 'Có lỗi xảy ra khi mở khóa người dùng.',
+                        icon: 'error',
+                        confirmButtonText: 'OK',
+                    });
+                })
                 .finally(() => setPopup({ show: false, message: '', onConfirm: null }));
         });
     };
-
     const handleDelete = (id) => {
         openPopup('Bạn có chắc chắn muốn xóa người dùng này không?', () => {
             fetch(`http://localhost:8080/api/admin/users/${id}`, {
@@ -61,14 +93,30 @@ const UserManagement = () => {
             })
                 .then((response) => {
                     if (response.ok) {
+                        Swal.fire({
+                            title: 'Thành công!',
+                            text: 'Xóa người dùng thành công.',
+                            icon: 'success',
+                            confirmButtonText: 'OK',
+                            timer: 3000,
+                            timerProgressBar: true,
+                        });
+
                         setUserList(userList.filter((user) => user.id !== id));
                     }
                 })
-                .catch((error) => console.error('Error deleting user:', error))
+                .catch((error) => {
+                    console.error('Error deleting user:', error);
+                    Swal.fire({
+                        title: 'Lỗi!',
+                        text: 'Có lỗi xảy ra khi xóa người dùng.',
+                        icon: 'error',
+                        confirmButtonText: 'OK',
+                    });
+                })
                 .finally(() => setPopup({ show: false, message: '', onConfirm: null }));
         });
     };
-
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         return date.toLocaleDateString('vi-VN', {
@@ -89,7 +137,7 @@ const UserManagement = () => {
             )}
             <div className="be-wrapper be-fixed-sidebar" style={{ paddingTop: '0px' }}>
                 <div className="be-content">
-                    <div className="container-fluid" style={{ padding: '15px', backgroundColor: '#f9f9f9' }}>
+                    <div className="container-fluid" style={{ padding: '20px', backgroundColor: '#f9f9f9' }}>
                         <div className="content">
                             <div className="card">
                                 <div
@@ -146,16 +194,16 @@ const UserManagement = () => {
                                         <tbody>
                                             {userList.map((user, index) => (
                                                 <tr key={user.id}>
-                                                    <td style={{ padding: '15px' }}>{index + 1}</td>
-                                                    <td style={{ padding: '15px' }}>{user.username}</td>
-                                                    <td style={{ padding: '15px' }}>{user.email}</td>
+                                                    <td style={{ padding: '20px' }}>{index + 1}</td>
+                                                    <td style={{ padding: '20px' }}>{user.username}</td>
+                                                    <td style={{ padding: '20px' }}>{user.email}</td>
 
-                                                    <td style={{ padding: '15px' }}>{formatDate(user.birthday)}</td>
-                                                    <td style={{ padding: '15px' }}>{user.phone}</td>
-                                                    <td style={{ padding: '15px' }}>{user.role ? 'Quản lý' : 'Khách hàng'}</td>
-                                                    <td style={{ padding: '15px' }}>{user.status ? 'Mở' : 'Khóa'}</td>
-                                                    <td style={{ padding: '15px' }}>{user.gender ? 'Nam' : 'Nữ'}</td>
-                                                    <td style={{ padding: '15px' }} >
+                                                    <td style={{ padding: '20px' }}>{formatDate(user.birthday)}</td>
+                                                    <td style={{ padding: '20px' }}>{user.phone}</td>
+                                                    <td style={{ padding: '20px' }}>{user.role ? 'Quản lý' : 'Khách hàng'}</td>
+                                                    <td style={{ padding: '20px' }}>{user.status ? 'Mở' : 'Khóa'}</td>
+                                                    <td style={{ padding: '20px' }}>{user.gender ? 'Nam' : 'Nữ'}</td>
+                                                    <td style={{ padding: '20px' }} >
                                                         <img
                                                             src={user.image ? `/assets/images/${user.image}` : '/assets/images/default_user_image.jpg'}
                                                             alt={user.name}
@@ -174,7 +222,7 @@ const UserManagement = () => {
                                                             style={{
                                                                 backgroundColor: '#ffc107',
                                                                 color: '#fff',
-                                                                padding: '8px 15px',
+                                                                padding: '8px 20px',
                                                                 borderRadius: '10px',
                                                                 border: 'none',
                                                                 cursor: 'pointer',
@@ -190,23 +238,23 @@ const UserManagement = () => {
                                                                 e.target.style.backgroundColor = '#ffc107';
                                                             }}
                                                         >
-                                                            <i className="bi bi-pencil" style={{ fontSize: '15px' }}></i>
+                                                            <i className="bi bi-pencil" style={{ fontSize: '20px' }}></i>
                                                         </button>
 
 
 
                                                         <button onClick={() => handleDelete(user.id)}
                                                             style={{
-                                                                marginLeft: '15px',
+                                                                marginLeft: '20px',
                                                                 backgroundColor: '#dc3545',
                                                                 color: '#fff',
-                                                                padding: '8px 15px',
+                                                                padding: '8px 20px',
                                                                 borderRadius: '10px',
                                                                 border: 'none',
                                                                 cursor: 'pointer',
                                                                 fontSize: '16px',
                                                                 fontWeight: 'bold',
-                                                                boxShadow: '0 5px 10px rgba(215, 53, 69, 0.3)',
+                                                                boxShadow: '0 5px 10px rgba(220, 53, 69, 0.3)',
                                                                 transition: 'all 0.3s ease',
                                                             }}
                                                             onMouseOver={(e) => {
@@ -216,7 +264,7 @@ const UserManagement = () => {
                                                                 e.target.style.backgroundColor = '#dc3545';
                                                             }}
                                                         >
-                                                            <i className="bi bi-trash" style={{ fontSize: '15px' }}></i>
+                                                            <i className="bi bi-trash" style={{ fontSize: '20px' }}></i>
                                                         </button>
 
 
@@ -225,16 +273,16 @@ const UserManagement = () => {
 
                                                             <button onClick={() => handleBlock(user.id)}
                                                                 style={{
-                                                                    marginLeft: '15px',
+                                                                    marginLeft: '20px',
                                                                     backgroundColor: '#dc3545',
                                                                     color: '#fff',
-                                                                    padding: '8px 15px',
+                                                                    padding: '8px 20px',
                                                                     borderRadius: '10px',
                                                                     border: 'none',
                                                                     cursor: 'pointer',
                                                                     fontSize: '16px',
                                                                     fontWeight: 'bold',
-                                                                    boxShadow: '0 5px 10px rgba(215, 53, 69, 0.3)',
+                                                                    boxShadow: '0 5px 10px rgba(220, 53, 69, 0.3)',
                                                                     transition: 'all 0.3s ease',
                                                                 }}
                                                                 onMouseOver={(e) => {
@@ -244,7 +292,7 @@ const UserManagement = () => {
                                                                     e.target.style.backgroundColor = '#dc3545';
                                                                 }}
                                                             >
-                                                                <i className="fa fa-lock" style={{ fontSize: '15px' }}></i>
+                                                                <i className="fa fa-lock" style={{ fontSize: '20px' }}></i>
                                                             </button>
 
 
@@ -253,16 +301,16 @@ const UserManagement = () => {
 
                                                             <button onClick={() => handleUnblock(user.id)}
                                                                 style={{
-                                                                    marginLeft: '15px',
+                                                                    marginLeft: '20px',
                                                                     backgroundColor: 'green',
                                                                     color: '#fff',
-                                                                    padding: '8px 15px',
+                                                                    padding: '8px 20px',
                                                                     borderRadius: '10px',
                                                                     border: 'none',
                                                                     cursor: 'pointer',
                                                                     fontSize: '16px',
                                                                     fontWeight: 'bold',
-                                                                    boxShadow: '0 5px 10px rgba(215, 53, 69, 0.3)',
+                                                                    boxShadow: '0 5px 10px rgba(220, 53, 69, 0.3)',
                                                                     transition: 'all 0.3s ease',
                                                                 }}
                                                                 onMouseOver={(e) => {
@@ -272,7 +320,7 @@ const UserManagement = () => {
                                                                     e.target.style.backgroundColor = '#green';
                                                                 }}
                                                             >
-                                                                <i className="fa fa-unlock" style={{ fontSize: '15px' }}></i>
+                                                                <i className="fa fa-unlock" style={{ fontSize: '20px' }}></i>
                                                             </button>
 
                                                         )}
@@ -318,6 +366,65 @@ const EditUserForm = ({ user, setUserList, onClose }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+
+        // Kiểm tra các trường
+        const newErrors = {};
+
+        // Kiểm tra trường username (ít nhất 5 ký tự)
+        if (!formData.username.trim()) {
+            newErrors.username = 'Tên người dùng không được để trống!';
+        } else if (formData.username.length < 5) {
+            newErrors.username = 'Tên người dùng phải có ít nhất 5 ký tự!';
+        }
+
+        // Kiểm tra email
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|fpt\.edu\.vn)$/;
+        if (!formData.email.trim()) {
+            newErrors.email = 'Email không được để trống!';
+        } else if (!emailRegex.test(formData.email)) {
+            newErrors.email = 'Email phải kết thúc bằng @gmail.com hoặc @fpt.edu.vn!';
+        }
+
+        // Kiểm tra trường name (tên không được có số hoặc ký tự đặc biệt)
+        const nameRegex = /^[A-Za-z\s]+$/; // Chỉ cho phép chữ cái và khoảng trắng
+        if (!formData.name.trim()) {
+            newErrors.name = 'Tên không được để trống!';
+        } else if (!nameRegex.test(formData.name)) {
+            newErrors.name = 'Tên không được có số hoặc ký tự đặc biệt!';
+        }
+
+        // Kiểm tra trường birthday (ngày sinh phải đủ 18 tuổi)
+        if (!formData.birthday.trim()) {
+            newErrors.birthday = 'Ngày sinh không được để trống!';
+        } else {
+            const birthDate = new Date(formData.birthday);
+            const today = new Date();
+            const age = today.getFullYear() - birthDate.getFullYear();
+            const m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            if (age < 18) {
+                newErrors.birthday = 'Bạn phải đủ 18 tuổi!';
+            }
+        }
+
+        // Kiểm tra trường phone (số điện thoại bắt đầu bằng 09 và có đúng 10 chữ số)
+        const phoneRegex = /^09\d{8}$/; // Số điện thoại phải bắt đầu bằng "09" và có đúng 10 chữ số
+        if (!formData.phone.trim()) {
+            newErrors.phone = 'Số điện thoại không được để trống!';
+        } else if (!phoneRegex.test(formData.phone)) {
+            newErrors.phone = 'Số điện thoại phải có đúng 10 chữ số và bắt đầu bằng 09, không chứa ký tự đặc biệt hoặc chữ cái!';
+        }
+
+        // Nếu có lỗi, không tiếp tục gửi yêu cầu
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            setLoading(false);
+            return;
+        }
+
+
         try {
             const formDataToSend = new FormData();
             const userPayload = {
@@ -338,14 +445,19 @@ const EditUserForm = ({ user, setUserList, onClose }) => {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
 
-            if (response.status === 150) {
-                alert('User updated successfully!');
+            if (response.status === 200) {
+                Swal.fire({
+                    title: 'Thành công!',
+                    text: 'Cập nhật thông tin người dùng thành công.',
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                    timer: 3000,
+                    timerProgressBar: true,
+                });
 
-                // Cập nhật danh sách người dùng ngay sau khi cập nhật thành công
                 setUserList((prevList) =>
                     prevList.map((u) => (u.id === user.id ? { ...u, ...userPayload } : u))
                 );
-
                 onClose();
             }
         } catch (error) {
@@ -355,6 +467,7 @@ const EditUserForm = ({ user, setUserList, onClose }) => {
         }
         setLoading(false);
     };
+
 
     return (
         <div style={{
@@ -373,7 +486,7 @@ const EditUserForm = ({ user, setUserList, onClose }) => {
                 backgroundColor: '#fff',
                 padding: '30px 40px',
                 borderRadius: '16px',
-                boxShadow: '0 15px 40px rgba(0, 0, 0, 0.3)',
+                boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
                 textAlign: 'center',
                 width: '660px',
                 maxWidth: '90%',
@@ -384,7 +497,7 @@ const EditUserForm = ({ user, setUserList, onClose }) => {
                     fontWeight: 'bold',
                 }}>Sửa người dùng</h3>
                 <form onSubmit={handleSubmit} style={{ maxWidth: '600px', margin: '0 auto' }}>
-                    <div style={{ display: 'flex', gap: '15px' }}>
+                    <div style={{ display: 'flex', gap: '20px' }}>
                         <div style={{ flex: 1 }}>
                             <label htmlFor="username" style={{ fontWeight: 'bold', marginBottom: '5px', color: '#333' }}>
                                 Tên người dùng
@@ -411,6 +524,7 @@ const EditUserForm = ({ user, setUserList, onClose }) => {
                                 onMouseLeave={(e) => e.target.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.1)'}
                             />
                             {errors.username && <div className="text-danger" style={{ fontSize: '14px' }}>{errors.username}</div>}
+
                         </div>
 
                         <div style={{ flex: 1 }}>
@@ -442,7 +556,7 @@ const EditUserForm = ({ user, setUserList, onClose }) => {
                         </div>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '15px' }}>
+                    <div style={{ display: 'flex', gap: '20px' }}>
                         <div style={{ flex: 1 }}>
                             <label htmlFor="name" style={{ fontWeight: 'bold', marginBottom: '5px', color: '#333' }}>
                                 Tên
@@ -500,7 +614,7 @@ const EditUserForm = ({ user, setUserList, onClose }) => {
                         </div>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '15px' }}>
+                    <div style={{ display: 'flex', gap: '20px' }}>
                         <div style={{ flex: 1 }}>
                             <label htmlFor="phone" style={{ fontWeight: 'bold', marginBottom: '5px', color: '#333' }}>
                                 Số điện thoại
@@ -554,7 +668,7 @@ const EditUserForm = ({ user, setUserList, onClose }) => {
                         </div>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '15px' }}>
+                    <div style={{ display: 'flex', gap: '20px' }}>
                         <div style={{ flex: 1 }}>
                             <label htmlFor="gender" style={{ fontWeight: 'bold', marginBottom: '5px', color: '#333' }}>
                                 Giới tính
@@ -606,7 +720,7 @@ const EditUserForm = ({ user, setUserList, onClose }) => {
                         style={{
                             display: 'flex',
                             justifyContent: 'space-between',
-                            marginTop: '15px',
+                            marginTop: '20px',
                         }}
                     >
                         <button
@@ -614,7 +728,7 @@ const EditUserForm = ({ user, setUserList, onClose }) => {
                             disabled={loading}
                             className="btn btn-primary"
                             style={{
-                                padding: '10px 15px',
+                                padding: '10px 20px',
                                 fontSize: '16px',
                                 fontWeight: 'bold',
                                 borderRadius: '8px',
@@ -632,7 +746,7 @@ const EditUserForm = ({ user, setUserList, onClose }) => {
                             className="btn btn-secondary"
                             onClick={onClose}
                             style={{
-                                padding: '10px 15px',
+                                padding: '10px 20px',
                                 fontSize: '16px',
                                 fontWeight: 'bold',
                                 borderRadius: '8px',
