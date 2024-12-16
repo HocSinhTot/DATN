@@ -20,10 +20,33 @@ const ProductDetail = () => {
   const [similarProducts, setSimilarProducts] = useState([]); // Dữ liệu sản phẩm tương tự
     const [activeTab, setActiveTab] = useState('description'); // Quản lý tab hiện tại
     const [quantity, setQuantity] = useState(1);
+    const [isFavorited, setIsFavorited] = useState(false); // Trạng thái ban đầu là chưa yêu thích
+  const [likedProducts, setLikedProducts] = useState([]); // Giả sử bạn đã có danh sách sản phẩm yêu thích của người dùng
 
     // Chuyển đổi tab khi người dùng click vào
     const handleTabClick = (tab) => {
       setActiveTab(tab);
+    };
+    const addToWishlist = async (productId) => {
+      const username = sessionStorage.getItem('username');
+      if (!username) {
+        console.error('User not logged in');
+        return;
+      }
+  
+      try {
+        await axios.post('http://localhost:8080/api/likes/add', null, {
+          params: { productId },
+          headers: {
+            'Authorization': `Bearer ${username}`, // Gửi thông tin username trong header
+          },
+          withCredentials: true,
+        });
+        console.log('Sản phẩm đã được thêm vào danh sách yêu thích');
+        setIsFavorited(true); // Cập nhật trạng thái sau khi thêm thành công
+      } catch (error) {
+        console.error('Lỗi khi thêm vào danh sách yêu thích:', error);
+      }
     };
   const formatCurrencyVND = (amount) => {
     return new Intl.NumberFormat('vi-VN', {
@@ -31,7 +54,30 @@ const ProductDetail = () => {
       currency: 'VND',
     }).format(amount);
   };
+  useEffect(() => {
+    const username = sessionStorage.getItem('username');
+    if (!username) {
+      console.error('User not logged in');
+      return;
+    }
 
+    fetch('http://localhost:8080/api/likes/like-products', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${username}`,
+      },
+      credentials: 'include',
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch liked products');
+        }
+        return response.json();
+      })
+      .then((data) => setLikedProducts(data))
+      .catch((error) => console.error('Error fetching liked products:', error));
+  }, []);
   useEffect(() => {
     if (id) {
       // Gọi API để lấy thông tin sản phẩm theo ID
@@ -94,9 +140,8 @@ const ProductDetail = () => {
     .catch((error) => console.error("Error fetching similar products", error));
 }, [id]);
 
-  const handleColorChange = (color) => {
-    setSelectedColor(color);
- 
+  const handleColorChange = (colorId) => {
+      setSelectedColor(colorId);
  
   };
   const navigate = useNavigate();  // Use useNavigate instead of useHistory
@@ -162,6 +207,10 @@ const ProductDetail = () => {
     return <p>Đang tải dữ liệu sản phẩm...</p>;
   }
 
+
+  
+
+  // Lấy sản phẩm yêu thích từ API
   
   return (
     <div className="body-content outer-top-xs">
@@ -252,9 +301,7 @@ const ProductDetail = () => {
                             key={color.colorId}
                             style={{
                               padding: "5px 10px",
-                              backgroundColor: color.colorName.toLowerCase(),
-                              border: selectedColor === color ? "2px solid black" : "1px solid #ddd",
-                              color: "#black",
+                              border: selectedColor === color || selectedColor === color.colorId ? "2px solid black" : "1px solid #ddd",
                               cursor: "pointer",
                               borderRadius: "5px",
                             }}
@@ -298,9 +345,7 @@ const ProductDetail = () => {
                         </div>
                         <div className="col-sm-6">
                         <div class="favorite-button m-t-10">
-                                <a class="btn btn-primary" data-toggle="tooltip" data-placement="right" title="Wishlist" href="#">
-                                    <i class="fa fa-heart"></i>
-                                </a>
+                               
                               
                             </div>
                         </div>
