@@ -1,6 +1,7 @@
 package JAVA6.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -65,8 +66,27 @@ public class OrderService {
 
     public List<Object[]> getMonthlyRevenueByYear(Integer year) {
         return orderRepository.getMonthlyRevenueByYear(year);
+
     }
 
-    
-}
+    // huy
+    public void cancelOrder(int orderId, String cancelReason) {
+        Optional<OrderModel> orderOptional = orderRepository.findById(orderId);
+        if (!orderOptional.isPresent()) {
+            throw new RuntimeException("Không tìm thấy đơn hàng với ID: " + orderId);
+        }
+        OrderModel order = orderOptional.get();
 
+        Optional<OrderStatusModel> canceledStatusOptional = orderStatusRepository.findById(7);
+        if (!canceledStatusOptional.isPresent()) {
+            throw new RuntimeException("Không tìm thấy trạng thái 'Hủy' với ID: 7");
+        }
+        OrderStatusModel canceledStatus = canceledStatusOptional.get();
+
+        // Cập nhật trạng thái đơn hàng thành 'Hủy' và lý do hủy
+        order.setOrderStatus(canceledStatus);
+        order.setCancelReason(cancelReason);
+        orderRepository.save(order);
+    }
+
+}

@@ -130,26 +130,14 @@ const WishlistPage = () => {
                 >
                     <thead>
                         <tr>
-                            <th
-                                colSpan="3"
-                                style={{
-                                    border: '1px solid #ddd',
-                                    padding: '20px',
-                                    textAlign: 'center',
-                                    fontSize: '1.5rem',
-                                    fontWeight: 'bold',
-                                }}
-                            >
-                                Danh Sách Sản Phẩm Yêu Thích
-                                {/* Thông báo */}
-                                <Notification
-                                    message={notificationMessage}
-                                    type={notificationType}
-                                    show={showNotification}
-                                    onClose={() => setShowNotification(false)}
-                                />
 
-                            </th>
+                            {/* Thông báo */}
+                            <Notification
+                                message={notificationMessage}
+                                type={notificationType}
+                                show={showNotification}
+                                onClose={() => setShowNotification(false)}
+                            />
                         </tr>
                     </thead>
                     <tbody>

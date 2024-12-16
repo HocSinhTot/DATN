@@ -21,7 +21,7 @@ const InvoicePage = () => {
     if (invoiceData) {
       setUserId(invoiceData.userId);
       setCartItems(invoiceData.items);
-     
+
       setTotalAmount(invoiceData.totalAmount);
     } else {
       setErrorMessage("Không có dữ liệu hóa đơn.");
@@ -63,15 +63,15 @@ const InvoicePage = () => {
 
   const handleSubmitPayment = async (event) => {
     event.preventDefault();
-  
+
     if (!address) {
       alert("Vui lòng nhập địa chỉ giao hàng.");
       return;
     }
-  
+
     // Tính tổng tiền sau khi áp dụng mã giảm giá
     const totalAfterDiscount = totalAmount - discountAmount;
-  
+
     if (payMethod === "2") {  // Phương thức thanh toán VNPay
       try {
         const response = await fetch(
@@ -80,7 +80,7 @@ const InvoicePage = () => {
             method: "GET",
           }
         );
-  
+
         if (response.ok) {
           const data = await response.json();
           if (data.code === "00" && data.data) {
@@ -106,7 +106,7 @@ const InvoicePage = () => {
             body: JSON.stringify(paymentData),
           }
         );
-  
+
         if (response.ok) {
           alert("Thanh toán COD thành công!");
           navigate("/");  // Điều hướng về trang chủ
@@ -118,7 +118,7 @@ const InvoicePage = () => {
       }
     }
   };
-  
+
 
   return (
     <div style={{ margin: "20px" }}>
@@ -158,50 +158,50 @@ const InvoicePage = () => {
               </tr>
             </thead>
             <tbody>
-            {cartItems && cartItems.length > 0 ? (
-  cartItems.map((item) => (
-    <tr key={item.id}>
-      <td style={{ border: "1px solid #ddd", padding: "10px" }}>{item.name}</td>
-      <td style={{ border: "1px solid #ddd", padding: "10px" }}>
-        <img src={`/assets/images/${item.image}`} alt={item.name} style={{ maxWidth: "100px" }} />
-      </td>
-      <td style={{ border: "1px solid #ddd", padding: "10px" }}>{item.color}</td>
-      <td style={{ border: "1px solid #ddd", padding: "10px" }}>{item.capacity}</td>
-      <td style={{ border: "1px solid #ddd", padding: "10px" }}>  {new Intl.NumberFormat('vi-VN', {
-                  style: 'currency',
-                  currency: 'VND',
-                }).format(item.price)}</td>
-      <td style={{ border: "1px solid #ddd", padding: "10px" }}>{item.quantity}</td>
-      <td style={{ border: "1px solid #ddd", padding: "10px" }}>{new Intl.NumberFormat('vi-VN', {
-                  style: 'currency',
-                  currency: 'VND',
-                }).format(item.price * item.quantity)}</td>
-    </tr>
-  ))
-) : (
-  <tr>
-    <td colSpan="5" style={{ textAlign: "center", padding: "10px" }}>
-      Không có sản phẩm nào trong giỏ hàng.
-    </td>
-  </tr>
-)}
+              {cartItems && cartItems.length > 0 ? (
+                cartItems.map((item) => (
+                  <tr key={item.id}>
+                    <td style={{ border: "1px solid #ddd", padding: "10px" }}>{item.name}</td>
+                    <td style={{ border: "1px solid #ddd", padding: "10px" }}>
+                      <img src={`/assets/images/${item.image}`} alt={item.name} style={{ maxWidth: "100px" }} />
+                    </td>
+                    <td style={{ border: "1px solid #ddd", padding: "10px" }}>{item.color}</td>
+                    <td style={{ border: "1px solid #ddd", padding: "10px" }}>{item.capacity}</td>
+                    <td style={{ border: "1px solid #ddd", padding: "10px" }}>  {new Intl.NumberFormat('vi-VN', {
+                      style: 'currency',
+                      currency: 'VND',
+                    }).format(item.price)}</td>
+                    <td style={{ border: "1px solid #ddd", padding: "10px" }}>{item.quantity}</td>
+                    <td style={{ border: "1px solid #ddd", padding: "10px" }}>{new Intl.NumberFormat('vi-VN', {
+                      style: 'currency',
+                      currency: 'VND',
+                    }).format(item.price * item.quantity)}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" style={{ textAlign: "center", padding: "10px" }}>
+                    Không có sản phẩm nào trong giỏ hàng.
+                  </td>
+                </tr>
+              )}
 
             </tbody>
           </table>
 
           <div>
             <p>Tổng cộng: {new Intl.NumberFormat('vi-VN', {
-                  style: 'currency',
-                  currency: 'VND',
-                }).format(totalAmount)} </p>
+              style: 'currency',
+              currency: 'VND',
+            }).format(totalAmount)} </p>
             {discountAmount > 0 && <p>Giảm giá:{new Intl.NumberFormat('vi-VN', {
-                  style: 'currency',
-                  currency: 'VND',
-                }).format(discountAmount)} </p>}
+              style: 'currency',
+              currency: 'VND',
+            }).format(discountAmount)} </p>}
             <p><strong>Tổng tiền sau giảm giá: {new Intl.NumberFormat('vi-VN', {
-                  style: 'currency',
-                  currency: 'VND',
-                }).format(totalAmount - discountAmount)}</strong></p>
+              style: 'currency',
+              currency: 'VND',
+            }).format(totalAmount - discountAmount)}</strong></p>
           </div>
 
           {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}

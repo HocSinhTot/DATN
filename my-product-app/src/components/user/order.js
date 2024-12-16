@@ -9,6 +9,7 @@ const OrderHistory = () => {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [cancelReason, setCancelReason] = useState('');
   const [orderIdToCancel, setOrderIdToCancel] = useState(null);
+  const [loadingCancel, setLoadingCancel] = useState(false);
 
   const userId = sessionStorage.getItem('userId');
   const [rating, setRating] = useState(0); // State cho số sao
@@ -71,7 +72,7 @@ const OrderHistory = () => {
       setOrderDetails(null);
       const response = await fetch(`http://localhost:8080/api/history/${orderId}`);
       if (!response.ok) throw new Error('Failed to fetch order details');
-      
+
       const data = await response.json();
       setOrderDetails(data);
     } catch (err) {
@@ -104,25 +105,39 @@ const OrderHistory = () => {
       return;
     }
 
+    if (!orderIdToCancel) {
+      alert('Không có đơn hàng để hủy!');
+      return;
+    }
+
     const confirmCancel = window.confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?');
     if (!confirmCancel) return;
 
+    setLoadingCancel(true);
+
     try {
-      const response = await fetch(`http://localhost:8080/api/cancel/${orderIdToCancel}`, {
-        method: 'POST',
+      const response = await fetch(`http://localhost:8080/api/history/cancel/${orderIdToCancel}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ reason: cancelReason }),
+        body: JSON.stringify({
+          cancelReason,
+        }),
       });
 
-      if (!response.ok) throw new Error('Hủy đơn hàng thất bại');
+      if (!response.ok) {
+        const errorDetails = await response.json();
+        throw new Error(`Hủy đơn hàng thất bại: ${errorDetails.message || 'Không rõ lý do'}`);
+      }
 
-      alert('Hủy đơn hàng thành công');
       setOrders((prevOrders) => prevOrders.filter((order) => order.id !== orderIdToCancel));
+      alert('Hủy đơn hàng thành công');
       closeModal();
     } catch (error) {
       alert(`Lỗi: ${error.message}`);
+    } finally {
+      setLoadingCancel(false);
     }
   };
 
@@ -164,7 +179,7 @@ const OrderHistory = () => {
         <h2 style={{ textAlign: 'center', color: '#333', fontSize: '2.5rem' }}>
           Đơn hàng của bạn
         </h2>
-        <button onClick={handleOpenPopup}>Sửa sản phẩm</button>
+        {/* <button onClick={handleOpenPopup}>Sửa sản phẩm</button> */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'center' }}>
           {orders.map((order) => (
             <div
@@ -242,7 +257,7 @@ const OrderHistory = () => {
               >
                 Xem chi tiết
               </button>
-
+              <button onClick={() => openCancelModal(order.id)} style={{ width: "100%", padding: "12px", marginTop: "10px", border: "none", borderRadius: "10px", backgroundColor: "#ff6b6b", color: "#fff", cursor: "pointer", fontWeight: "bold" }}>Hủy đơn hàng</button>
             </div>
           ))}
         </div>
@@ -304,8 +319,8 @@ const OrderHistory = () => {
                     e.currentTarget.style.boxShadow = '0 4px 10px rgba(0, 0, 0, 0.1)'; // Quay lại bóng đổ ban đầu
                   }}
                 >
-                  <strong style={{ color: '#4a90e2' }}>Sản phẩm:</strong> {detail.product.product.name} <br/>
-                  <strong style={{ color: '#4a90e2' }}>Màu sắc:</strong> {detail.product.color.name} <br/>
+                  <strong style={{ color: '#4a90e2' }}>Sản phẩm:</strong> {detail.product.product.name} <br />
+                  <strong style={{ color: '#4a90e2' }}>Màu sắc:</strong> {detail.product.color.name} <br />
                   <strong style={{ color: '#4a90e2' }}>Dung lượng:</strong> {detail.product.productPrice.capacity.name}
                   <div style={{ textAlign: 'center', margin: '15px 0' }}>
                     <img
@@ -352,7 +367,7 @@ const OrderHistory = () => {
                 Đóng
               </button>
 
-              <button
+              {/* <button
                 onClick={() => openCancelModal(orderDetails[0].orderId)} // Lấy orderId từ chi tiết đơn hàng
                 style={{
                   marginLeft: '10px',
@@ -369,7 +384,7 @@ const OrderHistory = () => {
                 onMouseOut={(e) => (e.target.style.backgroundColor = '#ff6b6b')}
               >
                 Hủy đơn hàng
-              </button>
+              </button> */}
             </div>
 
 
