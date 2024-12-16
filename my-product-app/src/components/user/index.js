@@ -587,17 +587,7 @@ const Index = () => {
                             <div className="cart clearfix animate-effect">
                               <div className="action">
                                 <ul className="list-unstyled">
-                                  <li className="add-cart-button btn-group">
-                                    <button
-                                      className="btn btn-primary"
-                                      onClick={() => {
-                                        handlePurchase();
-                                        addToCart(product.id);
-                                      }}
-                                    >
-                                      <i className="fa fa-shopping-cart"></i>
-                                    </button>
-                                  </li>
+
                                   <li className="add-cart-button btn-group">
                                     <button
                                       className="btn btn-primary"
@@ -728,17 +718,7 @@ const Index = () => {
                               <div className="cart clearfix animate-effect">
                                 <div className="action">
                                   <ul className="list-unstyled">
-                                    <li className="add-cart-button btn-group">
-                                      <button
-                                        className="btn btn-primary"
-                                        onClick={() => {
-                                          handlePurchase();
-                                          addToCart(product.id);
-                                        }}
-                                      >
-                                        <i className="fa fa-shopping-cart"></i>
-                                      </button>
-                                    </li>
+
                                     <li className="add-cart-button btn-group">
                                       <button
                                         className="btn btn-primary"
