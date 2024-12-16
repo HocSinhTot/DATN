@@ -21,6 +21,7 @@ import JAVA6.repository.OrderDetailRepository;
 import JAVA6.repository.OrderRepository;
 import JAVA6.repository.OrderStatusRepository;
 import JAVA6.repository.PaymentMethodRepository;
+import JAVA6.repository.ProductRepository;
 import JAVA6.repository.ProductdetailsRepositoryy;
 import JAVA6.repository.ProductsPriceRepository;
 import JAVA6.service.ProductService;
@@ -64,6 +65,9 @@ public class CartController {
     private ColorAdminRepository colorAdminRepository;
     @Autowired
     private ProductdetailsRepositoryy productDetailsRepositoryy;
+    @Autowired
+    private ProductRepository productRepository;
+    
     @Autowired
     private CapacityAdminRepository capacityAdminRepository;
     @Autowired
@@ -424,6 +428,7 @@ public class CartController {
         private OrderModel handleVNPayOrder(UserModel user, String address,PaymentMethodModel paymentMethod,
                 Map<String, String> vnp_Params) {
             // Tạo đơn hàng sau khi thanh toán thành công
+            
             OrderModel order = new OrderModel();
             order.setDate(new Timestamp(System.currentTimeMillis()));
             order.setAddress(address);
@@ -444,13 +449,20 @@ public class CartController {
             orderRepository.save(order);
     
             for (CartModel cartItem : cartItems) {
+                ProductModel product = cartItem.getProduct().getProduct();
+
+                if (product.getQuantity() < cartItem.getTotalQuantity()) {
+                    throw new RuntimeException("Sản phẩm " + product.getName() + " không đủ hàng trong kho.");
+                }else{
+                product.setQuantity(product.getQuantity() - cartItem.getTotalQuantity());
+                productRepository.save(product);
                 OrderDetailModel orderDetail = new OrderDetailModel();
                 orderDetail.setProduct(cartItem.getProduct());
                 orderDetail.setOrder(order);
                 orderDetail.setTotalQuantity(cartItem.getTotalQuantity());
                 orderDetail.setTotalPrice(cartItem.getTotalPrice());
                 orderDetailRepository.save(orderDetail);
-            }
+            }}
     
             // Xóa giỏ hàng sau khi lưu đơn hàng
             cartRepository.deleteAll(cartItems);
@@ -476,13 +488,23 @@ public class CartController {
             orderRepository.save(order);
     
             for (CartModel cartItem : cartItems) {
+                ProductModel product = cartItem.getProduct().getProduct();
+
+        // Kiểm tra tồn kho trước khi tạo chi tiết đơn hàng
+        if (product.getQuantity() < cartItem.getTotalQuantity()) {
+            throw new RuntimeException("Sản phẩm " + product.getName() + " không đủ hàng trong kho.");
+        }else{
+        product.setQuantity(product.getQuantity() - cartItem.getTotalQuantity());
+        productRepository.save(product);
                 OrderDetailModel orderDetail = new OrderDetailModel();
+
                 orderDetail.setProduct(cartItem.getProduct());
                 orderDetail.setOrder(order);
                 orderDetail.setTotalQuantity(cartItem.getTotalQuantity());
                 orderDetail.setTotalPrice(cartItem.getTotalPrice());
                 orderDetailRepository.save(orderDetail);
             }
+        }
     
             cartRepository.deleteAll(cartItems);
             return order;

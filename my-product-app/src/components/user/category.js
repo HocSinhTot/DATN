@@ -421,14 +421,7 @@ const Category = ({ keyword, categoryId: headerCategoryId, setCategoryId }) => {
                                             <i className={`icon fa fa-heart ${isFavorited ? 'favorited' : ''}`}></i>
                                           </button>
                                         </li>
-                                        <li className="add-cart-button btn-group">
-                                          <button
-                                            className="btn btn-primary"
-                                            onClick={() => window.location.href = `/product/${product.id}`}
-                                          >
-                                            <i className="fa fa-signal" aria-hidden="true"></i>
-                                          </button>
-                                        </li>
+
                                       </ul>
                                     </div>
                                   </div>

@@ -94,9 +94,8 @@ const ProductDetail = () => {
       .catch((error) => console.error("Error fetching similar products", error));
   }, [id]);
 
-  const handleColorChange = (color) => {
-    setSelectedColor(color);
-
+  const handleColorChange = (colorId) => {
+    setSelectedColor(colorId);
 
   };
   const navigate = useNavigate();  // Use useNavigate instead of useHistory
@@ -330,9 +329,7 @@ const ProductDetail = () => {
                               key={color.colorId}
                               style={{
                                 padding: "5px 10px",
-                                backgroundColor: color.colorName.toLowerCase(),
-                                border: selectedColor === color ? "2px solid black" : "1px solid #ddd",
-                                color: "#black",
+                                border: selectedColor === color || selectedColor === color.colorId ? "2px solid black" : "1px solid #ddd",
                                 cursor: "pointer",
                                 borderRadius: "5px",
                               }}
@@ -376,9 +373,12 @@ const ProductDetail = () => {
                           </div>
                           <div className="col-sm-6">
                             <div class="favorite-button m-t-10">
-                              <a class="btn btn-primary" data-toggle="tooltip" data-placement="right" title="Wishlist" href="#">
-                                <i class="fa fa-heart"></i>
-                              </a>
+
+
+                            </div>
+                          </div>
+                          <div className="col-sm-6">
+                            <div class="favorite-button m-t-10">
 
                             </div>
                           </div>
