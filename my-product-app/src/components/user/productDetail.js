@@ -165,16 +165,17 @@ const ProductDetail = () => {
 
   return (
     <div className="body-content outer-top-xs">
-      <div className style={{ justifyContent: 'center', display: 'flex' }} >
+      <div className style={{ justifyContent: 'center', display: 'flex', paddingBottom: '20px' }} >
         <div className="row single-product">
 
           <div style={{ width: '1400px' }}>
 
-
-            <div className="col-md-3 sidebar">
+            <div className="col-md-3 sidebar" style={{ backgroundColor: '#f8f8f8', padding: '15px', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }}>
               <div className="sidebar-module-container">
                 <div className="sidebar-widget">
-                  <h3 className="section-title">Sản phẩm tương tự</h3>
+                  <h3 className="section-title" style={{ fontSize: '18px', fontWeight: '600', marginBottom: '15px', color: '#333' }}>
+                    Sản phẩm tương tự
+                  </h3>
                   <Swiper
                     autoplay={{
                       delay: 2500,
@@ -189,23 +190,23 @@ const ProductDetail = () => {
                     navigation={true}
                     modules={[Autoplay, Pagination, Navigation]}
                     className="mySwiper"
+                    style={{ marginTop: '10px' }}
                   >
                     {similarProducts.length > 0 ? (
                       similarProducts.map((product) => {
-                        // Kiểm tra nếu productsImages hoặc images không phải undefined
                         const firstImageUrl = product.productsImages?.length > 0
                           ? `/assets/images/${product.productsImages[0].image.url}`
                           : (product.images?.length > 0
                             ? `/assets/images/${product.images[0].url}`
-                            : 'default-image.jpg'); // Lấy ảnh từ sản phẩm hoặc ảnh mặc định
+                            : 'default-image.jpg');
 
                         return (
-                          <SwiperSlide key={product.id} className="item">
-                            <div className="products special-product">
+                          <SwiperSlide key={product.id} className="item" style={{ display: 'flex', justifyContent: 'center' }}>
+                            <div className="products special-product" style={{ padding: '10px', borderRadius: '5px', backgroundColor: '#fff', transition: 'transform 0.3s ease' }}>
                               <div className="product">
                                 <div className="product-micro">
                                   <div className="row product-micro-row">
-                                    <div className="col col-xs-5">
+                                    <div className="col col-xs-12" style={{ textAlign: 'center' }}>
                                       <div className="product-image">
                                         <div className="image">
                                           <a href={`/product/${product.id}`}>
@@ -213,20 +214,19 @@ const ProductDetail = () => {
                                               src={firstImageUrl}
                                               alt={product.name}
                                               className="img-responsive"
+                                              style={{ width: '100%', height: 'auto', borderRadius: '5px', objectFit: 'cover' }}
                                             />
                                           </a>
                                         </div>
                                       </div>
-                                    </div>
-                                    <div className="col col-xs-7">
-                                      <div className="product-info">
-                                        <h3 className="name">
+                                      <div className="product-info" style={{ marginTop: '10px' }}>
+                                        <h3 className="name" style={{ fontSize: '16px', fontWeight: '500', color: '#333', marginBottom: '10px' }}>
                                           <a href={`/product/${product.id}`}>
                                             {product.name}
                                           </a>
                                         </h3>
                                         <div className="product-price">
-                                          <span className="price">
+                                          <span className="price" style={{ fontSize: '18px', color: '#ff6f61', fontWeight: '700' }}>
                                             {product.price.toLocaleString()} VND
                                           </span>
                                         </div>
@@ -240,12 +240,13 @@ const ProductDetail = () => {
                         );
                       })
                     ) : (
-                      <p>Không có sản phẩm nào.</p>
+                      <p style={{ textAlign: 'center', color: '#888' }}>Không có sản phẩm nào.</p>
                     )}
                   </Swiper>
                 </div>
               </div>
             </div>
+
 
             <div className="detail-block">
               <div className="row wow fadeInUp">
