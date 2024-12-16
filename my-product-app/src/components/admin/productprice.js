@@ -41,13 +41,13 @@ const ProductsPriceTable = () => {
           <div className="card">
             <div className="card-header">
               <h5 className="card-title m-0" style={{ fontSize: '30px', fontWeight: '700' }}>Quản lý giá sản phẩm</h5>
+              
             </div>
             <div className="card-body">
               <table className="table" style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr>
                     <th style={{ textAlign: 'center', padding: '12px', backgroundColor: '#007bff', color: '#fff' }}>Sản phẩm</th>
-                    <th style={{ textAlign: 'center', padding: '12px', backgroundColor: '#007bff', color: '#fff' }}>Màu sắc</th>
                     <th style={{ textAlign: 'center', padding: '12px', backgroundColor: '#007bff', color: '#fff' }}>Dung lượng</th>
                     <th style={{ textAlign: 'center', padding: '12px', backgroundColor: '#007bff', color: '#fff' }}>Giá</th>
                     <th style={{ textAlign: 'center', padding: '12px', backgroundColor: '#007bff', color: '#fff' }}>Thao tác</th>
@@ -58,7 +58,6 @@ const ProductsPriceTable = () => {
                     productsPrices.map((item) => (
                       <tr key={`${item.id.productId}-${item.id.capacityId}-${item.id.colorId}`}>
                         <td style={{ textAlign: 'center', padding: '12px' }}>{item.product?.name || 'Unknown'}</td>
-                        <td style={{ textAlign: 'center', padding: '12px' }}>{item.color?.name || 'N/A'}</td>
                         <td style={{ textAlign: 'center', padding: '12px' }}>{item.capacity?.name || 'N/A'}</td>
                         <td style={{ textAlign: 'center', padding: '12px' }}>{item.price}</td>
                         <td style={{ textAlign: 'center', padding: '12px' }}>

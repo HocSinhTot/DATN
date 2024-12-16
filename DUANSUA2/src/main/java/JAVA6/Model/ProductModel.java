@@ -46,7 +46,8 @@ public class ProductModel {
 	
 	private BrandModel brand;
 	@OneToMany(mappedBy = "product")
-    private List<ImageModel> images;
+	@JsonManagedReference
+	private List<ImageModel> images;
 	
 	// Getter và Setter
 	public List<ImageModel> getImages() {

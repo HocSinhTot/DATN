@@ -407,6 +407,12 @@ background: linear-gradient(90deg, rgb(44, 62, 80), rgb(52, 73, 94));}
 											<span>Quản lý yêu thích</span>
 										</a>
 									</li>
+									<li style={{ borderRadius: '5px', transition: 'background-color 0.3s ease' }}>
+										<a href="discount" style={{ color: 'black', textDecoration: 'none', display: 'flex', alignItems: 'center', padding: '15px 20px', borderRadius: '5px', transition: 'background-color 0.3s ease' }}>
+											<i className="bi bi-coin" style={{ fontSize: '24px', marginRight: '10px' }}></i>
+											<span>Quản lý mã giảm giá</span>
+										</a>
+									</li>
 								</ul>
 							</div>
 						</div>

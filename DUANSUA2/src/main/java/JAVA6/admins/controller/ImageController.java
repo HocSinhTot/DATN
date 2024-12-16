@@ -49,11 +49,11 @@ public class ImageController {
     // Lấy danh sách tất cả người dùng
     @GetMapping
     public ResponseEntity<List<ImageModel>> getAllImage() {
-        List<ImageModel> image = imageRepository.findAll();
-        if (image.isEmpty()) {
-            return ResponseEntity.noContent().build(); // Trả về 204 nếu danh sách rỗng
+        List<ImageModel> images = imageRepository.findAllWithProducts(); // Sử dụng phương thức mới
+        if (images.isEmpty()) {
+            return ResponseEntity.noContent().build(); 
         }
-        return ResponseEntity.ok(image); // Trả về danh sách người dùng
+        return ResponseEntity.ok(images); 
     }
 
     // Lấy thông tin người dùng theo ID

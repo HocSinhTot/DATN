@@ -29,6 +29,7 @@ import FavouriteAmin from './components/admin/favourite';
 import EvaluaesAmin from './components/admin/evaluaes';
 import ProductsPrice from './components/admin/productprice';
 import ProductsImage from './components/admin/productimages';
+import DiscountsAmin from './components/admin/discount';
 
 import ThongkeAdmin from './components/admin/Thongke';
 
@@ -241,6 +242,14 @@ function App() {
             <>
               <Headeradmin />
               <ProductsImage />
+            </>
+          </ProtectedRoute>
+        } />
+        <Route path="/discount" element={
+          <ProtectedRoute roles={['ROLE_ADMIN']}>
+            <>
+              <Headeradmin />
+              <DiscountsAmin />
             </>
           </ProtectedRoute>
         } />

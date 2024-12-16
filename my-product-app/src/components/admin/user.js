@@ -333,20 +333,22 @@ const EditUserForm = ({ user, setUserList, onClose }) => {
             if (formData.file) {
                 formDataToSend.append('file', formData.file);
             }
-
+    
             const response = await axios.put(`http://localhost:8080/api/admin/users/${user.id}`, formDataToSend, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
-
-            if (response.status === 150) {
+    
+            // Kiểm tra mã phản hồi 200-299 (thành công)
+            if (response.status >= 200 && response.status < 300) {
+                // Sử dụng alert để thông báo thành công
                 alert('User updated successfully!');
-
+    
                 // Cập nhật danh sách người dùng ngay sau khi cập nhật thành công
                 setUserList((prevList) =>
                     prevList.map((u) => (u.id === user.id ? { ...u, ...userPayload } : u))
                 );
-
-                onClose();
+    
+                onClose(); // Đóng cửa sổ popup
             }
         } catch (error) {
             if (error.response) {
