@@ -225,7 +225,7 @@ const Category = ({ keyword, categoryId: headerCategoryId, setCategoryId }) => {
             className="col-md-12"
             style={{
               width: '100%', // Đảm bảo chiều rộng của div chiếm toàn bộ chiều rộng
-              maxWidth: '1530px', // Bạn có thể thay đổi maxWidth theo ý muốn
+              maxWidth: '1675px', // Bạn có thể thay đổi maxWidth theo ý muốn
               margin: '0 auto', // Căn giữa phần tử
               backgroundColor: 'white',
               paddingLeft: '190px'

@@ -107,6 +107,9 @@ const Header = ({ setKeyword, setCategoryId }) => {
                       <Link to="/change" className="menu-item">Đổi mật khẩu</Link>
                     </li>
                     <li>
+                      <Link to="/admin" className="menu-item">Quản lý</Link>
+                    </li>
+                    <li>
                       <a href="/" onClick={handleLogout} className="menu-item">Đăng xuất</a>
                     </li>
                   </>
@@ -185,7 +188,7 @@ const Header = ({ setKeyword, setCategoryId }) => {
       </style>
 
       <div className="main-header" style={{
-        width: '1410px'
+        width: '1567px'
       }}>
         <div className="container">
           <div className="row" style={{ width: '1330px' }}>
