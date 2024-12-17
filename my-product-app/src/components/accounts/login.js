@@ -226,7 +226,7 @@ const LoginPage = () => {
               checked={rememberMe}
               onChange={(e) => setRememberMe(e.target.checked)}
             />
-            <label htmlFor="rememberMe">Lưu mật khẩu</label>
+            <label  style={{  marginBottom: '0px' }} htmlFor="rememberMe">Lưu mật khẩu</label>
           </div>
           {error && <div style={styles.errorMessage}>{error}</div>}
           <button type="submit" style={styles.btn}>

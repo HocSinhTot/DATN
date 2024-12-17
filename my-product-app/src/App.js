@@ -14,6 +14,7 @@ import Footer from './components/layout/footer';
 import Header from './components/layout/header';
 import VnPay from './components/user/vnPay';
 import Favorite from './components/user/favorite';
+import Discount from './components/user/discount';
 
 // admin imports
 import Headeradmin from './components/admin/formadmin/headeradmin';
@@ -29,6 +30,7 @@ import FavouriteAmin from './components/admin/favourite';
 import EvaluaesAmin from './components/admin/evaluaes';
 import ProductsPrice from './components/admin/productprice';
 import ProductsImage from './components/admin/productimages';
+import DiscountsAmin from './components/admin/discounts';
 
 import ThongkeAdmin from './components/admin/Thongke';
 
@@ -113,6 +115,15 @@ function App() {
             <>
               <Header setKeyword={setKeyword} setCategoryId={setCategoryId} />
               <Favorite />
+              <Footer />
+            </>
+          </ProtectedRoute>
+        } />
+         <Route path="/discount" element={
+          <ProtectedRoute roles={['ROLE_USER', 'ROLE_ADMIN']}>
+            <>
+              <Header setKeyword={setKeyword} setCategoryId={setCategoryId} />
+              <Discount />
               <Footer />
             </>
           </ProtectedRoute>
@@ -241,6 +252,14 @@ function App() {
             <>
               <Headeradmin />
               <ProductsImage />
+            </>
+          </ProtectedRoute>
+        } />
+        <Route path="/discounts" element={
+          <ProtectedRoute roles={['ROLE_ADMIN']}>
+            <>
+              <Headeradmin />
+              <DiscountsAmin />
             </>
           </ProtectedRoute>
         } />
