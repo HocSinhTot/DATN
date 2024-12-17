@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
-
+import Popup from './Popup';  // Giả sử bạn đã có một component Popup
+import Swal from 'sweetalert2';
 const Management = () => {
   // State for product management
   const [productList, setProductList] = useState([]);
@@ -10,12 +11,18 @@ const Management = () => {
   const [pageSize, setPageSize] = useState(10); // Số sản phẩm mỗi trang
   const [totalPages, setTotalPages] = useState(0); // Tổng số trang
   const [sortOrder, setSortOrder] = useState("asc"); // Mặc định là sắp xếp tăng dần
+  const [popup, setPopup] = useState({ show: false, message: '', onConfirm: null });
 
   // Popup state
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [currentProductId, setCurrentProductId] = useState(null);
 
+
+
+  const openPopup = (message, onConfirm) => {
+    setPopup({ show: true, message, onConfirm });
+  };
   // Form data for Add/Edit Product
   const [formData, setFormData] = useState({
     name: "",
@@ -76,26 +83,38 @@ const Management = () => {
       })
       .catch((error) => console.error("Error fetching products:", error));
   };
-  
+
   const handlePageSizeChange = (e) => {
     setPageSize(Number(e.target.value));
     setCurrentPage(0); // Reset về trang đầu tiên khi thay đổi số sản phẩm mỗi trang
   };
 
+
   const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this product?")) {
+    openPopup('Bạn có chắc chắn muốn xóa sản phẩm này không?', () => {
       fetch(`http://localhost:8080/api/admin/products/${id}`, {
-        method: "DELETE",
+        method: 'DELETE',
       })
         .then((response) => {
           if (response.ok) {
-            alert("Product deleted successfully!");
+            Swal.fire({
+              title: 'Thành công!',
+              text: 'Sản phẩm đã được xóa thành công!',
+              icon: 'success',
+              confirmButtonText: 'OK',
+              timer: 3000,
+              timerProgressBar: true,
+            });
+
             setProductList(productList.filter((product) => product.id !== id));
           }
         })
-        .catch((error) => console.error("Error deleting product:", error));
-    }
+        .catch((error) => console.error('Error deleting product:', error))
+        .finally(() => setPopup({ show: false, message: '', onConfirm: null }));
+    });
   };
+
+
 
   const handleSearch = () => {
     if (!searchTerm.trim()) {
@@ -150,49 +169,110 @@ const Management = () => {
     });
   };
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const validationErrors = {};
+
+    // Kiểm tra tên sản phẩm không có ký tự đặc biệt
+    if (!formData.name.trim()) {
+      validationErrors.name = "Tên sản phẩm không được để trống";
+    } else if (/[^a-zA-Z0-9\s]/.test(formData.name)) { // Kiểm tra ký tự đặc biệt
+      validationErrors.name = "Tên sản phẩm không được chứa ký tự đặc biệt";
+    }
+
+    // Kiểm tra giá sản phẩm
+    const price = String(formData.price).trim(); // Đảm bảo giá là chuỗi
+    if (!price || isNaN(price)) {
+      validationErrors.price = "Giá sản phẩm phải là một số hợp lệ";
+    } else if (Number(price) <= 0) {
+      validationErrors.price = "Giá sản phẩm không được là số âm hoặc bằng 0";
+    } else if (/[^0-9.]/.test(price)) {
+      validationErrors.price = "Giá sản phẩm không được chứa ký tự chữ hoặc ký tự đặc biệt";
+    }
+
+    // Kiểm tra số lượng sản phẩm
+    const quantity = String(formData.quantity).trim(); // Đảm bảo số lượng là chuỗi
+    if (!quantity || isNaN(quantity)) {
+      validationErrors.quantity = "Số lượng sản phẩm phải là một số hợp lệ";
+    } else if (Number(quantity) <= 0) {
+      validationErrors.quantity = "Số lượng sản phẩm không được là số âm hoặc bằng 0";
+    } else if (/[^0-9]/.test(quantity)) {
+      validationErrors.quantity = "Số lượng sản phẩm không được chứa chữ hoặc ký tự đặc biệt";
+    }
+
+    // Kiểm tra danh mục và thương hiệu
+    const category = String(formData.category).trim(); // Đảm bảo category là chuỗi
+    if (!category) {
+      validationErrors.category = "Danh mục sản phẩm không được để trống";
+    }
+
+    const brand = String(formData.brand).trim(); // Đảm bảo brand là chuỗi
+    if (!brand) {
+      validationErrors.brand = "Thương hiệu sản phẩm không được để trống";
+    }
+
+    // Kiểm tra mô tả sản phẩm
+    const description = String(formData.description).trim(); // Đảm bảo description là chuỗi
+    if (!description) {
+      validationErrors.description = "Mô tả sản phẩm không được để trống";
+    }
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
     const productPayload = {
-        name: formData.name,
-        description: formData.description,
-        price: Number(formData.price),
-        quantity: Number(formData.quantity),
-        brand: formData.brand,
-        category: formData.category,
+      name: formData.name,
+      description: formData.description,
+      price: Number(formData.price),
+      quantity: Number(formData.quantity),
+      brand: formData.brand,
+      category: formData.category,
     };
 
     const method = isEditMode ? "PUT" : "POST";
     const url = isEditMode
-        ? `http://localhost:8080/api/admin/products/${currentProductId}`
-        : "http://localhost:8080/api/admin/products";
+      ? `http://localhost:8080/api/admin/products/${currentProductId}`
+      : "http://localhost:8080/api/admin/products";
 
     try {
-        const response = await axios({
-            method,
-            url,
-            data: productPayload, // Gửi dưới dạng JSON
-            headers: {
-                "Content-Type": "application/json", // Đảm bảo là application/json
-                'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
-            },
+      const response = await axios({
+        method,
+        url,
+        data: productPayload,
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
+        },
+      });
+
+      if (response.status === 200 || response.status === 201) {
+        Swal.fire({
+          title: 'Thành công!',
+          text: isEditMode ? 'Sản phẩm đã được cập nhật thành công!' : 'Sản phẩm đã được thêm thành công!',
+          icon: 'success',
+          confirmButtonText: 'OK',
+          timer: 3000,
+          timerProgressBar: true,
         });
 
-        if (response.status === 200 || response.status === 201) {
-            alert("Sản phẩm đã được cập nhật/thêm thành công!");
-            setIsPopupOpen(false);
-            fetchProducts(currentPage, pageSize);
-        }
+        setIsPopupOpen(false);
+        fetchProducts(currentPage, pageSize);
+      }
     } catch (error) {
-        if (error.response) {
-            console.error("Server Error:", error.response.data);
-            alert("Lỗi từ máy chủ: " + JSON.stringify(error.response.data));
-        } else {
-            console.error("Unexpected error:", error);
-            alert("Lỗi bất ngờ xảy ra.");
-        }
+      if (error.response) {
+        console.error("Server Error:", error.response.data);
+        alert("Lỗi từ máy chủ: " + JSON.stringify(error.response.data));
+      } else {
+        console.error("Unexpected error:", error);
+        alert("Lỗi bất ngờ xảy ra.");
+      }
     }
-};
+  };
+
 
 
 
@@ -208,10 +288,10 @@ const Management = () => {
     }
 
     return [...productList].sort((a, b) => {
-      const quantityA = a.quantity ?? 0; 
-      const quantityB = b.quantity ?? 0; 
+      const quantityA = a.quantity ?? 0;
+      const quantityB = b.quantity ?? 0;
 
-      return order === "asc" ? quantityA - quantityB : quantityB - quantityA; 
+      return order === "asc" ? quantityA - quantityB : quantityB - quantityA;
     });
   };
 
@@ -462,6 +542,13 @@ const Management = () => {
 
       {/* Product Table */}
       <div className="be-wrapper be-fixed-sidebar">
+        {popup.show && (
+          <Popup
+            message={popup.message}
+            onClose={() => setPopup({ show: false, message: '', onConfirm: null })}
+            onConfirm={popup.onConfirm}
+          />
+        )}
         <div className="be-content">
           <div className="container-fluid">
             <div className="content">

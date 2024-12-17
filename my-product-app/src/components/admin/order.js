@@ -43,20 +43,20 @@ const OrderManagement = () => {
 
   const handleUpdateStatus = (orderId, statusId) => {
     // Gửi yêu cầu API để cập nhật trạng thái
-    fetch(`http://localhost:8080/api/admin/orders/${orderId}/updateStatus`, fetchOptions('POST', { 
+    fetch(`http://localhost:8080/api/admin/orders/${orderId}/updateStatus`, fetchOptions('POST', {
       orderId: orderId,
-      statusId: statusId 
+      statusId: statusId
     }))
       .then((response) => {
         if (response.ok) {
           alert("Order status updated successfully!");
-          
+
           // Cập nhật trạng thái mới ngay lập tức trong orderList (UI)
           const updatedOrders = orderList.map((order) =>
             order.id === orderId ? { ...order, orderStatus: { id: statusId } } : order
           );
           setOrderList(updatedOrders);
-          
+
           // Cập nhật lại count trạng thái và filteredOrders
           updateStatusCount(updatedOrders);
           setFilteredOrders(updatedOrders);
@@ -100,7 +100,7 @@ const OrderManagement = () => {
                     Tất cả ({orderList.length})
                   </button>
                   {statuses.map((status) => (
-                    <button 
+                    <button
                       key={status.id}
                       onClick={() => filterOrdersByStatus(status.id)}
                       style={buttonStyle}
@@ -135,33 +135,33 @@ const OrderManagement = () => {
                           <td>{order.address}</td>
                           <td>{order.paymentMethod.methods}</td>
                           <td>
-  <select
-    value={order.orderStatus.id}
-    onChange={(e) => handleUpdateStatus(order.id, parseInt(e.target.value))}
-    className="form-control"
-  >
-    {statuses.map((status) => {
-      // Nếu trạng thái id <= trạng thái hiện tại thì không hiển thị
-      // Đảm bảo luôn hiển thị trạng thái hiện tại của đơn hàng
-      if (status.id === order.orderStatus.id) {
-        return (
-          <option key={status.id} value={status.id} disabled>
-            {status.status} (Hiện tại)
-          </option>
-        );
-      }
-      // Hiển thị các trạng thái có thể thay đổi
-      if (status.id > order.orderStatus.id) {
-        return (
-          <option key={status.id} value={status.id}>
-            {status.status}
-          </option>
-        );
-      }
-      return null; // Ẩn các trạng thái đã qua
-    })}
-  </select>
-</td>
+                            <select
+                              value={order.orderStatus.id}
+                              onChange={(e) => handleUpdateStatus(order.id, parseInt(e.target.value))}
+                              className="form-control"
+                            >
+                              {statuses.map((status) => {
+                                // Nếu trạng thái id <= trạng thái hiện tại thì không hiển thị
+                                // Đảm bảo luôn hiển thị trạng thái hiện tại của đơn hàng
+                                if (status.id === order.orderStatus.id) {
+                                  return (
+                                    <option key={status.id} value={status.id} disabled>
+                                      {status.status} (Hiện tại)
+                                    </option>
+                                  );
+                                }
+                                // Hiển thị các trạng thái có thể thay đổi
+                                if (status.id > order.orderStatus.id) {
+                                  return (
+                                    <option key={status.id} value={status.id}>
+                                      {status.status}
+                                    </option>
+                                  );
+                                }
+                                return null; // Ẩn các trạng thái đã qua
+                              })}
+                            </select>
+                          </td>
 
                           <td>
                             <Link to={`/order/${order.id}/details`} className="btn btn-info">

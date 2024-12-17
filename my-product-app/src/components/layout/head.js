@@ -3,39 +3,44 @@ import { Helmet } from "react-helmet";
 export default function Head() {
     return (
         <>
-        <Helmet>
-            <meta charSet="utf-8" />
-            <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+            <Helmet>
+                <meta charSet="utf-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-            <meta name="description" content="" />
-            <meta name="author" content="" />
-            <meta name="keywords" content="MediaCenter, Template, eCommerce" />
-            <meta name="robots" content="all" />
+                <meta name="description" content="" />
+                <meta name="author" content="" />
+                <meta name="keywords" content="MediaCenter, Template, eCommerce" />
+                <meta name="robots" content="all" />
 
-            {/* Bootstrap Core CSS */}
-            <link rel="stylesheet" href="/assets/css/bootstrap.min.css" />
+                {/* Bootstrap Core CSS */}
+                <link rel="stylesheet" href="/assets/css/bootstrap.min.css" />
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+                <link
+                    href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+                    rel="stylesheet"
+                />
 
-            {/* Customizable CSS */}
-            
-            <link rel="stylesheet" href="/assets/css/main.css" />
-            <link rel="stylesheet" href="/assets/css/blue.css" />
-            <link rel="stylesheet" href="/assets/css/owl.carousel.css" />
-            <link rel="stylesheet" href="/assets/css/owl.transitions.css" />
-            <link rel="stylesheet" href="/assets/css/animate.min.css" />
-            <link rel="stylesheet" href="/assets/css/rateit.css" />
-            <link rel="stylesheet" href="/assets/css/rateit.css" />
-            <link rel="stylesheet" href="/assets/css/bootstrap-select.min.css" />
-          {/* Icons/Glyphs */}
-            <link rel="stylesheet" href="/assets/css/font-awesome.css" />
+                {/* Customizable CSS */}
 
-            {/* Fonts */}
-            <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet" type="text/css" />
-            <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,400italic,600,600italic,700,700italic,800" rel="stylesheet" type="text/css" />
-            <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css" />
-            
-            {/* Sửa lại phần style */}
-            <style jsx="true">
-                {`
+                <link rel="stylesheet" href="/assets/css/main.css" />
+                <link rel="stylesheet" href="/assets/css/blue.css" />
+                <link rel="stylesheet" href="/assets/css/owl.carousel.css" />
+                <link rel="stylesheet" href="/assets/css/owl.transitions.css" />
+                <link rel="stylesheet" href="/assets/css/animate.min.css" />
+                <link rel="stylesheet" href="/assets/css/rateit.css" />
+                <link rel="stylesheet" href="/assets/css/rateit.css" />
+                <link rel="stylesheet" href="/assets/css/bootstrap-select.min.css" />
+                {/* Icons/Glyphs */}
+                <link rel="stylesheet" href="/assets/css/font-awesome.css" />
+
+                {/* Fonts */}
+                <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet" type="text/css" />
+                <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,400italic,600,600italic,700,700italic,800" rel="stylesheet" type="text/css" />
+                <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css" />
+
+                {/* Sửa lại phần style */}
+                <style jsx="true">
+                    {`
                     .alert {
                         position: fixed;
                         top: 20px;
@@ -239,7 +244,7 @@ export default function Head() {
         }
 
                 `}
-            </style>
+                </style>
             </Helmet>
         </>
     );

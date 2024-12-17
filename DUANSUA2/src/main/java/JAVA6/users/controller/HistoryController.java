@@ -21,39 +21,54 @@ public class HistoryController {
 
     @Autowired
     private HistoryService historyService;
-
     @Autowired
     private OrderDetailService orderDetailService;
-
     @Autowired
-    private OrderService orderService; // Thêm OrderService để xử lý việc hủy đơn hàng
+    private OrderService orderService;
 
-    // Xử lý POST request và lấy userId từ body request
     @PostMapping("/api/history")
     public List<OrderModel> getOrdersByUserId(@RequestBody UserRequest userRequest) {
         return historyService.getbyIdOrders(userRequest.getUserId());
     }
 
-    // Xử lý GET request và lấy thông tin chi tiết đơn hàng theo orderId
     @GetMapping("/api/history/{orderId}")
     public List<OrderDetailModel> getOrderDetails(@PathVariable int orderId) {
-        // Trả về danh sách chi tiết của đơn hàng
         return orderDetailService.getOrderDetailsByOrderId(orderId);
     }
 
     // API để hủy đơn hàng
-
-}
-
-// Định nghĩa lớp UserRequest để nhận userId từ body
-class UserRequest {
-    private int userId;
-
-    public int getUserId() {
-        return userId;
+    @PutMapping("/api/history/cancel/{orderId}")
+    public ResponseEntity<String> cancelOrder(@PathVariable int orderId, @RequestBody CancelRequest cancelRequest) {
+        try {
+            orderService.cancelOrder(orderId, cancelRequest.getCancelReason());
+            return new ResponseEntity<>("Đơn hàng đã được hủy thành công.", HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Không thể hủy đơn hàng. Lỗi: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    // Lớp CancelRequest phải là static
+    public static class CancelRequest {
+        private String cancelReason;
+
+        public String getCancelReason() {
+            return cancelReason;
+        }
+
+        public void setCancelReason(String cancelReason) {
+            this.cancelReason = cancelReason;
+        }
+    }
+
+    public static class UserRequest {
+        private int userId;
+
+        public int getUserId() {
+            return userId;
+        }
+
+        public void setUserId(int userId) {
+            this.userId = userId;
+        }
     }
 }

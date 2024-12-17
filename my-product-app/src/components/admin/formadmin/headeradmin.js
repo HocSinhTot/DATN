@@ -238,7 +238,7 @@ background: linear-gradient(90deg, rgb(44, 62, 80), rgb(52, 73, 94));}
 							</a>
 						</div>
 
-						{/* User Info */}
+						{/* User Info 
 						<div className="be-right-navbar">
 							<ul className="nav navbar-nav float-right be-user-nav">
 								<li className="nav-item dropdown">
@@ -274,7 +274,6 @@ background: linear-gradient(90deg, rgb(44, 62, 80), rgb(52, 73, 94));}
 								</li>
 							</ul>
 
-							{/* Notifications */}
 							<ul className="nav navbar-nav float-right be-icons-nav">
 								<li className="nav-item dropdown">
 									<a
@@ -343,7 +342,7 @@ background: linear-gradient(90deg, rgb(44, 62, 80), rgb(52, 73, 94));}
 									</ul>
 								</li>
 							</ul>
-						</div>
+						</div>*/}
 					</div>
 				</nav>
 

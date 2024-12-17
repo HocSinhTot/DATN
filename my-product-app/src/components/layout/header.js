@@ -30,6 +30,24 @@ const Header = ({ setKeyword, setCategoryId }) => {
     navigate('/categorys');
   };
 
+
+  const handleVoiceSearch = () => {
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = 'vi-VN'; // Set the language for recognition (Vietnamese)
+    recognition.start();
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setLocalKeyword(transcript);
+      setKeyword(transcript);
+      navigate('/categorys');
+    };
+
+    recognition.onerror = (event) => {
+      console.error("Speech recognition error", event.error);
+    };
+  };
+
   const handleLogout = async (event) => {
     event.preventDefault();
     try {
@@ -87,6 +105,9 @@ const Header = ({ setKeyword, setCategoryId }) => {
                     </li>
                     <li>
                       <Link to="/change" className="menu-item">Đổi mật khẩu</Link>
+                    </li>
+                    <li>
+                      <Link to="/admin" className="menu-item">Quản lý</Link>
                     </li>
                     <li>
                       <a href="/" onClick={handleLogout} className="menu-item">Đăng xuất</a>
@@ -152,7 +173,7 @@ const Header = ({ setKeyword, setCategoryId }) => {
         </div>
         <p style={{ marginLeft: '50px' }}>Đăng nhập thành công! Chào mừng bạn!</p>
       </div>
-      
+
       <style>
         {`
           @keyframes rotate_3922 {
@@ -167,84 +188,115 @@ const Header = ({ setKeyword, setCategoryId }) => {
       </style>
 
       <div className="main-header" style={{
-    width: '1410px'}}>
+        width: '1567px'
+      }}>
         <div className="container">
-          <div className="row" style={{width: '1330px'}}>
+          <div className="row" style={{ width: '1330px' }}>
             <div className="col-xs-12 col-sm-12 col-md-3 logo-holder">
               <div className="logo">
                 <Link to="/">
-                  <img style={{ width: '120px',
-    height: '111px',marginRight:"100px" }} src="/assets/images/banners/logo1.jpg" alt="logo" />
+                  <img style={{
+                    width: '120px',
+                    height: '111px', marginRight: "100px"
+                  }} src="/assets/images/banners/logo1.jpg" alt="logo" />
                 </Link>
               </div>
             </div>
 
             <div className="col-xs-12 col-sm-12 col-md-6 top-search-holder">
-            <div className="search-area" style={{    width: '620px'}}>
-            <form
-  onSubmit={handleSearch}
-  style={{
-    position: "relative",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",  // Form chiếm toàn bộ chiều rộng
-    maxWidth: "100%",
+              <div className="search-area" style={{ width: '620px' }}>
+                <form
+                  onSubmit={handleSearch}
+                  style={{
+                    position: "relative",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    width: "100%",  // Form chiếm toàn bộ chiều rộng
+                    maxWidth: "100%",
 
-    height: "56px",
-    background: "transparent",  // Không có nền
-    border: "none",
-    boxShadow: "none",
-  }}
->
-  <input
-    placeholder="Tìm kiếm..."
-    value={localKeyword}
-    onChange={(e) => setLocalKeyword(e.target.value)}
-    style={{
-      flex: 1,
- 
-      border: "none",  // Không có viền
-      height: "100%",
-      paddingLeft: "20px",
-      fontSize: "16px",
-      color: "#a9c7ff",
-      outline: "none",
-      borderRadius: "0",  // Không bo góc
-    }}
-  />
-  <button
-    type="submit"
-    style={{
-      width: "56px",  // Chiều rộng bằng với chiều rộng của input
-      height: "56px",  // Chiều cao đầy đủ
-      background: "linear-gradient(180deg, #1c2452, #2a3875)",
-      border: "none",  // Không có viền
-      color: "white",
-      fontSize: "16px",
-      cursor: "pointer",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      borderRadius: "0",  // Không bo góc
-      padding: "0",  // Loại bỏ padding
-    }}
-  >
-    🔍
-  </button>
-</form>
+                    height: "56px",
+                    background: "transparent",  // Không có nền
+                    border: "none",
+                    boxShadow: "none",
+                  }}
+                >
+                  <input
+                    placeholder="Tìm kiếm..."
+                    value={localKeyword}
+                    onChange={(e) => setLocalKeyword(e.target.value)}
+                    style={{
+                      flex: 1,
 
-<div className="galaxy"></div>
+                      border: "none",  // Không có viền
+                      height: "100%",
+                      paddingLeft: "20px",
+                      fontSize: "16px",
+                      color: "#a9c7ff",
+                      outline: "none",
+                      borderRadius: "0",  // Không bo góc
+                    }}
+                  />
+                  <button
+                    type="submit"
+                    style={{
+                      width: "56px",  // Chiều rộng bằng với chiều rộng của input
+                      height: "56px",  // Chiều cao đầy đủ
+                      background: "linear-gradient(180deg, #1c2452, #2a3875)",
+                      border: "none",  // Không có viền
+                      color: "white",
+                      fontSize: "16px",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      borderRadius: "0",  // Không bo góc
+                      padding: "0",  // Loại bỏ padding
+                    }}
+                  >
+                    🔍
+                  </button>
 
-<div id="search-container">
-  <div className="starfield"></div>
-  <div className="nebula"></div>
-  <div className="stardust"></div>
-  <div className="cosmic-ring"></div>
-</div>
 
-<style>
-{`
+                  {/* Voice search button */}
+                  <button
+                    type="button"
+                    onClick={handleVoiceSearch}
+                    className="btn btn-warning d-flex align-items-center justify-content-center rounded-circle"
+                    style={{
+                      width: "56px",  // Chiều rộng bằng với chiều rộng của input
+                      height: "56px",  // Chiều cao đầy đủ
+                      background: "linear-gradient(180deg, #1c2452, #2a3875)",
+                      border: "none",  // Không có viền
+                      color: "white",
+                      fontSize: "16px",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      borderRadius: "0",  // Không bo góc
+                      padding: "0",  // Loại bỏ padding
+                    }}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-mic" viewBox="0 0 16 16">
+                      <path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5" />
+                      <path d="M10 8a2 2 0 1 1-4 0V3a2 2 0 1 1 4 0zM8 0a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V3a3 3 0 0 0-3-3" />
+                    </svg>
+                  </button>
+
+                </form>
+
+                <div className="galaxy"></div>
+
+                <div id="search-container">
+                  <div className="starfield"></div>
+                  <div className="nebula"></div>
+                  <div className="stardust"></div>
+                  <div className="cosmic-ring"></div>
+                </div>
+
+                <style>
+                  {`
   .galaxy {
     height: 800px;
     width: 800px;
@@ -323,27 +375,27 @@ const Header = ({ setKeyword, setCategoryId }) => {
     transition: all 2s;
   }
 `}
-</style>
+                </style>
 
 
-        </div>
+              </div>
             </div>
             <div className="col-xs-12 col-sm-12 col-md-3 top-search" style={{ paddingTop: '9px', paddingLeft: '79px' }}>
-  <Link to="/cart" style={{
-    display: 'flex',
-    alignItems: 'center',
-    textDecoration: 'none',
-    backgroundColor: '#0f6cb2',  // Màu nền của ô vuông
-    padding: '10px 20px',      // Khoảng cách bên trong ô vuông
-    borderRadius: '5px',       // Bo tròn các góc của ô vuông
-    color: 'white',            // Màu chữ
-    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-    width: '158px',  // Đổ bóng nhẹ cho ô vuông
-  }}>
-    <i className="icon fa fa-shopping-cart" style={{ fontSize: '36px', marginRight: '10px' }}></i>
-    <span style={{ fontSize: '12px', fontWeight: '500' }}>Xem giỏ hàng</span>
-  </Link>
-</div>
+              <Link to="/cart" style={{
+                display: 'flex',
+                alignItems: 'center',
+                textDecoration: 'none',
+                backgroundColor: '#0f6cb2',  // Màu nền của ô vuông
+                padding: '10px 20px',      // Khoảng cách bên trong ô vuông
+                borderRadius: '5px',       // Bo tròn các góc của ô vuông
+                color: 'white',            // Màu chữ
+                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                width: '158px',  // Đổ bóng nhẹ cho ô vuông
+              }}>
+                <i className="icon fa fa-shopping-cart" style={{ fontSize: '36px', marginRight: '10px' }}></i>
+                <span style={{ fontSize: '12px', fontWeight: '500' }}>Xem giỏ hàng</span>
+              </Link>
+            </div>
 
 
 
@@ -365,13 +417,13 @@ const Header = ({ setKeyword, setCategoryId }) => {
             <div className="nav-bg-class">
               <div className="navbar-collapse collapse" id="mc-horizontal-menu-collapse">
                 <div className="nav-outer">
-                  <ul className="nav navbar-nav" style={{height:'55px'}}>
-                    <li className="active dropdown yamm-fw"><Link style={{    padding: '15px 20px 0 20px', height: '54px'}} to="/" className="dropdown-toggle">Trang chủ</Link></li>
-                    <li className="dropdown yamm mega-menu"><Link style={{    padding: '15px 20px 0 20px',height: '54px'}} to="/categorys" onClick={() => handleCategoryClick(1)} className="dropdown-toggle" data-toggle="dropdown">Điện thoại di động</Link></li>
-                    <li className="dropdown mega-menu"><Link style={{    padding: '15px 20px 0 20px',height: '54px'}} to="/categorys" onClick={() => handleCategoryClick(2)} className="dropdown-toggle" data-toggle="dropdown">Laptop</Link></li>
-                    <li className="dropdown mega-menu"><Link style={{    padding: '15px 20px 0 20px',height: '54px'}} to="/categorys"  onClick={() => handleCategoryClick(3)} className="dropdown-toggle" data-toggle="dropdown">Máy tính bảng</Link></li>
-                    <li className="dropdown mega-menu"><Link style={{    padding: '15px 20px 0 20px',height: '54px'}} to="/categorys" onClick={() => handleCategoryClick(4)} className="dropdown-toggle" data-toggle="dropdown">Phụ kiện</Link></li>
-                    <li className="dropdown yamm-fw"><Link style={{    padding: '15px 20px 0 20px',height: '54px'}} to="/categorys" onClick={() => handleCategoryClick()} className="dropdown-toggle">Sản phẩm</Link></li>
+                  <ul className="nav navbar-nav" style={{ height: '55px', paddingLeft: '120px' }}>
+                    <li className="active dropdown yamm-fw"><Link style={{ padding: '15px 20px 0 20px', height: '54px' }} to="/" className="dropdown-toggle">Trang chủ</Link></li>
+                    <li className="dropdown yamm mega-menu"><Link style={{ padding: '15px 20px 0 20px', height: '54px' }} to="/categorys" onClick={() => handleCategoryClick(1)} className="dropdown-toggle" data-toggle="dropdown">Điện thoại di động</Link></li>
+                    <li className="dropdown mega-menu"><Link style={{ padding: '15px 20px 0 20px', height: '54px' }} to="/categorys" onClick={() => handleCategoryClick(2)} className="dropdown-toggle" data-toggle="dropdown">Laptop</Link></li>
+                    <li className="dropdown mega-menu"><Link style={{ padding: '15px 20px 0 20px', height: '54px' }} to="/categorys" onClick={() => handleCategoryClick(3)} className="dropdown-toggle" data-toggle="dropdown">Máy tính bảng</Link></li>
+                    <li className="dropdown mega-menu"><Link style={{ padding: '15px 20px 0 20px', height: '54px' }} to="/categorys" onClick={() => handleCategoryClick(4)} className="dropdown-toggle" data-toggle="dropdown">Phụ kiện</Link></li>
+                    <li className="dropdown yamm-fw"><Link style={{ padding: '15px 20px 0 20px', height: '54px' }} to="/categorys" onClick={() => handleCategoryClick()} className="dropdown-toggle">Sản phẩm</Link></li>
                   </ul>
                 </div>
               </div>

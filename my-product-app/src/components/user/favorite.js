@@ -128,7 +128,18 @@ const WishlistPage = () => {
                         height: 'auto',
                     }}
                 >
-                    
+                    <thead>
+                        <tr>
+
+                            {/* Thông báo */}
+                            <Notification
+                                message={notificationMessage}
+                                type={notificationType}
+                                show={showNotification}
+                                onClose={() => setShowNotification(false)}
+                            />
+                        </tr>
+                    </thead>
                     <tbody>
                         {listLike.map((like) => (
                             <tr key={like.id}>
@@ -139,6 +150,7 @@ const WishlistPage = () => {
                                     }}
                                 >
                                     {like.product.images.length > 0 && (
+                                        <a href={`/product/${like.product.id}`}>
                                         <img
                                             src={`/assets/images/${like.product.images[0].url}`}
                                             alt={like.product.name}
@@ -149,6 +161,7 @@ const WishlistPage = () => {
                                                 borderRadius: '10px',
                                             }}
                                         />
+                                        </a>
                                     )}
                                 </td>
                                 <td
@@ -158,7 +171,7 @@ const WishlistPage = () => {
                                     }}
                                 >
                                     <div className="product-name">
-                                        <a href={`/productdetails/${like.product.id}`} style={{ fontSize: '1.2rem' }}>
+                                        <a href={`/product/${like.product.id}`} style={{ fontSize: '1.2rem' }}>
                                             {like.product.name}
                                         </a>
                                     </div>

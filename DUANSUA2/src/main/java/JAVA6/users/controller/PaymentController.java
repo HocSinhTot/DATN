@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -60,14 +59,14 @@ public class PaymentController {
             String orderInfo = "Thanhtoandonhang" + vnp_TxnRef;
             String encodedOrderInfo = URLEncoder.encode(orderInfo, StandardCharsets.UTF_8);
             vnp_Params.put("vnp_OrderType", "110000"); // Ví dụ mã danh mục hàng hóa
-            vnp_Params.put("vnp_ReturnUrl", "http://localhost:8080/api/cart/order/vnpayReturn?userId=" + userId);
+            vnp_Params.put("vnp_ReturnUrl", "http://localhost:8080/api/cart/order/vnpayReturn?userId=" + userId+"&address="+address);
 
             vnp_Params.put("vnp_OrderInfo", encodedOrderInfo);
             vnp_Params.put("vnp_Locale", language);
 
             // Tạo ngày giao dịch
             Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+           SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
             String vnp_CreateDate = formatter.format(cld.getTime());
             vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
 
@@ -115,7 +114,7 @@ public class PaymentController {
             response.put("code", "00");
             response.put("message", "success");
             response.put("data", paymentUrl);
-
+            
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             Map<String, Object> errorResponse = new HashMap<>();
