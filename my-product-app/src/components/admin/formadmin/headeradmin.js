@@ -59,7 +59,7 @@ export default function App() {
 			transition: all 0.3s ease;
 		}
 
-		.sidebar a:hover {
+			.sidebar a:hover {
 			background-color: #495057;
 		}
 
@@ -128,7 +128,7 @@ export default function App() {
 		}
 
 		tbody tr:hover {
-			background-color: #e2e6ea;
+			background-color:rgb(226, 234, 231);
 		}
 
 		tbody tr:nth-child(even) {
@@ -167,167 +167,253 @@ export default function App() {
 		.has-submenu>a {
 			cursor: pointer;
 		}
+
+/* Hover effect for li */
+.left-sidebar-wrapper .sidebar-elements li:hover {
+  background-color: #34495e !important; /* Màu xám đậm sang trọng khi hover vào li */
+}
+
+/* Hover effect for a inside li */
+.left-sidebar-wrapper .sidebar-elements li a:hover {
+  background-color: #2c3e50 !important; /* Màu xám xanh đậm khi hover vào a */
+  color: #ecf0f1 !important; /* Màu chữ trắng nhạt (gần trắng ngà) */
+}
+
+/* Hover effect for active li and a */
+.left-sidebar-wrapper .sidebar-elements li.active:hover {
+  background-color: #1abc9c !important; /* Màu xanh ngọc nhạt khi hover vào li.active */
+}
+
+/* Transition cho hiệu ứng */
+.left-sidebar-wrapper .sidebar-elements li, 
+.left-sidebar-wrapper .sidebar-elements li a {
+  transition: background-color 0.3s ease !important, color 0.3s ease !important;
+}
+.be-content{
+padding-top:100px;}
+
+.card-header{
+background: linear-gradient(90deg, rgb(44, 62, 80), rgb(52, 73, 94));
+}
+
+th{
+background: linear-gradient(90deg, rgb(44, 62, 80), rgb(52, 73, 94));}
+
+
+		
           `}
 				</style>
 			</Helmet>
 
 			<div class="be-wrapper be-fixed-sidebar">
 
-				<nav class="navbar navbar-expand fixed-top be-top-header">
-					<div class="container-fluid">
-						<div class="be-navbar-header">
-							<a class="navbar-brand" href="/admin"></a>
-
+				<nav className="navbar navbar-expand fixed-top be-top-header" style={{ boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)' }}>
+					<div className="container-fluid" style={{ background: 'linear-gradient(90deg, #2c3e50, #34495e)', color: 'white' }}>
+						{/* Logo */}
+						<div className="be-navbar-header d-flex align-items-center">
+							<a className="navbar-brand" href="/admin"></a>
 							<div className="logo">
-
-								<img style={{
-									width: '120px',
-									height: '111px', marginRight: "100px"
-								}} src="/assets/images/banners/logo1.jpg" alt="logo" />
-
+								<img
+									style={{
+										width: '100px',
+										height: '100px',
+										marginRight: '20px',
+										borderRadius: '50%',
+										objectFit: 'cover',
+									}}
+									src="/assets/images/banners/logo1.jpg"
+									alt="logo"
+								/>
 							</div>
 						</div>
-						<div class="page-title">
-							<a class="navbar-brand" href="/admin">Bảng Thống Kê</a>
+
+						{/* Title */}
+						<div className="page-title text-center">
+							<a
+								className="navbar-brand"
+								href="/admin"
+								style={{ fontSize: '24px', color: 'white', fontWeight: '700', textTransform: 'uppercase' }}
+							>
+								Chào mừng đến với trang Admin
+							</a>
 						</div>
-						<div class="be-right-navbar">
-							<ul class="nav navbar-nav float-right be-user-nav">
+
+						{/* User Info 
+						<div className="be-right-navbar">
+							<ul className="nav navbar-nav float-right be-user-nav">
 								<li className="nav-item dropdown">
-									<a className="nav-link dropdown-toggle" href="#" data-toggle="dropdown" role="button" aria-expanded="false">
-										<img src="assets/img/avatar.png" alt="Avatar" />
-										<span className="user-name">{username || 'Túpac Amaru'}</span>
+									<a
+										className="nav-link dropdown-toggle"
+										href="#"
+										data-toggle="dropdown"
+										role="button"
+										aria-expanded="false"
+										style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'white' }}
+									>
+										<img
+											src="assets/img/avatar.png"
+											alt="Avatar"
+											style={{ width: '40px', height: '40px', borderRadius: '50%' }}
+										/>
+										<span className="user-name" style={{ fontSize: '16px', fontWeight: '500' }}>{username || 'Túpac Amaru'}</span>
 									</a>
-									<div className="dropdown-menu" role="menu">
-										<div className="user-info">
+									<div className="dropdown-menu dropdown-menu-right" role="menu">
+										<div className="user-info p-3" style={{ backgroundColor: '#34495e', color: 'white', textAlign: 'center' }}>
 											{username && <div>Xin chào, <span>{username}</span>!</div>}
 										</div>
-										<a className="dropdown-item" href="pages-profile.html">
-											<span className="icon mdi mdi-face"></span>Tài khoản
+										<a className="dropdown-item" href="pages-profile.html" style={{ color: '#2c3e50' }}>
+											<span className="icon mdi mdi-face"></span> Tài khoản
 										</a>
-										<a className="dropdown-item" href="#">
-											<span className="icon mdi mdi-settings"></span>Cài đặt
+										<a className="dropdown-item" href="#" style={{ color: '#2c3e50' }}>
+											<span className="icon mdi mdi-settings"></span> Cài đặt
 										</a>
-										<a className="dropdown-item" href="/logoutadmin">
-											<span className="icon mdi mdi-power"></span>Đăng xuất
+										<a className="dropdown-item" href="/logoutadmin" style={{ color: '#c0392b' }}>
+											<span className="icon mdi mdi-power"></span> Đăng xuất
 										</a>
 									</div>
 								</li>
 							</ul>
-							<ul class="nav navbar-nav float-right be-icons-nav">
-								<li class="nav-item dropdown"><a class="nav-link be-toggle-right-sidebar" href="#" role="button"
-									aria-expanded="false"> <span class="icon mdi mdi-settings"></span>
-								</a></li>
-								<li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#"
-									data-toggle="dropdown" role="button" aria-expanded="false"> <span
-										class="icon mdi mdi-notifications"></span> <span class="indicator"></span>
-								</a>
-									<ul class="dropdown-menu be-notifications">
-										<li>
-											<div class="title">
-												Thông báo<span class="badge badge-pill">3</span>
-											</div>
-											<div class="list">
-												<div class="be-scroller-notifications">
-													<div class="content">
-														<ul>
-															<li class="notification notification-unread"><a href="#">
-																<div class="image">
-																	<img src="assets/img/avatar2.png" alt="Avatar" />
-																</div>
-																<div class="notification-info">
-																	<div class="text">
-																		<span class="user-name">Jessica
-																			Caruso</span> đã
-																		chấp
-																		nhận lời mời của bạn tham gia nhóm.
-																	</div>
-																	<span class="date">2 phút trước</span>
-																</div>
-															</a></li>
-															<li class="notification"><a href="#">
-																<div class="image">
-																	<img src="assets/img/avatar3.png" alt="Avatar" />
-																</div>
-																<div class="notification-info">
-																	<div class="text">
-																		<span class="user-name">Joel King</span>
-																		đang theo
-																		dõi
-																		bạn
-																	</div>
-																	<span class="date">2 ngày trước</span>
-																</div>
-															</a></li>
 
+							<ul className="nav navbar-nav float-right be-icons-nav">
+								<li className="nav-item dropdown">
+									<a
+										className="nav-link be-toggle-right-sidebar"
+										href="#"
+										role="button"
+										aria-expanded="false"
+										style={{ color: 'white' }}
+									>
+										<span className="icon mdi mdi-settings"></span>
+									</a>
+								</li>
+								<li className="nav-item dropdown">
+									<a
+										className="nav-link dropdown-toggle"
+										href="#"
+										data-toggle="dropdown"
+										role="button"
+										aria-expanded="false"
+										style={{ color: 'white' }}
+									>
+										<span className="icon mdi mdi-notifications"></span>
+										<span className="indicator" style={{ backgroundColor: '#e74c3c', borderRadius: '50%', padding: '2px 6px' }}>
+											3
+										</span>
+									</a>
+									<ul className="dropdown-menu be-notifications">
+										<li>
+											<div className="title p-2" style={{ backgroundColor: '#34495e', color: 'white' }}>
+												Thông báo <span className="badge badge-pill">3</span>
+											</div>
+											<div className="list">
+												<div className="be-scroller-notifications">
+													<div className="content">
+														<ul>
+															<li className="notification notification-unread">
+																<a href="#" style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+																	<img src="assets/img/avatar2.png" alt="Avatar" style={{ width: '40px', borderRadius: '50%' }} />
+																	<div className="notification-info">
+																		<div className="text">
+																			<span className="user-name">Jessica Caruso</span> đã chấp nhận lời mời của bạn tham gia nhóm.
+																		</div>
+																		<span className="date" style={{ color: '#7f8c8d' }}>2 phút trước</span>
+																	</div>
+																</a>
+															</li>
+															<li className="notification">
+																<a href="#" style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+																	<img src="assets/img/avatar3.png" alt="Avatar" style={{ width: '40px', borderRadius: '50%' }} />
+																	<div className="notification-info">
+																		<div className="text">
+																			<span className="user-name">Joel King</span> đang theo dõi bạn
+																		</div>
+																		<span className="date" style={{ color: '#7f8c8d' }}>2 ngày trước</span>
+																	</div>
+																</a>
+															</li>
 														</ul>
 													</div>
 												</div>
 											</div>
-											<div class="footer">
-												<a href="#">Xem tất cả thông báo</a>
+											<div className="footer text-center p-2" style={{ backgroundColor: '#34495e' }}>
+												<a href="#" style={{ color: 'white' }}>Xem tất cả thông báo</a>
 											</div>
 										</li>
 									</ul>
 								</li>
 							</ul>
-						</div>
+						</div>*/}
 					</div>
 				</nav>
+
 			</div>
-			<div class="be-left-sidebar">
-				<div class="left-sidebar-wrapper">
-					<a class="left-sidebar-toggle" href="#">Bảng thống kê</a>
-					<div class="left-sidebar-spacer">
-						<div class="left-sidebar-scroll">
-							<div class="left-sidebar-content">
-								<ul class="sidebar-elements">
-									<li class="divider">Menu</li>
-									<li class="active"><a href="/admin"><i class="icon mdi mdi-home"></i><span>Trang
-										chủ</span></a></li>
-									<li><a href="/nguoidung"><i class="icon mdi mdi-view-list"></i><span>Quản lý người
-										dùng</span></a></li>
-									<li class="has-submenu"><a href="#"><i class="icon mdi mdi-view-list"></i><span>Quản
-										lý sản
-										phẩm</span></a>
-										<ul class="submenu">
-											<li><a href="/products"><span>Quản lý sản phẩm</span></a></li>
-											<li><a href="/products-prices"><span>Quản lý sản phẩm dung lượng</span></a></li>
-											<li><a href="/products-images"><span>Quản lý sản phẩm hình ảnh</span></a></li>
-											<li><a href="/category"><span>Quản lý danh mục</span></a></li>
-											<li><a href="/brands"><span>Quản lý thương hiệu</span></a></li>
-											<li><a href="/color"><span>Quản lý màu</span></a></li>
-											<li><a href="/capacity"><span>Quản lý dung
-												lượng</span></a></li>
-											<li><a href="/images"><span>Quản lý hình ảnh</span></a></li>
+			<div className="be-left-sidebar">
+				<div className="left-sidebar-wrapper" style={{ width: '250px', backgroundColor: '#2c3e50', height: '100vh' }}>
+					<a className="left-sidebar-toggle" href="#" style={{ color: 'black', padding: '10px 15px', fontSize: '16px', fontWeight: 'bold' }}>Bảng thống kê</a>
+					<div className="left-sidebar-spacer">
+						<div className="left-sidebar-scroll">
+							<div className="left-sidebar-content" style={{ backgroundColor: 'rgb(44, 62, 80)' }}>
+								<ul className="sidebar-elements" style={{ listStyleType: 'none', padding: '0', margin: '0' }}>
+									<li className="divider" style={{ color: '#ecf0f1', fontWeight: 'bold', fontSize: '18px', padding: '10px 15px' }}>Menu</li>
+
+									<li className="active" style={{ borderRadius: '5px', backgroundColor: '#1abc9c', transition: 'background-color 0.3s ease' }}>
+										<a href="/admin" style={{ color: 'black', textDecoration: 'none', display: 'flex', alignItems: 'center', padding: '15px 20px', borderRadius: '5px', transition: 'background-color 0.3s ease' }}>
+											<i className="icon mdi mdi-home" style={{ fontSize: '24px', marginRight: '10px' }}></i>
+											<span>Trang chủ</span>
+										</a>
+									</li>
+
+									<li style={{ borderRadius: '5px', transition: 'background-color 0.3s ease' }}>
+										<a href="/nguoidung" style={{ color: 'black', textDecoration: 'none', display: 'flex', alignItems: 'center', padding: '15px 20px', borderRadius: '5px', transition: 'background-color 0.3s ease' }}>
+											<i className="bi bi-person-circle" style={{ fontSize: '24px', marginRight: '10px' }}></i>
+											<span>Quản lý người dùng</span>
+										</a>
+									</li>
+
+									<li className="has-submenu" style={{ borderRadius: '5px', transition: 'background-color 0.3s ease' }}>
+										<a href="#" style={{ color: 'black', textDecoration: 'none', display: 'flex', alignItems: 'center', padding: '15px 20px', borderRadius: '5px', transition: 'background-color 0.3s ease' }}>
+											<i className="bi bi-phone-fill" style={{ fontSize: '24px', marginRight: '10px' }}></i>
+											<span>Quản lý sản phẩm</span>
+										</a>
+										<ul className="submenu" style={{ listStyleType: 'none', padding: '0', margin: '0' }}>
+											<li><a href="/products" style={{ color: 'black', textDecoration: 'none', padding: '15px 20px', borderRadius: '5px', transition: 'background-color 0.3s ease' }}><span>Quản lý sản phẩm</span></a></li>
+											<li><a href="/products-prices" style={{ color: 'black', textDecoration: 'none', padding: '15px 20px', borderRadius: '5px', transition: 'background-color 0.3s ease' }}><span>Quản lý sản phẩm dung lượng</span></a></li>
+											<li><a href="/category" style={{ color: 'black', textDecoration: 'none', padding: '15px 20px', borderRadius: '5px', transition: 'background-color 0.3s ease' }}><span>Quản lý danh mục</span></a></li>
+											<li><a href="/brands" style={{ color: 'black', textDecoration: 'none', padding: '15px 20px', borderRadius: '5px', transition: 'background-color 0.3s ease' }}><span>Quản lý thương hiệu</span></a></li>
+											<li><a href="/color" style={{ color: 'black', textDecoration: 'none', padding: '15px 20px', borderRadius: '5px', transition: 'background-color 0.3s ease' }}><span>Quản lý màu</span></a></li>
+											<li><a href="/capacity" style={{ color: 'black', textDecoration: 'none', padding: '15px 20px', borderRadius: '5px', transition: 'background-color 0.3s ease' }}><span>Quản lý dung lượng</span></a></li>
+											<li><a href="/images" style={{ color: 'black', textDecoration: 'none', padding: '15px 20px', borderRadius: '5px', transition: 'background-color 0.3s ease' }}><span>Quản lý hình ảnh</span></a></li>
 										</ul>
 									</li>
-									<li><a href="/order"><i class="icon mdi mdi-view-list"></i><span>Quản
-										lý đơn hàng</span></a></li>
-									<li><a href="evaluaes"><i class="icon mdi mdi-view-list"></i><span>Quản
-										lý đánh giá</span></a></li>
-									<li><a href="favourite"><i class="icon mdi mdi-view-list"></i><span>Quản
-										lý yêu thích</span></a></li>
-									<li class="divider">Thống kê</li>
-									<li><a href="#"><i class="icon mdi mdi-chart-donut"></i><span>Doanh
-										thu</span></a></li>
-									<li><a href="#"><i class="icon mdi mdi-chart-donut"></i><span>Tồn
-										kho</span></a></li>
-								</ul>
 
+									<li style={{ borderRadius: '5px', transition: 'background-color 0.3s ease' }}>
+										<a href="/order" style={{ color: 'black', textDecoration: 'none', display: 'flex', alignItems: 'center', padding: '15px 20px', borderRadius: '5px', transition: 'background-color 0.3s ease' }}>
+											<i className="bi bi-cart-fill" style={{ fontSize: '24px', marginRight: '10px' }}></i>
+											<span>Quản lý đơn hàng</span>
+										</a>
+									</li>
+
+									<li style={{ borderRadius: '5px', transition: 'background-color 0.3s ease' }}>
+										<a href="evaluaes" style={{ color: 'black', textDecoration: 'none', display: 'flex', alignItems: 'center', padding: '15px 20px', borderRadius: '5px', transition: 'background-color 0.3s ease' }}>
+											<i className="bi bi-star-fill" style={{ fontSize: '24px', marginRight: '10px' }}></i>
+											<span>Quản lý đánh giá</span>
+										</a>
+									</li>
+
+									<li style={{ borderRadius: '5px', transition: 'background-color 0.3s ease' }}>
+										<a href="favourite" style={{ color: 'black', textDecoration: 'none', display: 'flex', alignItems: 'center', padding: '15px 20px', borderRadius: '5px', transition: 'background-color 0.3s ease' }}>
+											<i className="bi bi-heart-fill" style={{ fontSize: '24px', marginRight: '10px' }}></i>
+											<span>Quản lý yêu thích</span>
+										</a>
+									</li>
+								</ul>
 							</div>
-						</div>
-					</div>
-					<div class="progress-widget">
-						<div class="progress-data">
-							<span class="progress-value">60%</span> <span class="name">Đã
-								hoàn thành</span>
-						</div>
-						<div class="progress">
-							<div class="progress-bar progress-bar-primary"></div>
 						</div>
 					</div>
 				</div>
 			</div>
+
+
 		</div>
 	);
 }

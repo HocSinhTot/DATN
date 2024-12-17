@@ -90,7 +90,7 @@ const Index = () => {
       return;
     }
 
-    
+
     try {
       const response = await axios.post('http://localhost:8080/api/cart/addToCart', null, {
         params: { userId, productId, quantity },
@@ -100,7 +100,7 @@ const Index = () => {
       // Lấy URL chuyển hướng từ response
       const redirectUrl = response.data.redirectUrl;
 
- 
+
     } catch (error) {
       console.error("Lỗi khi thêm vào giỏ hàng:", error);
     }
@@ -166,7 +166,7 @@ const Index = () => {
       .catch((error) => console.error('Error fetching liked products:', error));
   }, []);
 
-///thông báo
+  ///thông báo
   const [showNotification, setShowNotification] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState('');
   const [notificationType, setNotificationType] = useState('success');
@@ -202,606 +202,576 @@ const Index = () => {
 
   return (
     <>
-    
-        <div className="container-fluid">
-          <div className="row">
-            {/* Sidebar Section */}
-            <div className="col-xs-12 col-sm-12 col-md-3 sidebar" style={{        width: '8%'}}>
-              <SideMenu />
-            
-      {/* Thông báo */}
-      <Notification
-        message={notificationMessage}
-        type={notificationType}
-        show={showNotification}
-        onClose={() => setShowNotification(false)}
-      />
 
-            
+      <div className="container-fluid" style={{ backgroundColor: "white", width: '1350px', paddingTop: '1px' }}>
+        <div className="row" style={{ marginTop: "-30px" }}>
+          {/* Sidebar Section */}
+          <div className="col-xs-12 col-sm-12 col-md-3 sidebar" style={{ width: '8%' }}>
+            <SideMenu />
 
-
-            </div>
-
-            <div className="col-xs-12 col-sm-12 col-md-9 homebanner-holder" style={{        width: '87%'}}>
-
-      <div id="hero" style={{paddingTop:'16px'}}>
-        <Swiper
-        autoplay={{
-          delay: 2500,
-          disableOnInteraction: false,
-        }}
-        slidesPerView={1}
-        spaceBetween={0}
-        loop={true}
-      
-        modules={[Autoplay, Pagination, Navigation]}
-        className="mySwiper">
-          <SwiperSlide
-            className=" "
-            style={{
-              backgroundImage: "url(/assets/images/sliders/1.jpg)",
-              height: "450px",
-              width: "900px",
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              backgroundColor: "#ccc", // Fallback color
-            }}
-          >
-            <div className="container-fluid">
-              <div className="caption bg-color vertical-center text-left">
-                {/* Nội dung caption nếu cần */}
-              </div>
-            </div>
-          </SwiperSlide>
-
-          <SwiperSlide
-            className="item"
-            style={{
-              backgroundImage: "url(/assets/images/sliders/2.jpg)",
-              height: "450px",
-              width: "900px",
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              backgroundColor: "#ccc", // Fallback color
-            }}
-          >
-            <div className="container-fluid">
-              <div className="caption bg-color vertical-center text-left">
-                {/* Nội dung caption nếu cần */}
-              </div>
-            </div>
-          </SwiperSlide>
-        </Swiper>
-      </div>
+            {/* Thông báo */}
+            <Notification
+              message={notificationMessage}
+              type={notificationType}
+              show={showNotification}
+              onClose={() => setShowNotification(false)}
+            />
 
 
 
 
-              <div className="info-boxes wow fadeInUp">
-                <div className="info-boxes-inner">
-                  <div className="row">
-                    <div className="col-md-6 col-sm-4 col-lg-4">
-                      <div className="info-box">
-                        <div className="row">
-                          <div className="col-xs-12">
-                            <h4 className="info-box-heading green">Hoàn tiền</h4>
-                          </div>
-                        </div>
-                        <h6 className="text">Đảm bảo hoàn tiền trong 30 ngày</h6>
-                      </div>
-                    </div>
+          </div>
 
-                    <div className="hidden-md col-sm-4 col-lg-4">
-                      <div className="info-box">
-                        <div className="row">
-                          <div className="col-xs-12">
-                            <h4 className="info-box-heading green">Miễn phí vận chuyển</h4>
-                          </div>
-                        </div>
-                        <h6 className="text">Vận chuyển cho các đơn đặt hàng trên
-                          1.000.000  VNĐ</h6>
-                      </div>
-                    </div>
+          <div className="col-xs-12 col-sm-12 col-md-9 homebanner-holder" style={{ width: '100%' }}>
 
-                    <div className="col-md-6 col-sm-4 col-lg-4">
-                      <div className="info-box">
-                        <div className="row">
-                          <div className="col-xs-12">
-                            <h4 className="info-box-heading green">Giảm giá đặc biệt</h4>
-                          </div>
-                        </div>
-                        <h6 className="text">Giảm thêm 100.000 VNĐ cho tất cả các mặt hàng</h6>
-                      </div>
+            <div id="hero" style={{ paddingTop: '0px' }}>
+              <Swiper
+                autoplay={{
+                  delay: 2500,
+                  disableOnInteraction: false,
+                }}
+                slidesPerView={1}
+                spaceBetween={0}
+                loop={true}
+
+                modules={[Autoplay, Pagination, Navigation]}
+                className="mySwiper">
+                <SwiperSlide
+                  className=" "
+                  style={{
+                    backgroundImage: "url(/assets/images/sliders/1.jpg)",
+                    height: "450px",
+                    width: "900px",
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    backgroundColor: "#ccc", // Fallback color
+                  }}
+                >
+                  <div className="container-fluid">
+                    <div className="caption bg-color vertical-center text-left">
+                      {/* Nội dung caption nếu cần */}
                     </div>
                   </div>
-                </div>
-
-              </div>
-              <div id="product-tabs-slider" className="scroll-tabs outer-top-vs wow fadeInUp">
-                <div className="more-info-tab clearfix ">
-                  <h3 className="new-product-title pull-left">Sản phẩm mới</h3>
-                 
-                  <ul className="nav nav-tabs nav-tab-line pull-right gap-3" id="new-products-1">
-      <li
-        className={`me-3 ${categoryId === null ? 'active' : ''}`}
-        onClick={() => handleCategoryClick(null)}
-        onMouseEnter={() => handleMouseEnter(1)}
-        onMouseLeave={handleMouseLeave}
-        style={{
-          cursor: 'pointer',
-          transition: 'color 0.3s ease',
-          color: hoverIndex === 1 ? 'blue' : '#000', // Blue on hover, black by default
-        }}
-      >
-        <span>Tất cả</span>
-      </li>
-      <li
-        className={`me-3 ${categoryId === 1 ? 'active' : ''}`}
-        onClick={() => handleCategoryClick(1)}
-        onMouseEnter={() => handleMouseEnter(2)}
-        onMouseLeave={handleMouseLeave}
-        style={{
-          cursor: 'pointer',
-          transition: 'color 0.3s ease',
-          color: hoverIndex === 2 ? 'red' : '#000', // Red on hover, black by default
-        }}
-      >
-        <span>Điện thoại di động</span>
-      </li>
-      <li
-        className={`me-3 ${categoryId === 2 ? 'active' : ''}`}
-        onClick={() => handleCategoryClick(2)}
-        onMouseEnter={() => handleMouseEnter(3)}
-        onMouseLeave={handleMouseLeave}
-        style={{
-          cursor: 'pointer',
-          transition: 'color 0.3s ease',
-          color: hoverIndex === 3 ? 'purple' : '#000', // Purple on hover, black by default
-        }}
-      >
-        <span>Laptop</span>
-      </li>
-      <li
-        className={`me-3 ${categoryId === 3 ? 'active' : ''}`}
-        onClick={() => handleCategoryClick(3)}
-        onMouseEnter={() => handleMouseEnter(4)}
-        onMouseLeave={handleMouseLeave}
-        style={{
-          cursor: 'pointer',
-          transition: 'color 0.3s ease',
-          color: hoverIndex === 4 ? 'yellow' : '#000', // Yellow on hover, black by default
-        }}
-      >
-        <span>Máy tính bảng</span>
-      </li>
-      <li
-        className={`${categoryId === 4 ? 'active' : ''}`}
-        onClick={() => handleCategoryClick(4)}
-        onMouseEnter={() => handleMouseEnter(5)}
-        onMouseLeave={handleMouseLeave}
-        style={{
-          cursor: 'pointer',
-          transition: 'color 0.3s ease',
-          color: hoverIndex === 5 ? 'green' : '#000', // Green on hover, black by default
-        }}
-      >
-        <span>Phụ kiện</span>
-      </li>
-    </ul>
-
-                 
-                </div>
-                <div className="tab-content outer-top-xs">
-      <div className="tab-pane in active" id="all">
-        <div className="product-slider">
-          <Swiper
-        slidesPerView={4}
-        spaceBetween={30}
-        loop={true}
-        pagination={{
-          clickable: true,
-        }}
-        navigation={true}
-        modules={[Pagination, Navigation]}
-        className="mySwiper">
-           {Array.isArray(products.all) && products.all.length > 0 ? (
-  products.all.map((product) => {
-    const firstImageUrl = product.productsImages && product.productsImages.length > 0
-    ? `/assets/images/${product.productsImages[0].image.url}`
-    : 'default-image.jpg';
-  
-    
-                return (
-                  <SwiperSlide className="col-12 col-sm-6 col-md-4 col-lg-12" key={product.id}>
-                  <div className={`product ${likedProducts.some(like => like.product.id === product.id) ? 'liked' : ''}`} style={{
-                    transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out'
-                  }}>
-                    <div className="product-image">
-                      <div className="image">
-                        <a href={`/product/${product.id}`}>
-                          <img
-                            src={firstImageUrl}
-                            alt={product.name}
-                            className="img-responsive"
-                            style={{
-                              transition: 'transform 0.3s ease-in-out',
-                                   transform: 'translateX(-50%)'
-                               
-                            }}
-                          />
-                        </a>
-                      </div>
-                      <div className="tag new">
-                        <span>new</span>
-                      </div>
-                    </div>
-                
-                    <div className="product-info text-left">
-                      <h3 className="name">
-                        <a href={`/product/${product.id}`}>{product.name}</a>
-                      </h3>
-                      <div className="rating rateit-small"></div>
-                      <div className="description"></div>
-                      <div className="product-price">
-                        <span className="price">
-                          {product.price.toLocaleString()} VND
-                        </span>
-                      </div>
-                      <br />
-                    </div>
-                
-                    <div className="cart clearfix animate-effect">
-                      <div className="action">
-                        <ul className="list-unstyled">
-                          <li className="add-cart-button btn-group">
-                            <button
-                              className="btn btn-primary"
-                              onClick={() => {
-                                handlePurchase();
-                                addToCart(product.id);
-                              }}
-                            >
-                              <i className="fa fa-shopping-cart"></i>
-                            </button>
-                          </li>
-                          <li className="add-cart-button btn-group">
-                            <button
-                              className="btn btn-primary"
-                              onClick={() => {
-                                addToWishlist(product.id);
-                                thich();
-                              }}
-                              style={{
-                                color: isFavorited ? 'red' : 'white', // Thay đổi màu biểu tượng trái tim
-                              }}
-                            >
-                              <i className={`icon fa fa-heart ${isFavorited ? 'favorited' : ''}`}></i>
-                            </button>
-                          </li>
-                          <li className="add-cart-button btn-group">
-                            <button
-                              className="btn btn-primary"
-                              onClick={() => window.location.href = `/product/${product.id}`}
-                            >
-                              <i className="fa fa-signal" aria-hidden="true"></i>
-                            </button>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                
-                  <style jsx>{`
-                    .product:hover {
-                      transform: translateY(-10px);
-                      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                    }
-                    .product:hover .product-image img {
-                      transform: scale(1.1);
-                    }
-                  `}</style>
                 </SwiperSlide>
-                
-                );
-              })
-            ) : (
-              <p></p>
-            )}
-          </Swiper>
-        </div>
-      </div>
-    </div>
-              </div>
-              <div className="wide-banners wow fadeInUp outer-bottom-xs">
+
+                <SwiperSlide
+                  className="item"
+                  style={{
+                    backgroundImage: "url(/assets/images/sliders/2.jpg)",
+                    height: "450px",
+                    width: "900px",
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    backgroundColor: "#ccc", // Fallback color
+                  }}
+                >
+                  <div className="container-fluid">
+                    <div className="caption bg-color vertical-center text-left">
+                      {/* Nội dung caption nếu cần */}
+                    </div>
+                  </div>
+                </SwiperSlide>
+              </Swiper>
+            </div>
+
+
+
+
+            <div className="info-boxes wow fadeInUp">
+              <div className="info-boxes-inner">
                 <div className="row">
-                  <div className="col-md-7 col-sm-6">
-                    <div className="wide-banner cnt-strip">
-                      <div className="image">
-                        <img className="img-responsive" src="\assets\\images\banners\bannerdt4.webp"
-                          alt="" />
+                  <div className="col-md-6 col-sm-4 col-lg-4">
+                    <div className="info-box">
+                      <div className="row">
+                        <div className="col-xs-12">
+                          <h4 className="info-box-heading green">Hoàn tiền</h4>
+                        </div>
                       </div>
-
+                      <h6 className="text">Đảm bảo hoàn tiền trong 30 ngày</h6>
                     </div>
                   </div>
-                  <div className="col-md-5 col-sm-6">
-                    <div className="wide-banner cnt-strip">
-                      <div className="image">
-                        <img className="img-responsive" src="\assets\\images\banners\bannerdt3.jpg"
-                          alt="" />
+
+                  <div className="hidden-md col-sm-4 col-lg-4">
+                    <div className="info-box">
+                      <div className="row">
+                        <div className="col-xs-12">
+                          <h4 className="info-box-heading green">Miễn phí vận chuyển</h4>
+                        </div>
                       </div>
+                      <h6 className="text">Vận chuyển cho các đơn đặt hàng trên
+                        1.000.000  VNĐ</h6>
+                    </div>
+                  </div>
+
+                  <div className="col-md-6 col-sm-4 col-lg-4">
+                    <div className="info-box">
+                      <div className="row">
+                        <div className="col-xs-12">
+                          <h4 className="info-box-heading green">Giảm giá đặc biệt</h4>
+                        </div>
+                      </div>
+                      <h6 className="text">Giảm thêm 100.000 VNĐ cho tất cả các mặt hàng</h6>
                     </div>
                   </div>
                 </div>
               </div>
-
-              <section className="section featured-product wow fadeInUp">
-                <h3 className="section-title">ĐIỆN THOẠI GIÁ RẺ</h3>
-                <div className="product-slider">
-          <Swiper
-        slidesPerView={4}
-        spaceBetween={30}
-        loop={true}
-        pagination={{
-          clickable: true,
-        }}
-        navigation={true}
-        modules={[Pagination, Navigation]}
-        className="mySwiper">
-           {Array.isArray(products.cheap) && products.cheap.length > 0 ? (
-  products.phonesCheap.map((product) => {
-    const firstImageUrl = product.productsImages && product.productsImages.length > 0
-    ? `/assets/images/${product.productsImages[0].image.url}`
-    : 'default-image.jpg';
-  
-    
-                return (
-                  <SwiperSlide className="col-12 col-sm-6 col-md-4 col-lg-12" key={product.id}>
-                  <div className={`product ${likedProducts.some(like => like.product.id === product.id) ? 'liked' : ''}`} 
-                       style={{
-                         transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
-                       }}
-                  >
-                    <div className="product-image">
-                      <div className="image">
-                        <a href={`/product/${product.id}`}>
-                          <img
-                            style={{
-                              transform: 'translateX(-50%)',
-                              transition: 'transform 0.3s ease-in-out',
-                            }}
-                            src={firstImageUrl}
-                            alt={product.name}
-                            className="img-responsive"
-                          />
-                        </a>
-                      </div>
-                      <div className="tag new">
-                        <span>new</span>
-                      </div>
-                    </div>
-                
-                    <div className="product-info text-left">
-                      <h3 className="name">
-                        <a href={`/product/${product.id}`}>{product.name}</a>
-                      </h3>
-                      <div className="rating rateit-small"></div>
-                      <div className="description"></div>
-                      <div className="product-price">
-                        <span className="price">
-                          {product.price.toLocaleString()} VND
-                        </span>
-                      </div>
-                      <br />
-                    </div>
-                
-                    <div className="cart clearfix animate-effect">
-                      <div className="action">
-                        <ul className="list-unstyled">
-                          <li className="add-cart-button btn-group">
-                            <button
-                              className="btn btn-primary"
-                              onClick={() => {
-                                handlePurchase();
-                                addToCart(product.id);
-                              }}
-                            >
-                              <i className="fa fa-shopping-cart"></i>
-                            </button>
-                          </li>
-                          <li className="add-cart-button btn-group">
-                            <button
-                              className="btn btn-primary"
-                              onClick={() => {
-                                addToWishlist(product.id);
-                                thich();
-                              }}
-                              style={{
-                                color: isFavorited ? 'red' : 'white',
-                              }}
-                            >
-                              <i className={`icon fa fa-heart ${isFavorited ? 'favorited' : ''}`}></i>
-                            </button>
-                          </li>
-                          <li className="add-cart-button btn-group">
-                            <button
-                              className="btn btn-primary"
-                              onClick={() => window.location.href = `/product/${product.id}`}
-                            >
-                              <i className="fa fa-signal" aria-hidden="true"></i>
-                            </button>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                
-                  <style jsx>{`
-                    .product:hover {
-                      transform: translateY(-10px);
-                      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                    }
-                    .product:hover .product-image img {
-                      transform: scale(1.1);
-                    }
-                  `}</style>
-                </SwiperSlide>
-                
-                );
-              })
-            ) : (
-              <p></p>
-            )}
-          </Swiper>
-        </div>
-              </section>
-              <div className="wide-banners wow fadeInUp outer-bottom-xs">
-                <div className="row">
-                  <div className="col-md-12">
-                    <div className="wide-banner cnt-strip">
-                      <div className="image">
-                        <img className="img-responsive" style={{width : "1500px",height:"391px"}} src="\assets\\images\banners\bannerdt2.jpg"
-                          alt="" />
-                      </div>
-                     
-                      <div className="new-label">
-                        <div className="text">NEW</div>
-                      </div>
-                    </div>
-                  </div>
-
-                </div>
-              </div>
-
-              <div className="best-deal wow fadeInUp outer-bottom-xs">
-                <h3 className="section-title">Phụ kiện tốt nhất</h3>
-                <div className="product-slider">
-            <div>
-          <Swiper
-        slidesPerView={4}
-        spaceBetween={30}
-        loop={true}
-        pagination={{
-          clickable: true,
-        }}
-        navigation={true}
-        modules={[Pagination, Navigation]}
-        className="mySwiper">
-            {Array.isArray(products.accessoriesDiscount) && products.accessoriesDiscount.length > 0 ? (
-  products.accessoriesDiscount.map((product) => {
-    const firstImageUrl = product.productsImages && product.productsImages.length > 0
-  ? `/assets/images/${product.productsImages[0].image.url}`
-  : 'default-image.jpg';
-
-    
-                return (
-                  <SwiperSlide className="col-12 col-sm-6 col-md-4 col-lg-12" key={product.id}>
-                  <div className={`product ${likedProducts.some(like => like.product.id === product.id) ? 'liked' : ''}`} 
-                       style={{
-                         transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
-                       }}
-                  >
-                    <div className="product-image">
-                      <div className="image">
-                        <a href={`/product/${product.id}`}>
-                          <img
-                            src={firstImageUrl}
-                            alt={product.name}
-                            className="img-responsive"
-                            style={{
-                              transition: 'transform 0.3s ease-in-out',
-
-                              transform: 'translateX(-50%)'
-
-                            }}
-                          />
-                        </a>
-                      </div>
-                      <div className="tag new">
-                        <span>new</span>
-                      </div>
-                    </div>
-                
-                    <div className="product-info text-left">
-                      <h3 className="name">
-                        <a href={`/product/${product.id}`}>{product.name}</a>
-                      </h3>
-                      <div className="rating rateit-small"></div>
-                      <div className="description"></div>
-                      <div className="product-price">
-                        <span className="price">
-                          {product.price.toLocaleString()} VND
-                        </span>
-                      </div>
-                      <br />
-                    </div>
-                
-                    <div className="cart clearfix animate-effect">
-                      <div className="action">
-                        <ul className="list-unstyled">
-                          <li className="add-cart-button btn-group">
-                            <button
-                              className="btn btn-primary"
-                              onClick={() => {
-                                handlePurchase();
-                                addToCart(product.id);
-                              }}
-                            >
-                              <i className="fa fa-shopping-cart"></i>
-                            </button>
-                          </li>
-                          <li className="add-cart-button btn-group">
-                            <button
-                              className="btn btn-primary"
-                              onClick={() => {
-                                addToWishlist(product.id);
-                                thich();
-                              }}
-                              style={{
-                                color: isFavorited ? 'red' : 'white',
-                              }}
-                            >
-                              <i className={`icon fa fa-heart ${isFavorited ? 'favorited' : ''}`}></i>
-                            </button>
-                          </li>
-                          <li className="add-cart-button btn-group">
-                            <button
-                              className="btn btn-primary"
-                              onClick={() => window.location.href = `/product/${product.id}`}
-                            >
-                              <i className="fa fa-signal" aria-hidden="true"></i>
-                            </button>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                
-                  <style jsx>{`
-                    .product:hover {
-                      transform: translateY(-10px);
-                      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                    }
-                    .product:hover .product-image img {
-                      transform: scale(1.1);
-                    }
-                  `}</style>
-                </SwiperSlide>
-                
-                );
-              })
-            ) : (
-              <p></p>
-            )}
-          </Swiper>
-        </div>
-              </div>
-</div>
-            
 
             </div>
+            <div id="product-tabs-slider" className="scroll-tabs outer-top-vs wow fadeInUp">
+              <div className="more-info-tab clearfix ">
+                <h3 className="new-product-title pull-left">Sản phẩm mới</h3>
+
+                <ul className="nav nav-tabs nav-tab-line pull-right gap-3" id="new-products-1">
+                  <li
+                    className={`me-3 ${categoryId === null ? 'active' : ''}`}
+                    onClick={() => handleCategoryClick(null)}
+                    onMouseEnter={() => handleMouseEnter(1)}
+                    onMouseLeave={handleMouseLeave}
+                    style={{
+                      cursor: 'pointer',
+                      transition: 'color 0.3s ease',
+                      color: hoverIndex === 1 ? 'blue' : '#000', // Blue on hover, black by default
+                    }}
+                  >
+                    <span>Tất cả</span>
+                  </li>
+                  <li
+                    className={`me-3 ${categoryId === 1 ? 'active' : ''}`}
+                    onClick={() => handleCategoryClick(1)}
+                    onMouseEnter={() => handleMouseEnter(2)}
+                    onMouseLeave={handleMouseLeave}
+                    style={{
+                      cursor: 'pointer',
+                      transition: 'color 0.3s ease',
+                      color: hoverIndex === 2 ? 'red' : '#000', // Red on hover, black by default
+                    }}
+                  >
+                    <span>Điện thoại di động</span>
+                  </li>
+                  <li
+                    className={`me-3 ${categoryId === 2 ? 'active' : ''}`}
+                    onClick={() => handleCategoryClick(2)}
+                    onMouseEnter={() => handleMouseEnter(3)}
+                    onMouseLeave={handleMouseLeave}
+                    style={{
+                      cursor: 'pointer',
+                      transition: 'color 0.3s ease',
+                      color: hoverIndex === 3 ? 'purple' : '#000', // Purple on hover, black by default
+                    }}
+                  >
+                    <span>Laptop</span>
+                  </li>
+                  <li
+                    className={`me-3 ${categoryId === 3 ? 'active' : ''}`}
+                    onClick={() => handleCategoryClick(3)}
+                    onMouseEnter={() => handleMouseEnter(4)}
+                    onMouseLeave={handleMouseLeave}
+                    style={{
+                      cursor: 'pointer',
+                      transition: 'color 0.3s ease',
+                      color: hoverIndex === 4 ? 'yellow' : '#000', // Yellow on hover, black by default
+                    }}
+                  >
+                    <span>Máy tính bảng</span>
+                  </li>
+                  <li
+                    className={`${categoryId === 4 ? 'active' : ''}`}
+                    onClick={() => handleCategoryClick(4)}
+                    onMouseEnter={() => handleMouseEnter(5)}
+                    onMouseLeave={handleMouseLeave}
+                    style={{
+                      cursor: 'pointer',
+                      transition: 'color 0.3s ease',
+                      color: hoverIndex === 5 ? 'green' : '#000', // Green on hover, black by default
+                    }}
+                  >
+                    <span>Phụ kiện</span>
+                  </li>
+                </ul>
+
+
+              </div>
+              <div className="tab-content outer-top-xs">
+                <div className="tab-pane in active" id="all">
+                  <div className="product-slider">
+                    <Swiper
+                      slidesPerView={5}
+                      spaceBetween={30}
+                      loop={true}
+                      pagination={{
+                        clickable: true,
+                      }}
+                      navigation={true}
+                      modules={[Pagination, Navigation]}
+                      className="mySwiper">
+                      {Array.isArray(products.all) && products.all.length > 0 ? (
+                        products.all.map((product) => {
+                          const firstImageUrl = product.images && product.images.length > 0
+                            ? `/assets/images/${product.images[0].url}`
+                            : 'default-image.jpg';
+
+
+                          return (
+                            <SwiperSlide className="col-12 col-sm-6 col-md-4 col-lg-12" key={product.id}>
+                              <div className={`product ${likedProducts.some(like => like.product.id === product.id) ? 'liked' : ''}`} style={{
+                                transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out'
+                              }}>
+                                <div className="product-image">
+                                  <div className="image">
+                                    <a href={`/product/${product.id}`}>
+                                      <img
+                                        src={firstImageUrl}
+                                        alt={product.name}
+                                        className="img-responsive"
+                                        style={{
+                                          transition: 'transform 0.3s ease-in-out',
+                                          transform: 'translateX(-50%)'
+
+                                        }}
+                                      />
+                                    </a>
+                                  </div>
+                                  <div className="tag new">
+                                    <span>new</span>
+                                  </div>
+                                </div>
+
+                                <div className="product-info text-left">
+                                  <h3 className="name">
+                                    <a href={`/product/${product.id}`}>{product.name}</a>
+                                  </h3>
+                                  <div className="rating rateit-small"></div>
+                                  <div className="description"></div>
+                                  <div className="product-price">
+                                    <span className="price">
+                                      {product.price.toLocaleString()} VND
+                                    </span>
+                                  </div>
+                                  <br />
+                                </div>
+
+                                <div className="cart clearfix animate-effect">
+                                  <div className="action">
+                                    <ul className="list-unstyled">
+
+                                      <li className="add-cart-button btn-group">
+                                        <button
+                                          className="btn btn-primary"
+                                          onClick={() => {
+                                            addToWishlist(product.id);
+                                            thich();
+                                          }}
+                                          style={{
+                                            color: isFavorited ? 'red' : 'white', // Thay đổi màu biểu tượng trái tim
+                                          }}
+                                        >
+                                          <i className={`icon fa fa-heart ${isFavorited ? 'favorited' : ''}`}></i>
+                                        </button>
+                                      </li>
+                                      <li className="add-cart-button btn-group">
+                                        <button
+                                          className="btn btn-primary"
+                                          onClick={() => window.location.href = `/product/${product.id}`}
+                                        >
+                                          <i className="fa fa-signal" aria-hidden="true"></i>
+                                        </button>
+                                      </li>
+                                    </ul>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <style jsx>{`
+                    .product:hover {
+                      transform: translateY(-10px);
+                      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                    }
+                    .product:hover .product-image img {
+                      transform: scale(1.1);
+                    }
+                  `}</style>
+                            </SwiperSlide>
+
+                          );
+                        })
+                      ) : (
+                        <p></p>
+                      )}
+                    </Swiper>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="wide-banners wow fadeInUp outer-bottom-xs">
+              <div className="row " >
+                <div className="col-md-7 col-sm-5 ">
+                  <div className="wide-banner cnt-strip">
+                    <div className="image">
+                      <img className="img-responsive" src="\assets\\images\banners\bannerdt4.webp"
+                        alt="" style={{ height: '80%' }} />
+                    </div>
+
+                  </div>
+                </div>
+                <div className="col-md-5 col-sm-5">
+                  <div className="wide-banner cnt-strip">
+                    <div className="image">
+                      <img className="img-responsive" src="\assets\\images\banners\bannerdt3.jpg" style={{ height: '80%' }}
+                        alt="" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <section className="section featured-product wow fadeInUp">
+              <h3 className="section-title">ĐIỆN THOẠI GIÁ RẺ</h3>
+              <div className="product-slider">
+                <Swiper
+                  slidesPerView={5}
+                  spaceBetween={30}
+                  loop={true}
+                  pagination={{
+                    clickable: true,
+                  }}
+                  navigation={true}
+                  modules={[Pagination, Navigation]}
+                  className="mySwiper">
+                  {Array.isArray(products.cheap) && products.cheap.length > 0 ? (
+                    products.phonesCheap.map((product) => {
+                      const firstImageUrl = product.images && product.images.length > 0
+                        ? `/assets/images/${product.images[0].url}`
+                        : 'default-image.jpg';
+
+
+                      return (
+                        <SwiperSlide className="col-12 col-sm-6 col-md-4 col-lg-12" key={product.id}>
+                          <div className={`product ${likedProducts.some(like => like.product.id === product.id) ? 'liked' : ''}`}
+                            style={{
+                              transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
+                            }}
+                          >
+                            <div className="product-image">
+                              <div className="image">
+                                <a href={`/product/${product.id}`}>
+                                  <img
+                                    style={{
+                                      transform: 'translateX(-50%)',
+                                      transition: 'transform 0.3s ease-in-out',
+                                    }}
+                                    src={firstImageUrl}
+                                    alt={firstImageUrl}
+                                    className="img-responsive"
+                                  />
+                                </a>
+                              </div>
+                              <div className="tag new">
+                                <span>new</span>
+                              </div>
+                            </div>
+
+                            <div className="product-info text-left">
+                              <h3 className="name">
+                                <a href={`/product/${product.id}`}>{product.name}</a>
+                              </h3>
+                              <div className="rating rateit-small"></div>
+                              <div className="description"></div>
+                              <div className="product-price">
+                                <span className="price">
+                                  {product.price.toLocaleString()} VND
+                                </span>
+                              </div>
+                              <br />
+                            </div>
+
+                            <div className="cart clearfix animate-effect">
+                              <div className="action">
+                                <ul className="list-unstyled">
+
+                                  <li className="add-cart-button btn-group">
+                                    <button
+                                      className="btn btn-primary"
+                                      onClick={() => {
+                                        addToWishlist(product.id);
+                                        thich();
+                                      }}
+                                      style={{
+                                        color: isFavorited ? 'red' : 'white',
+                                      }}
+                                    >
+                                      <i className={`icon fa fa-heart ${isFavorited ? 'favorited' : ''}`}></i>
+                                    </button>
+                                  </li>
+                                  <li className="add-cart-button btn-group">
+                                    <button
+                                      className="btn btn-primary"
+                                      onClick={() => window.location.href = `/product/${product.id}`}
+                                    >
+                                      <i className="fa fa-signal" aria-hidden="true"></i>
+                                    </button>
+                                  </li>
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+
+                          <style jsx>{`
+                    .product:hover {
+                      transform: translateY(-10px);
+                      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                    }
+                    .product:hover .product-image img {
+                      transform: scale(1.1);
+                    }
+                  `}</style>
+                        </SwiperSlide>
+
+                      );
+                    })
+                  ) : (
+                    <p></p>
+                  )}
+                </Swiper>
+              </div>
+            </section>
+            <div className="wide-banners wow fadeInUp outer-bottom-xs">
+              <div className="row">
+                <div className="col-md-12">
+                  <div className="wide-banner cnt-strip">
+                    <div className="image">
+                      <img className="img-responsive" style={{ width: "100%", height: "100%" }} src="https://content.vodafone.co.nz/dims4/default/d98478e/2147483647/strip/true/crop/2360x640+0+0/resize/1640x445!/quality/90/?url=http%3A%2F%2Fvodafonenz-brightspot.s3.amazonaws.com%2F3d%2F7e%2Fbc19d8a74fcea1c2532b2199c4b0%2Fcbu-presale-family-page-hello-banner-desktop-banner-iphone-12-pro-no-cta-copy-2x.png"
+                        alt="" />
+                    </div>
+
+                    <div className="new-label">
+                      <div className="text">NEW</div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div className="best-deal wow fadeInUp outer-bottom-xs">
+              <h3 className="section-title">Phụ kiện tốt nhất</h3>
+              <div className="product-slider">
+                <div>
+                  <Swiper
+                    slidesPerView={5}
+                    spaceBetween={30}
+                    loop={true}
+                    pagination={{
+                      clickable: true,
+                    }}
+                    navigation={true}
+                    modules={[Pagination, Navigation]}
+                    className="mySwiper">
+                    {Array.isArray(products.accessoriesDiscount) && products.accessoriesDiscount.length > 0 ? (
+                      products.accessoriesDiscount.map((product) => {
+                        const firstImageUrl = product.images && product.images.length > 0
+                          ? `/assets/images/${product.images[0].url}`
+                          : 'default-image.jpg';
+
+
+                        return (
+                          <SwiperSlide className="col-12 col-sm-6 col-md-4 col-lg-12" key={product.id}>
+                            <div className={`product ${likedProducts.some(like => like.product.id === product.id) ? 'liked' : ''}`}
+                              style={{
+                                transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
+                              }}
+                            >
+                              <div className="product-image">
+                                <div className="image">
+                                  <a href={`/product/${product.id}`}>
+                                    <img
+                                      src={firstImageUrl}
+                                      alt={product.name}
+                                      className="img-responsive"
+                                      style={{
+                                        transition: 'transform 0.3s ease-in-out',
+
+                                        transform: 'translateX(-50%)'
+
+                                      }}
+                                    />
+                                  </a>
+                                </div>
+                                <div className="tag new">
+                                  <span>new</span>
+                                </div>
+                              </div>
+
+                              <div className="product-info text-left">
+                                <h3 className="name">
+                                  <a href={`/product/${product.id}`}>{product.name}</a>
+                                </h3>
+                                <div className="rating rateit-small"></div>
+                                <div className="description"></div>
+                                <div className="product-price">
+                                  <span className="price">
+                                    {product.price.toLocaleString()} VND
+                                  </span>
+                                </div>
+                                <br />
+                              </div>
+
+                              <div className="cart clearfix animate-effect">
+                                <div className="action">
+                                  <ul className="list-unstyled">
+
+                                    <li className="add-cart-button btn-group">
+                                      <button
+                                        className="btn btn-primary"
+                                        onClick={() => {
+                                          addToWishlist(product.id);
+                                          thich();
+                                        }}
+                                        style={{
+                                          color: isFavorited ? 'red' : 'white',
+                                        }}
+                                      >
+                                        <i className={`icon fa fa-heart ${isFavorited ? 'favorited' : ''}`}></i>
+                                      </button>
+                                    </li>
+                                    <li className="add-cart-button btn-group">
+                                      <button
+                                        className="btn btn-primary"
+                                        onClick={() => window.location.href = `/product/${product.id}`}
+                                      >
+                                        <i className="fa fa-signal" aria-hidden="true"></i>
+                                      </button>
+                                    </li>
+                                  </ul>
+                                </div>
+                              </div>
+                            </div>
+
+                            <style jsx>{`
+                    .product:hover {
+                      transform: translateY(-10px);
+                      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                    }
+                    .product:hover .product-image img {
+                      transform: scale(1.1);
+                    }
+                  `}</style>
+                          </SwiperSlide>
+
+                        );
+                      })
+                    ) : (
+                      <p></p>
+                    )}
+                  </Swiper>
+                </div>
+              </div>
+            </div>
+
+
           </div>
         </div>
-    
+      </div>
+
     </>
   );
 

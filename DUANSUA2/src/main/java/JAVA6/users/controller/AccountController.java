@@ -7,7 +7,9 @@ import java.util.Optional;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,11 +22,12 @@ public class AccountController {
 
     @Autowired
     UsersRepository userRepository;
+@Autowired
+private PasswordEncoder passwordEncoder;
 
     @GetMapping("/profile")
     public ResponseEntity<UserModel> getProfile(@RequestHeader("Username") String username) {
         // Kiểm tra giá trị username
-        System.out.println("Username from request header: " + username);
 
         if (username == null) {
             return ResponseEntity.status(400).body(null); // Trả về lỗi nếu không có username
@@ -41,6 +44,7 @@ public class AccountController {
     public ResponseEntity<String> updateUser(
             @RequestPart("user") UserModel user, // Nhận đối tượng user từ form data
             @RequestPart(value = "image", required = false) MultipartFile imageFile, // Nhận file hình ảnh nếu có
+            @RequestPart("password") String passwordInput,
             HttpSession session,
             HttpServletRequest request) {
         // Kiểm tra xem người dùng có tồn tại trong cơ sở dữ liệu không
@@ -50,7 +54,9 @@ public class AccountController {
         }
 
         UserModel existingUser = existingUserOpt.get();
-
+  if (!passwordEncoder.matches(passwordInput, existingUser.getPassword())) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Mật khẩu không chính xác");
+    }
         // Cập nhật thông tin người dùng
         existingUser.setName(user.getName());
         existingUser.setUsername(user.getUsername());

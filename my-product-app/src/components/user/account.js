@@ -62,7 +62,16 @@ const Account = () => {
     const formData = new FormData();
     formData.append("user", new Blob([JSON.stringify(user)], { type: 'application/json' }));
     formData.append("image", user.imageFile);  // Gửi hình ảnh nếu có
+    formData.append("password", passwordInput);  // Gửi mật khẩu để xác thực
 
+ if (!passwordInput) {
+  setNotificationMessage('Mật khẩu không chính xác vui lòng nhập lại!');
+  setNotificationType('error');
+  setShowNotification(true);
+
+  setTimeout(() => setShowNotification(false), 3000); // Ẩn sau 3 giây
+    return;
+  }
     axios
       .put("http://localhost:8080/api/users/update", formData, {
         headers: {
@@ -70,7 +79,8 @@ const Account = () => {
         },
       })
       .then(() => {
-        setNotificationMessage('Cập nhật thành công người dung');
+        setNotificationMessage('Cập nhật thành công người dùng');
+        setPasswordInput("");
         setNotificationType('success');
         setShowNotification(true);
 
@@ -78,12 +88,19 @@ const Account = () => {
         setShowPopup(false);
       })
       .catch((error) => {
-        setNotificationMessage("Đã xảy ra lỗi khi cập nhật thông tin");
-        setNotificationType("error");
-        setShowNotification(true);
-
-        setTimeout(() => setShowNotification(false), 3000); // Ẩn sau 3 giây
-        alert("Đã xảy ra lỗi khi cập nhật thông tin");
+        if (error.response && error.response.status === 401) {
+          setNotificationMessage('Mật khẩu không chính xác vui lòng nhập lại!');
+          setNotificationType('error');
+          setShowNotification(true);
+  
+          setTimeout(() => setShowNotification(false), 3000); // Ẩn sau 3 giây
+        } else {
+          setNotificationMessage("Đã xảy ra lỗi khi cập nhật thông tin");
+          setNotificationType("error");
+          setShowNotification(true);
+  
+          setTimeout(() => setShowNotification(false), 3000); // Ẩn sau 3 giây
+        }
       });
   };
 

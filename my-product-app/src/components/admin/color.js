@@ -1,87 +1,60 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 const ColorManagement = () => {
-    const [colorList, setColorList] = useState([]);
-    const [popup, setPopup] = useState({ show: false, type: '', color: null }); // Manage popup state
-    const [currentColor, setCurrentColor] = useState({ name: '' });
-    const [errors, setErrors] = useState({});
-    const [loading, setLoading] = useState(false); // Loading state for form submission
+    const [color, setColor] = useState([]);
+    const [popup, setPopup] = useState({ show: false, type: '', color: null });
 
-    // Fetch color data when the component mounts
     useEffect(() => {
-        fetch('http://localhost:8080/api/colors')
+        fetch('http://localhost:8080/api/admin/colors')
             .then((response) => response.json())
-            .then((data) => setColorList(data))
+            .then((data) => setColor(data))
             .catch((error) => console.error('Error fetching color data:', error));
     }, []);
 
-    const handleDelete = (color) => {
-        setPopup({ show: true, type: 'delete', color });
+    const handleDelete = (id) => {
+        setPopup({ show: true, type: 'delete', color: { id } });
     };
 
-    const confirmDelete = (colorId) => {
-        fetch(`http://localhost:8080/api/colors/${colorId}`, {
-            method: 'DELETE',
-        })
-            .then((response) => {
-                if (response.ok) {
-                    setColorList(colorList.filter((color) => color.id !== colorId));
-                    alert('Color deleted successfully!');
-                }
-            })
-            .catch((error) => console.error('Error deleting color:', error));
+    const confirmDelete = async (id) => {
+        try {
+            const response = await axios.delete(`http://localhost:8080/api/admin/colors/${id}`);
+            if (response.status === 200) {
+                alert('Xóa màu sắc thành công!');
+                setColor(color.filter(color => color.id !== id));
+            }
+            closePopup();
+        } catch (error) {
+            console.error('Error deleting color:', error);
+        }
+    };
+
+    const closePopup = () => {
         setPopup({ show: false, type: '', color: null });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const formData = new FormData();
-        formData.append('color', JSON.stringify({ name: currentColor.name }));
-
-        setLoading(true);
-
         try {
-            let response;
-            if (popup.type === 'edit') {
-                response = await axios.put(`http://localhost:8080/api/colors/${currentColor.id}`, formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' },
-                });
-            } else {
-                response = await axios.post('http://localhost:8080/api/colors', formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' },
-                });
+            const formData = new FormData();
+            formData.append("color", JSON.stringify({ name: popup.color.name }));
+            const method = popup.type === 'edit' ? 'PUT' : 'POST';
+            const url = popup.type === 'edit'
+                ? `http://localhost:8080/api/admin/colors/${popup.color.id}`
+                : 'http://localhost:8080/api/admin/colors';
+            
+            const response = await axios({ method, url, data: formData });
+            if (response.status === 200 || response.status === 201) {
+                alert(popup.type === 'edit' ? 'Cập nhật màu sắc thành công!' : 'Thêm màu sắc thành công!');
             }
 
-            if (response.status === 200) {
-                alert(`Color ${popup.type === 'edit' ? 'updated' : 'added'} successfully!`);
-                if (popup.type === 'edit') {
-                    setColorList(colorList.map((color) => (color.id === currentColor.id ? response.data : color)));
-                } else {
-                    setColorList([...colorList, response.data]);
-                }
-                closeModal();
-            }
+            const updatedData = await axios.get('http://localhost:8080/api/admin/colors');
+            setColor(updatedData.data);
+            closePopup();
         } catch (error) {
-            setErrors(error.response?.data.errors || {});
-        } finally {
-            setLoading(false);
+            console.error(`Error ${popup.type === 'edit' ? 'updating' : 'adding'} color:`, error);
         }
-    };
-
-    const openAddModal = () => {
-        setPopup({ show: true, type: 'add', color: null });
-        setCurrentColor({ name: '' });
-    };
-
-    const openEditModal = (color) => {
-        setPopup({ show: true, type: 'edit', color });
-        setCurrentColor(color);
-    };
-
-    const closeModal = () => {
-        setPopup({ show: false, type: '', color: null });
-        setErrors({});
     };
 
     return (
@@ -93,7 +66,7 @@ const ColorManagement = () => {
                             <h5 className="card-title m-0" style={{ fontSize: '30px', fontWeight: '700' }}>Quản lý màu sắc</h5>
                             <button
                                 className="btn btn-success mb-3"
-                                onClick={openAddModal}
+                                onClick={() => setPopup({ show: true, type: 'add', color: null })}
                                 style={{
                                     marginTop: '18px',
                                     backgroundColor: '#28a745',
@@ -111,29 +84,26 @@ const ColorManagement = () => {
                                 onMouseOut={(e) => e.target.style.backgroundColor = '#28a745'}
                             >
                                 <i className="bi bi-plus-circle" style={{ fontSize: '32px' }}></i>
-
                             </button>
-
-
                         </div>
                         <div className="card-body">
                             <table className="table">
                                 <thead>
                                     <tr>
                                         <th style={{ textAlign: 'center' }}>STT</th>
-                                        <th style={{ textAlign: 'center' }}>Tên màu</th>
+                                        <th style={{ textAlign: 'center' }}>Tên màu sắc</th>
                                         <th style={{ width: '500px', textAlign: 'center' }}>Thao tác</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {colorList.length > 0 ? (
-                                        colorList.map((color, index) => (
+                                    {color.length > 0 ? (
+                                        color.map((color, index) => (
                                             <tr key={color.id}>
-                                                <td style={{ padding: '15px', textAlign: 'center' }}>{color.id}</td>
+                                                <td style={{ padding: '15px', textAlign: 'center' }}>{index + 1}</td>
                                                 <td style={{ padding: '15px', textAlign: 'center' }}>{color.name}</td>
                                                 <td style={{ padding: '15px', textAlign: 'center' }}>
                                                     <button
-                                                        onClick={() => openEditModal(color)}
+                                                        onClick={() => setPopup({ show: true, type: 'edit', color })}
                                                         style={{
                                                             backgroundColor: '#ffc107',
                                                             color: '#fff',
@@ -157,7 +127,7 @@ const ColorManagement = () => {
                                                     </button>
 
                                                     <button
-                                                        onClick={() => handleDelete(color)}
+                                                        onClick={() => handleDelete(color.id)}
                                                         style={{
                                                             marginLeft: '60px',
                                                             backgroundColor: '#dc3545',
@@ -177,152 +147,92 @@ const ColorManagement = () => {
                                                         onMouseOut={(e) => {
                                                             e.target.style.backgroundColor = '#dc3545';
                                                         }}
-                                                    >    <i className="bi bi-pencil" style={{ fontSize: '20px' }}></i>
+                                                    >
                                                         <i className="bi bi-trash" style={{ fontSize: '20px' }}></i>
                                                     </button>
                                                 </td>
                                             </tr>
-
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan="3" style={{ textAlign: 'center' }}>Không có dữ liệu</td>
+                                            <td colSpan="3" style={{ textAlign: 'center' }}>Không tìm thấy màu sắc nào</td>
                                         </tr>
                                     )}
                                 </tbody>
                             </table>
                         </div>
                     </div>
-
-                    {/* Popup for Add / Edit Color */}
-                    {/* Popup for Add / Edit Color */}
-                    {popup.show && (
-                        <div style={{
-                            position: 'fixed',
-                            top: '0',
-                            left: '0',
-                            width: '100%',
-                            height: '100%',
-                            backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            zIndex: '9999',
-                        }}>
-                            <div style={{
-                                backgroundColor: '#fff',
-                                padding: '30px 40px',
-                                borderRadius: '16px',
-                                boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
-                                textAlign: 'center',
-                                width: '660px',
-                                maxWidth: '90%',
-                            }}>
-                                <h3 style={{ marginBottom: '25px', fontSize: '22px', fontWeight: 'bold' }}>
-                                    {popup.type === 'edit' ? 'Sửa màu sắc' : popup.type === 'delete' ? 'Xác nhận xóa' : 'Thêm màu sắc'}
-                                </h3>
-
-                                {/* Form for add/edit color */}
-                                {popup.type !== 'delete' ? (
-                                    <form onSubmit={handleSubmit} style={{ maxWidth: '600px', margin: '0 auto' }}>
-                                        <div className="form-group">
-                                            <label style={{ fontWeight: 600, fontSize: '20px' }} htmlFor="name">Tên màu sắc</label>
-                                            <input
-                                                type="text"
-                                                id="name"
-                                                name="name"
-                                                className={`form-control ${errors.name ? 'is-invalid' : ''}`}
-                                                value={currentColor.name}
-                                                onChange={(e) => setCurrentColor({ ...currentColor, name: e.target.value })}
-                                                required
-                                            />
-                                            {errors.name && <div className="invalid-feedback">{errors.name}</div>}
-                                        </div>
-
-                                        {/* Buttons - Align Add and Close on the same line */}
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
-                                            <button
-                                                type="submit"
-                                                className="btn btn-primary"
-                                                disabled={loading}
-                                                style={{
-                                                    padding: '10px 20px',
-                                                    fontSize: '16px',
-                                                    fontWeight: 'bold',
-                                                    borderRadius: '8px',
-                                                    border: 'none',
-                                                    cursor: 'pointer',
-                                                    boxShadow: 'rgba(0, 123, 255, 0.3) 0px 5px 10px',
-                                                    transition: '0.3s',
-                                                }}
-                                            >
-                                                {loading ? 'Đang xử lý...' : popup.type === 'edit' ? 'Cập nhật' : 'Thêm'}
-                                            </button>
-
-                                            <button
-                                                className="btn btn-secondary"
-                                                onClick={closeModal}
-                                                style={{
-                                                    padding: '10px 20px',
-                                                    fontSize: '16px',
-                                                    fontWeight: 'bold',
-                                                    borderRadius: '8px',
-                                                    border: 'none',
-                                                    cursor: 'pointer',
-                                                    boxShadow: 'rgba(0, 123, 255, 0.3) 0px 5px 10px',
-                                                    transition: '0.3s',
-                                                    marginLeft: '10px',
-                                                }}
-                                            >
-                                                Đóng
-                                            </button>
-                                        </div>
-                                    </form>
-                                ) : (
-                                    <div>
-                                        <p>Bạn có chắc chắn muốn xóa màu sắc này không?</p>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
-                                            <button
-                                                className="btn btn-danger"
-                                                onClick={() => confirmDelete(popup.color.id)}
-                                                style={{
-                                                    padding: '10px 20px',
-                                                    fontSize: '16px',
-                                                    fontWeight: 'bold',
-                                                    borderRadius: '8px',
-                                                    border: 'none',
-                                                    cursor: 'pointer',
-                                                    boxShadow: 'rgba(0, 123, 255, 0.3) 0px 5px 10px',
-                                                    transition: '0.3s',
-                                                }}
-                                            >
-                                                Xóa
-                                            </button>
-                                            <button
-                                                className="btn btn-secondary"
-                                                onClick={closeModal}
-                                                style={{
-                                                    padding: '10px 20px',
-                                                    fontSize: '16px',
-                                                    fontWeight: 'bold',
-                                                    borderRadius: '8px',
-                                                    border: 'none',
-                                                    cursor: 'pointer',
-                                                    boxShadow: 'rgba(0, 123, 255, 0.3) 0px 5px 10px',
-                                                    transition: '0.3s',
-                                                }}
-                                            >
-                                                Hủy
-                                            </button>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    )}
-
                 </div>
             </div>
+
+            {/* Popup for Add / Edit / Delete Brand */}
+            {popup.show && (
+                <div style={{
+                    position: 'fixed',
+                    top: '0',
+                    left: '0',
+                    width: '100%',
+                    height: '100%',
+                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    zIndex: '9999',
+                }}>
+                    <div style={{
+                        backgroundColor: '#fff',
+                        padding: '30px 40px',
+                        borderRadius: '16px',
+                        boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
+                        textAlign: 'center',
+                        width: '660px',
+                        maxWidth: '90%',
+                    }}>
+                        <h3 style={{ marginBottom: '25px', fontSize: '22px', fontWeight: 'bold' }}>
+                            {popup.type === 'edit' ? 'Sửa màu sắc' : popup.type === 'delete' ? 'Xác nhận xóa' : 'Thêm màu sắc'}
+                        </h3>
+
+                        {popup.type !== 'delete' ? (
+                            // Form for Add/Edit Capacity
+                            <form onSubmit={handleSubmit} style={{ maxWidth: '600px', margin: '0 auto' }}>
+                                <div className="form-group">
+                                    <label htmlFor="name" style={{ fontWeight: 600, fontSize: '20px' }}>Tên màu sắc</label>
+                                    <input
+                                        type="text"
+                                        id="name"
+                                        name="name"
+                                        className="form-control"
+                                        value={popup.color ? popup.color.name : ''}
+                                        onChange={(e) => setPopup({ ...popup, color: { ...popup.color, name: e.target.value } })}
+                                        required
+                                    />
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
+                                    <button type="submit" className="btn btn-primary">
+                                        {popup.type === 'edit' ? 'Cập nhật' : 'Thêm'}
+                                    </button>
+                                    <button type="button" className="btn btn-secondary" onClick={closePopup}>
+                                        Đóng
+                                    </button>
+                                </div>
+                            </form>
+                        ) : (
+                            // Delete Confirmation
+                            <div>
+                                <p>Bạn có chắc chắn muốn xóa màu sắc này không?</p>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
+                                    <button className="btn btn-danger" onClick={() => confirmDelete(popup.color.id)}>
+                                        Xóa
+                                    </button>
+                                    <button className="btn btn-secondary" onClick={closePopup}>
+                                        Hủy
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,7 +15,7 @@ import JAVA6.Model.CategoryModel;
 import JAVA6.Model.ImageModel;
 import JAVA6.Model.BrandModel;
 import JAVA6.Model.ProductModel;
-import JAVA6.service.ImagesService;
+
 import JAVA6.service.ProductService;
 import JAVA6.service.BrandService;
 import JAVA6.service.CategoryService;
@@ -36,9 +37,6 @@ public class IndexController {
     private CategoryService categoryService;
 
     @Autowired
-    private ImagesService imagesService;
-
-    @Autowired
     private ProductdetailsRepository productdetailsRepository;
 
     // API Endpoint để lấy sản phẩm theo các tiêu chí lọc
@@ -52,23 +50,22 @@ public class IndexController {
             @RequestParam(value = "keyword", required = false) String keyword,
             @RequestParam(value = "page", defaultValue = "0") int page, // Thêm tham số page
             @RequestParam(value = "size", defaultValue = "20") int size) { // Thêm tham số size
-    
+
         // Lọc sản phẩm theo các tiêu chí và trả về danh sách sản phẩm
         Page<ProductModel> pageProducts = productService.getProductsByFilters(
-                categoryId, 
+                categoryId,
                 brandId,
-                sort != null && sort.equalsIgnoreCase("asc"), 
-                minPrice, 
-                maxPrice, 
-                keyword, 
-                page, 
+                sort != null && sort.equalsIgnoreCase("asc"),
+                minPrice,
+                maxPrice,
+                keyword,
+                page,
                 size);
-    
+
         return ResponseEntity.ok(pageProducts.getContent()); // Trả về danh sách sản phẩm
     }
-    
+
     // API Endpoint để lấy sản phẩm theo ID
- 
 
     // API Endpoint để lấy ảnh của sản phẩm theo productId
     @GetMapping("/api/product/{id}/images")
@@ -90,6 +87,7 @@ public class IndexController {
         }
         return ResponseEntity.ok(categories); // Trả về 200 OK nếu có danh mục
     }
+
     @GetMapping("/api/brands")
     public ResponseEntity<List<BrandModel>> getAllBrands() {
         List<BrandModel> brands = brandsService.getAllBrands();

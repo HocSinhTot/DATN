@@ -130,26 +130,14 @@ const WishlistPage = () => {
                 >
                     <thead>
                         <tr>
-                            <th
-                                colSpan="3"
-                                style={{
-                                    border: '1px solid #ddd',
-                                    padding: '20px',
-                                    textAlign: 'center',
-                                    fontSize: '1.5rem',
-                                    fontWeight: 'bold',
-                                }}
-                            >
-                                Danh Sách Sản Phẩm Yêu Thích
-                                {/* Thông báo */}
-                                <Notification
-                                    message={notificationMessage}
-                                    type={notificationType}
-                                    show={showNotification}
-                                    onClose={() => setShowNotification(false)}
-                                />
 
-                            </th>
+                            {/* Thông báo */}
+                            <Notification
+                                message={notificationMessage}
+                                type={notificationType}
+                                show={showNotification}
+                                onClose={() => setShowNotification(false)}
+                            />
                         </tr>
                     </thead>
                     <tbody>
@@ -162,6 +150,7 @@ const WishlistPage = () => {
                                     }}
                                 >
                                     {like.product.images.length > 0 && (
+                                        <a href={`/product/${like.product.id}`}>
                                         <img
                                             src={`/assets/images/${like.product.images[0].url}`}
                                             alt={like.product.name}
@@ -172,6 +161,7 @@ const WishlistPage = () => {
                                                 borderRadius: '10px',
                                             }}
                                         />
+                                        </a>
                                     )}
                                 </td>
                                 <td
@@ -181,7 +171,7 @@ const WishlistPage = () => {
                                     }}
                                 >
                                     <div className="product-name">
-                                        <a href={`/productdetails/${like.product.id}`} style={{ fontSize: '1.2rem' }}>
+                                        <a href={`/product/${like.product.id}`} style={{ fontSize: '1.2rem' }}>
                                             {like.product.name}
                                         </a>
                                     </div>

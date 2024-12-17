@@ -7,7 +7,7 @@ function ChangePasswordForm() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
-    const username = localStorage.getItem("username");
+    const username = sessionStorage.getItem("username");
   const navigate = useNavigate();
 
     // Hàm kiểm tra mật khẩu yếu

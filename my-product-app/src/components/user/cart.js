@@ -36,15 +36,15 @@ const CartPage = () => {
       });
   };
 
-  const updateQuantity = (productId, quantity) => {
+  const updateQuantity = (productId, quantity, colorId, capacity) => {
     if (quantity <= 0) {
-      handleShowPopup(productId);
+      handleShowPopup(productId, colorId, capacity);
     } else {
       axios.post(
         'http://localhost:8080/api/cart/updateQuantity',
         null, // Body null vì sử dụng query params
         {
-          params: { userId, productId, quantity }, // Truyền tham số qua query string
+          params: { userId, productId, quantity, colorId, capacity }, // Truyền tham số qua query string
           withCredentials: true,
         }
       )
@@ -58,7 +58,7 @@ const CartPage = () => {
     }
   };
 
-  const handleShowPopup = (productId) => {
+  const handleShowPopup = (productId, colorId, capacity) => {
     setPopup({
       show: true,
       message: 'Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?',
@@ -67,7 +67,7 @@ const CartPage = () => {
           'http://localhost:8080/api/cart/removeFromCart',
           null,
           {
-            params: { userId, productId },
+            params: { userId, productId, colorId, capacity },
             withCredentials: true,
           }
         )
@@ -93,9 +93,6 @@ const CartPage = () => {
     });
   };
 
-
-
-
   ///thông báo
   const [showNotification, setShowNotification] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState('');
@@ -108,7 +105,7 @@ const CartPage = () => {
       const quantity = parseInt(item.totalQuantity, 10);
 
       if (isNaN(price) || isNaN(quantity)) {
-        console.error(`Invalid price or quantity for product: ${item.product.name}`);
+        console.error(`Invalid price or quantity for product: ${item.product.product.name}`);
         return sum;
       }
 
@@ -196,6 +193,12 @@ const CartPage = () => {
               Hình ảnh
             </th>
             <th style={{ border: '1px solid #ddd', padding: '15px', textAlign: 'center' }}>
+              Màu sắc
+            </th>
+            <th style={{ border: '1px solid #ddd', padding: '15px', textAlign: 'center' }}>
+              Dung lượng
+            </th>
+            <th style={{ border: '1px solid #ddd', padding: '15px', textAlign: 'center' }}>
               Giá
             </th>
             <th style={{ border: '1px solid #ddd', padding: '15px', textAlign: 'center' }}>
@@ -211,15 +214,15 @@ const CartPage = () => {
         </thead>
         <tbody>
           {cartItems.map((item) => (
-            <tr key={item.product.id}>
+            <tr key={item.product.id} >
               <td style={{ textAlign: 'center', padding: '15px' }}>
-                {item.product.name}
+                {item.product.product.name}
               </td>
               <td style={{ textAlign: 'center', padding: '15px' }}>
-                <a href={`/product/${item.product.id}`}>
+                <a href={`/product/${item.product.product.id}`}>
                   <img
-                    src={`/assets/images/${item.product.productsImages[0].image.url}`}
-                    alt={item.product.name}
+                    src={`/assets/images/${item.product.product.images[0].url}`}
+                    alt={item.product.product.name}
                     style={{
                       width: '150px',
                       height: 'auto',
@@ -229,6 +232,13 @@ const CartPage = () => {
                   />
                 </a>
               </td>
+              <td style={{ textAlign: 'center', padding: '15px' }}>
+                {item.product.color ? item.product.color.name : "Màu sắc không xác định"}  {/* Hiển thị tên màu sắc */}
+              </td>
+              <td style={{ textAlign: 'center', padding: '15px' }}>
+                {item.product.productPrice.capacity ? item.product.productPrice.capacity.name : "Dung lượng không xác định"}  {/* Hiển thị tên dung lượng */}
+              </td>
+
               <td style={{ textAlign: 'center', padding: '15px' }}>
                 {new Intl.NumberFormat('vi-VN', {
                   style: 'currency',
@@ -245,7 +255,7 @@ const CartPage = () => {
                 >
                   <button
                     onClick={() =>
-                      updateQuantity(item.product.id, item.totalQuantity - 1)
+                      updateQuantity(item.product.product.id, item.totalQuantity - 1, item.product.color.id, item.product.productPrice.capacity.id)
                     }
                     style={{
                       backgroundColor: '#f0f0f0',
@@ -271,7 +281,7 @@ const CartPage = () => {
                   />
                   <button
                     onClick={() =>
-                      updateQuantity(item.product.id, item.totalQuantity + 1)
+                      updateQuantity(item.product.product.id, item.totalQuantity + 1, item.product.color.id, item.product.productPrice.capacity.id)
                     }
                     style={{
                       backgroundColor: '#f0f0f0',
@@ -293,7 +303,7 @@ const CartPage = () => {
               </td>
               <td style={{ textAlign: 'center', padding: '15px' }}>
                 <button
-                  onClick={() => handleShowPopup(item.product.id)}
+                  onClick={() => handleShowPopup(item.product.product.id, item.product.color.id, item.product.productPrice.capacity.id)}
                   style={{
                     backgroundColor: '#ff6f61',
                     color: '#fff',
@@ -377,8 +387,6 @@ const CartPage = () => {
         />
       )}
     </div>
-
-
   );
 };
 

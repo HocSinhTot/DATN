@@ -36,7 +36,8 @@ public class OrderModel {
 
 	@Column(name = "address", nullable = false)
 	private String address;
-
+	@Column(name = "cancel_reason", nullable = true) // Cập nhật kiểu dữ liệu đúng
+	private String cancelReason;
 
 	@Column(name = "orderstatus_id", insertable = false, updatable = false)
 	private int status; // Trạng thái đơn hàng để kiểm tra

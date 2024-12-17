@@ -1,86 +1,354 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import axios from "axios";
 
 const ImageManagement = () => {
-    const [images, setImages] = useState([]);
+  const [image, setImage] = useState([]);
+  const [popup, setPopup] = useState({ show: false, type: "", image: null });
+  const [products, setProducts] = useState([]);
 
-    // Fetch images from API
-    useEffect(() => {
-        fetch('http://localhost:8080/api/images')  // Replace with the correct API endpoint
-            .then((response) => response.json())
-            .then((data) => setImages(data))
-            .catch((error) => console.error('Error fetching image data:', error));
-    }, []);
-
-    // Delete image
-    const handleDelete = (id) => {
-        if (window.confirm('Are you sure you want to delete this image?')) {
-            fetch(`http://localhost:8080/api/images/${id}`, {
-                method: 'DELETE',
-            })
-                .then((response) => {
-                    if (response.ok) {
-                        alert('Image deleted successfully!');
-                        setImages(images.filter(image => image.id !== id));
-                    }
-                })
-                .catch((error) => console.error('Error deleting image:', error));
+  useEffect(() => {
+    const fetchData = async () => {
+        try {
+            const [imagesRes, productRes] = await Promise.all([
+                axios.get("http://localhost:8080/api/admin/images"),
+                axios.get("http://localhost:8080/api/admin/products"),
+            ]);
+            console.log(imagesRes.data); // Kiểm tra cấu trúc dữ liệu
+            setImage(imagesRes.data);
+            setProducts(productRes.data);
+        } catch (error) {
+            console.error("Error fetching data:", error);
         }
     };
 
-    return (
-        <div className="be-wrapper be-fixed-sidebar">
-            <div className="be-content">
-                <div className="container-fluid">
-                    <div className="content">
-                        <div className="card">
-                            <div className="card-header">
-                                <h5 className="card-title m-0">Quản lý hình ảnh</h5>
-                                <Link to="/images/add" className="btn btn-light">Thêm mới</Link>
-                            </div>
-                            <div className="card-body">
-                                <table className="table">
-                                    <thead>
-                                        <tr>
-                                            <th>STT</th>
-                                            <th>Url</th>
-                                            <th>Ảnh</th>
-                                            <th>Thao tác</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {images.length > 0 ? (
-                                            images.map((image, index) => (
-                                                <tr key={image.id}>
-                                                    <td>{index + 1}</td>
-                                                    <td>{image.url}</td>
-                                                    <td>
-                                                        <img
-                                                            src={`/assets/images/${image.url}`} 
-                                                            alt="Image"
-                                                            style={{ width: '100px', height: 'auto' }}
-                                                        />
-                                                    </td>
-                                                    <td>
-                                                        <Link to={`/images/edit/${image.id}`} className="btn btn-warning btn-sm">Sửa</Link>
-                                                        <button onClick={() => handleDelete(image.id)} className="btn btn-danger btn-sm">Xóa</button>
-                                                    </td>
-                                                </tr>
-                                            ))
-                                        ) : (
-                                            <tr>
-                                                <td colSpan="4" style={{ textAlign: 'center' }}>Không tìm thấy hình ảnh nào</td>
-                                            </tr>
-                                        )}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    fetchData();
+}, []);
+
+  const handleDelete = (id) => {
+    setPopup({ show: true, type: "delete", image: { id } });
+  };
+
+  const confirmDelete = async (id) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:8080/api/admin/images/${id}`
+      );
+      if (response.status === 200) {
+        alert("Xóa hình ảnh thành công!");
+        setImage(image.filter((image) => image.id !== id));
+      }
+      closePopup();
+    } catch (error) {
+      console.error("Error deleting image:", error);
+    }
+  };
+
+  const closePopup = () => {
+    setPopup({ show: false, type: "", image: null });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const formData = new FormData();
+      // Thêm thông tin product_id nếu có
+      formData.append("product_id", popup.image.product.id); // Thêm product_id
+      formData.append("image", JSON.stringify({ url: popup.image.url }));
+  
+      const method = popup.type === "edit" ? "PUT" : "POST";
+      const url =
+        popup.type === "edit"
+          ? `http://localhost:8080/api/admin/images/${popup.image.id}`
+          : "http://localhost:8080/api/admin/images";
+  
+      const response = await axios({ method, url, data: formData });
+      if (response.status === 200 || response.status === 201) {
+        alert(
+          popup.type === "edit"
+            ? "Cập nhật hình ảnh thành công!"
+            : "Thêm hình ảnh thành công!"
+        );
+      }
+  
+      const updatedData = await axios.get("http://localhost:8080/api/admin/images");
+      setImage(updatedData.data);
+      closePopup();
+    } catch (error) {
+      console.error(
+        `Error ${popup.type === "edit" ? "updating" : "adding"} image:`,
+        error
+      );
+    }
+  };
+
+  return (
+    <div
+      className="be-wrapper be-fixed-sidebar"
+      style={{ justifyContent: "center", display: "flex" }}
+    >
+      <div className="be-content" style={{ width: "1100px" }}>
+        <div className="container-fluid">
+          <div className="card">
+            <div className="card-header">
+              <h5
+                className="card-title m-0"
+                style={{ fontSize: "30px", fontWeight: "700" }}
+              >
+                Quản lý hình ảnh
+              </h5>
+              <button
+                className="btn btn-success mb-3"
+                onClick={() =>
+                  setPopup({ show: true, type: "add", image: null })
+                }
+                style={{
+                  marginTop: "18px",
+                  backgroundColor: "#28a745",
+                  color: "#fff",
+                  padding: "12px 30px",
+                  borderRadius: "8px",
+                  border: "none",
+                  cursor: "pointer",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  boxShadow: "0 5px 10px rgba(40, 167, 69, 0.3)",
+                  transition: "all 0.3s ease",
+                }}
+                onMouseOver={(e) =>
+                  (e.target.style.backgroundColor = "#218838")
+                }
+                onMouseOut={(e) => (e.target.style.backgroundColor = "#28a745")}
+              >
+                <i
+                  className="bi bi-plus-circle"
+                  style={{ fontSize: "32px" }}
+                ></i>
+              </button>
             </div>
+            <div className="card-body">
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th style={{ textAlign: "center" }}>STT</th>
+                    <th style={{ textAlign: "center" }}>Url</th>
+                    <th style={{ textAlign: "center" }}>Hình ảnh</th>
+                    <th style={{ textAlign: "center" }}>Sản phẩm</th>
+                    <th style={{ width: "500px", textAlign: "center" }}>
+                      Thao tác
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {image.length > 0 ? (
+                    image.map((image, index) => (
+                      <tr key={image.id}>
+                        <td style={{ padding: "15px", textAlign: "center" }}>
+                          {index + 1}
+                        </td>
+                        <td style={{ padding: "15px", textAlign: "center" }}>
+                          {image.url}
+                        </td>
+                        <td style={{ padding: "15px", textAlign: "center" }}>
+                        {image.product ? image.product.name : "N/A"}
+                        </td>
+                        <td style={{ padding: "15px", textAlign: "center" }}>
+                          <img
+                            src={`/assets/images/${image.url}`}
+                            alt="Image"
+                            style={{ width: "100px", height: "auto" }}
+                          />
+                        </td>
+                        <td style={{ padding: "15px", textAlign: "center" }}>
+                          <button
+                            onClick={() =>
+                              setPopup({ show: true, type: "edit", image })
+                            }
+                            style={{
+                              backgroundColor: "#ffc107",
+                              color: "#fff",
+                              padding: "12px 30px",
+                              borderRadius: "10px",
+                              border: "none",
+                              cursor: "pointer",
+                              fontSize: "16px",
+                              fontWeight: "bold",
+                              boxShadow: "0 5px 10px rgba(255, 193, 7, 0.3)",
+                              transition: "all 0.3s ease",
+                            }}
+                            onMouseOver={(e) => {
+                              e.target.style.backgroundColor = "#e0a800";
+                            }}
+                            onMouseOut={(e) => {
+                              e.target.style.backgroundColor = "#ffc107";
+                            }}
+                          >
+                            <i
+                              className="bi bi-pencil"
+                              style={{ fontSize: "20px" }}
+                            ></i>
+                          </button>
+
+                          <button
+                            onClick={() => handleDelete(image.id)}
+                            style={{
+                              marginLeft: "60px",
+                              backgroundColor: "#dc3545",
+                              color: "#fff",
+                              padding: "12px 30px",
+                              borderRadius: "10px",
+                              border: "none",
+                              cursor: "pointer",
+                              fontSize: "16px",
+                              fontWeight: "bold",
+                              boxShadow: "0 5px 10px rgba(220, 53, 69, 0.3)",
+                              transition: "all 0.3s ease",
+                            }}
+                            onMouseOver={(e) => {
+                              e.target.style.backgroundColor = "#a71d2a";
+                            }}
+                            onMouseOut={(e) => {
+                              e.target.style.backgroundColor = "#dc3545";
+                            }}
+                          >
+                            <i
+                              className="bi bi-trash"
+                              style={{ fontSize: "20px" }}
+                            ></i>
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="3" style={{ textAlign: "center" }}>
+                        Không tìm thấy dung lượng nào
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
-    );
+      </div>
+
+      {/* Popup for Add / Edit / Delete Brand */}
+      {popup.show && (
+        <div
+          style={{
+            position: "fixed",
+            top: "0",
+            left: "0",
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.7)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: "9999",
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "#fff",
+              padding: "30px 40px",
+              borderRadius: "16px",
+              boxShadow: "0 20px 40px rgba(0, 0, 0, 0.3)",
+              textAlign: "center",
+              width: "660px",
+              maxWidth: "90%",
+            }}
+          >
+            <h3
+              style={{
+                marginBottom: "25px",
+                fontSize: "22px",
+                fontWeight: "bold",
+              }}
+            >
+              {popup.type === "edit"
+                ? "Sửa hình ảnh"
+                : popup.type === "delete"
+                ? "Xác nhận xóa"
+                : "Thêm hình ảnh"}
+            </h3>
+
+            {popup.type !== "delete" ? (
+              // Form for Add/Edit Capacity
+              <form
+                onSubmit={handleSubmit}
+                style={{ maxWidth: "600px", margin: "0 auto" }}
+              >
+                <div className="form-group">
+                  <label
+                    htmlFor="image"
+                    style={{ fontWeight: 600, fontSize: "20px" }}
+                  >
+                    Chọn hình ảnh
+                  </label>
+                  <input
+                    type="file"
+                    id="image"
+                    name="image"
+                    className="form-control"
+                    onChange={(e) => {
+                      const file = e.target.files[0]; // Lấy tệp người dùng chọn
+                      if (file) {
+                        // Cập nhật trạng thái với tệp người dùng đã chọn
+                        setPopup({ ...popup, image: { ...popup.image, file } });
+                      }
+                    }}
+                    required
+                  />
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    marginTop: "20px",
+                  }}
+                >
+                  <button type="submit" className="btn btn-primary">
+                    {popup.type === "edit" ? "Cập nhật" : "Thêm"}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={closePopup}
+                  >
+                    Đóng
+                  </button>
+                </div>
+              </form>
+            ) : (
+              // Delete Confirmation
+              <div>
+                <p>Bạn có chắc chắn muốn xóa hình ảnh này không?</p>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    marginTop: "20px",
+                  }}
+                >
+                  <button
+                    className="btn btn-danger"
+                    onClick={() => confirmDelete(popup.image.id)}
+                  >
+                    Xóa
+                  </button>
+                  <button className="btn btn-secondary" onClick={closePopup}>
+                    Hủy
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default ImageManagement;

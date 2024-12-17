@@ -17,7 +17,6 @@ import JAVA6.Model.ColorModel;
 import JAVA6.Model.ImageModel;
 
 import JAVA6.repository.ProductdetailsRepository;
-import JAVA6.service.ImagesService;
 import JAVA6.service.ProductDetailsService;
 
 
@@ -28,8 +27,7 @@ public class ProductdetailsController {
     @Autowired
     private ProductDetailsService productDetailsService;
 
-    @Autowired
-    private ImagesService imagesService;
+
 
     @Autowired
     private ProductdetailsRepository productdetailsRepository;
@@ -38,6 +36,11 @@ public class ProductdetailsController {
     public ResponseEntity<List<Map<String, Object>>> getProductCapacities(@PathVariable("id") int productId) {
         List<Map<String, Object>> capacities = productDetailsService.getProductCapacitiesAndPrices(productId);
         return ResponseEntity.ok(capacities);
+    }
+    @GetMapping("/{id}/colors")
+    public ResponseEntity<List<Map<String, Object>>> getProductColors(@PathVariable("id") int productId) {
+        List<Map<String, Object>> colors = productDetailsService.getProductColor(productId);
+        return ResponseEntity.ok(colors);
     }
     @GetMapping("/checkStock/{id}")
     public ResponseEntity<Map<String, Object>> checkStock(@PathVariable("id") int productId) {

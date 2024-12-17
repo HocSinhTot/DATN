@@ -21,7 +21,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/admin/users")
 public class UsersController {
 
     private static final Logger logger = LoggerFactory.getLogger(UsersController.class);
@@ -60,10 +60,10 @@ public class UsersController {
             @RequestPart("user") String userJson,
             @RequestPart(value = "file", required = false) MultipartFile file) {
         try {
+            // chuyển đổi
             ObjectMapper mapper = new ObjectMapper();
             UserModel user = mapper.readValue(userJson, UserModel.class);
 
-            // Kiểm tra dữ liệu hợp lệ
             if (user.getUsername() == null || user.getUsername().isEmpty()) {
                 return ResponseEntity.badRequest().body("Username is required.");
             }
@@ -77,12 +77,12 @@ public class UsersController {
             // Xử lý upload file nếu có
             if (file != null && !file.isEmpty()) {
                 // Định nghĩa thư mục lưu trữ ảnh trong thư mục "static"
-                String uploadDir = "src/main/resources/static/assets/images/U/";
+                String uploadDir = "src/main/resources/static/U/";
 
                 // Sử dụng `Path` để xử lý đường dẫn và đảm bảo thư mục tồn tại
                 Path uploadPath = Paths.get(uploadDir);
                 if (!Files.exists(uploadPath)) {
-                    Files.createDirectories(uploadPath); // Tạo thư mục nếu không tồn tại
+                    Files.createDirectories(uploadPath); //
                 }
 
                 // Lấy tên tệp gốc
@@ -95,7 +95,7 @@ public class UsersController {
                 Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
                 // Lưu tên hình ảnh vào cơ sở dữ liệu (relative path)
-                user.setImage("assets/images/U/" + originalFileName);
+                user.setImage("U/" + originalFileName);
             } else {
                 user.setImage("assets/images/default_user_image.jpg"); // Sử dụng ảnh mặc định nếu không tải lên
             }
@@ -141,13 +141,17 @@ public class UsersController {
                                     Files.createDirectories(uploadPath);
                                 }
 
-                                // Sử dụng tên file độc nhất
-                                String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-                                Path filePath = uploadPath.resolve(fileName);
-                                Files.copy(file.getInputStream(), filePath);
+                                // Lấy tên tệp gốc
+                                String originalFileName = file.getOriginalFilename();
 
-                                // Cập nhật đường dẫn ảnh, bao gồm thư mục 'U'
-                                user.setImage("U/U/" + fileName);
+                                // Đặt đường dẫn đầy đủ đến tệp sẽ lưu
+                                Path filePath = uploadPath.resolve(originalFileName);
+
+                                // Sao chép tệp vào thư mục
+                                Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+                                // Lưu tên hình ảnh vào cơ sở dữ liệu (relative path)
+                                user.setImage("U/" + originalFileName);
                             } catch (IOException e) {
                                 logger.error("Error uploading file: ", e);
                                 return ResponseEntity.status(500).body("Error uploading file: " + e.getMessage());

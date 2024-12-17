@@ -6,7 +6,7 @@ const EvaluateManagement = () => {
 
     // Lấy dữ liệu từ API khi component được render
     useEffect(() => {
-        fetch('http://localhost:8080/api/evaluaes')  // URL API của backend
+        fetch('http://localhost:8080/api/admin/evaluaes')  // URL API của backend
             .then((response) => response.json())
             .then((data) => setEvaluateList(data))
             .catch((error) => console.error('Error fetching evaluate data:', error));
@@ -19,21 +19,19 @@ const EvaluateManagement = () => {
                     <div className="content">
                         <div className="card">
                             <div className="card-header">
-                                <h5 className="card-title m-0">Quản lý đánh giá</h5>
-                                <Link to="/evaluaes/add" className="btn btn-light">
-                                    Thêm mới
-                                </Link>
+                                <h5 className="card-title m-0" style={{ fontSize: '30px', fontWeight: '700' }}>Quản lý đánh giá</h5>
+                                
                             </div>
                             <div className="card-body">
                                 <table className="table">
                                     <thead>
                                         <tr>
-                                            <th>STT</th>
-                                            <th>Sao</th>
-                                            <th>Hình ảnh</th>
-                                            <th>Bình luận</th>
-                                            <th>Tên sản phẩm</th>
-                                            <th>Tên người dùng</th>
+                                            <th style={{ padding: '15px', textAlign: 'center' }}>STT</th>
+                                            <th style={{ padding: '15px', textAlign: 'center' }}>Sao</th>
+                                            <th style={{ padding: '15px', textAlign: 'center' }}>Hình ảnh</th>
+                                            <th style={{ padding: '15px', textAlign: 'center' }}>Bình luận</th>
+                                            <th style={{ padding: '15px', textAlign: 'center' }}>Tên sản phẩm</th>
+                                            <th style={{ padding: '15px', textAlign: 'center' }}>Tên người dùng</th>
                                         </tr>
                                     </thead>
                                     <tbody>

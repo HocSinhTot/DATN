@@ -8,6 +8,7 @@ import java.util.Properties;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,7 +33,6 @@ public class ForgotController {
     private UsersRepository usersRepository;
 
     Map<String, String> mapOTP = new HashMap<>();
-
     @RequestMapping("/Forgot")
     public String forgotForm() {
         return "accounts/Forgot";

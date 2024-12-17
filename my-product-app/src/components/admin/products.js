@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
-import Popup from "./Popup";
+import Popup from './Popup';  // Giả sử bạn đã có một component Popup
+import Swal from 'sweetalert2';
 const Management = () => {
   // State for product management
   const [productList, setProductList] = useState([]);
@@ -10,16 +11,19 @@ const Management = () => {
   const [pageSize, setPageSize] = useState(10); // Số sản phẩm mỗi trang
   const [totalPages, setTotalPages] = useState(0); // Tổng số trang
   const [sortOrder, setSortOrder] = useState("asc"); // Mặc định là sắp xếp tăng dần
+  const [popup, setPopup] = useState({ show: false, message: '', onConfirm: null });
 
-  // State for user management
-  const [userList, setUserList] = useState([]);
-  const [popup, setPopup] = useState({
-    show: false,
-    type: "",
-    productId: null,
-  });
+  // Popup state
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [currentProductId, setCurrentProductId] = useState(null);
 
-  // State for form data (Add Product / Edit Product)
+
+
+  const openPopup = (message, onConfirm) => {
+    setPopup({ show: true, message, onConfirm });
+  };
+  // Form data for Add/Edit Product
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -33,16 +37,24 @@ const Management = () => {
   const [categories, setCategories] = useState([]);
   const [errors, setErrors] = useState({});
 
-  const navigate = useNavigate();
-  const { id } = useParams();
+  const fetchOptions = (method, body = null) => {
+    const token = sessionStorage.getItem('token'); // Lấy token từ sessionStorage
+
+    return {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`, // Thêm header Authorization
+      },
+      body: body ? JSON.stringify(body) : null,
+    };
+  };
 
   useEffect(() => {
-    // Fetch product data
     fetchProducts(currentPage, pageSize);
   }, [currentPage, pageSize]);
 
   useEffect(() => {
-    // Fetch brand and category options
     const fetchOptions = async () => {
       try {
         const [brandsRes, categoriesRes] = await Promise.all([
@@ -62,8 +74,12 @@ const Management = () => {
     fetch(`http://localhost:8080/api/admin/products?page=${page}&size=${size}`)
       .then((response) => response.json())
       .then((data) => {
-        setProductList(data.content);
-        setTotalPages(data.totalPages);
+        if (Array.isArray(data.content)) {
+          setProductList(data.content);
+          setTotalPages(data.totalPages);
+        } else {
+          console.error("API response does not contain a valid 'content' array.");
+        }
       })
       .catch((error) => console.error("Error fetching products:", error));
   };
@@ -73,20 +89,32 @@ const Management = () => {
     setCurrentPage(0); // Reset về trang đầu tiên khi thay đổi số sản phẩm mỗi trang
   };
 
+
   const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this product?")) {
+    openPopup('Bạn có chắc chắn muốn xóa sản phẩm này không?', () => {
       fetch(`http://localhost:8080/api/admin/products/${id}`, {
-        method: "DELETE",
+        method: 'DELETE',
       })
         .then((response) => {
           if (response.ok) {
-            alert("Product deleted successfully!");
+            Swal.fire({
+              title: 'Thành công!',
+              text: 'Sản phẩm đã được xóa thành công!',
+              icon: 'success',
+              confirmButtonText: 'OK',
+              timer: 3000,
+              timerProgressBar: true,
+            });
+
             setProductList(productList.filter((product) => product.id !== id));
           }
         })
-        .catch((error) => console.error("Error deleting product:", error));
-    }
+        .catch((error) => console.error('Error deleting product:', error))
+        .finally(() => setPopup({ show: false, message: '', onConfirm: null }));
+    });
   };
+
+
 
   const handleSearch = () => {
     if (!searchTerm.trim()) {
@@ -99,30 +127,38 @@ const Management = () => {
       .catch((error) => console.error("Error searching products:", error));
   };
 
-  const openPopup = (type, productId = null) => {
-    setPopup({ show: true, type, productId });
-    if (type === "edit" && productId) {
-      // Fetch the product details for editing
-      axios
-        .get(`http://localhost:8080/api/admin/products/${productId}`)
-        .then((response) => {
-          setFormData({
-            ...response.data,
-            brand: response.data.brand.id,
-            category: response.data.category.id,
-          });
-        })
-        .catch((error) => console.error("Error fetching product data:", error));
-    } else {
-      setFormData({
-        name: "",
-        description: "",
-        price: "",
-        quantity: "",
-        brand: "",
-        category: "",
-      });
-    }
+  const openAddPopup = () => {
+    setIsEditMode(false);
+    setIsPopupOpen(true);
+    setFormData({
+      name: "",
+      description: "",
+      price: "",
+      quantity: "",
+      brand: "",
+      category: "",
+    });
+    setErrors({});
+  };
+
+  const openEditPopup = (productId) => {
+    axios
+      .get(`http://localhost:8080/api/admin/products/${productId}`)
+      .then((response) => {
+        setFormData({
+          name: response.data.name,
+          description: response.data.description,
+          price: response.data.price,
+          quantity: response.data.quantity,
+          brand: response.data.brand.id,
+          category: response.data.category.id,
+        });
+        setCurrentProductId(productId);
+        setIsEditMode(true);
+        setIsPopupOpen(true);
+        setErrors({});
+      })
+      .catch((error) => console.error("Error fetching product data:", error));
   };
 
   const handleChange = (e) => {
@@ -133,79 +169,142 @@ const Management = () => {
     });
   };
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const validationErrors = {};
+
+    // Kiểm tra tên sản phẩm không có ký tự đặc biệt
+    if (!formData.name.trim()) {
+      validationErrors.name = "Tên sản phẩm không được để trống";
+    } else if (/[^a-zA-Z0-9\s]/.test(formData.name)) { // Kiểm tra ký tự đặc biệt
+      validationErrors.name = "Tên sản phẩm không được chứa ký tự đặc biệt";
+    }
+
+    // Kiểm tra giá sản phẩm
+    const price = String(formData.price).trim(); // Đảm bảo giá là chuỗi
+    if (!price || isNaN(price)) {
+      validationErrors.price = "Giá sản phẩm phải là một số hợp lệ";
+    } else if (Number(price) <= 0) {
+      validationErrors.price = "Giá sản phẩm không được là số âm hoặc bằng 0";
+    } else if (/[^0-9.]/.test(price)) {
+      validationErrors.price = "Giá sản phẩm không được chứa ký tự chữ hoặc ký tự đặc biệt";
+    }
+
+    // Kiểm tra số lượng sản phẩm
+    const quantity = String(formData.quantity).trim(); // Đảm bảo số lượng là chuỗi
+    if (!quantity || isNaN(quantity)) {
+      validationErrors.quantity = "Số lượng sản phẩm phải là một số hợp lệ";
+    } else if (Number(quantity) <= 0) {
+      validationErrors.quantity = "Số lượng sản phẩm không được là số âm hoặc bằng 0";
+    } else if (/[^0-9]/.test(quantity)) {
+      validationErrors.quantity = "Số lượng sản phẩm không được chứa chữ hoặc ký tự đặc biệt";
+    }
+
+    // Kiểm tra danh mục và thương hiệu
+    const category = String(formData.category).trim(); // Đảm bảo category là chuỗi
+    if (!category) {
+      validationErrors.category = "Danh mục sản phẩm không được để trống";
+    }
+
+    const brand = String(formData.brand).trim(); // Đảm bảo brand là chuỗi
+    if (!brand) {
+      validationErrors.brand = "Thương hiệu sản phẩm không được để trống";
+    }
+
+    // Kiểm tra mô tả sản phẩm
+    const description = String(formData.description).trim(); // Đảm bảo description là chuỗi
+    if (!description) {
+      validationErrors.description = "Mô tả sản phẩm không được để trống";
+    }
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    const productPayload = {
+      name: formData.name,
+      description: formData.description,
+      price: Number(formData.price),
+      quantity: Number(formData.quantity),
+      brand: formData.brand,
+      category: formData.category,
+    };
+
+    const method = isEditMode ? "PUT" : "POST";
+    const url = isEditMode
+      ? `http://localhost:8080/api/admin/products/${currentProductId}`
+      : "http://localhost:8080/api/admin/products";
+
     try {
-      const formDataToSend = new FormData();
-      const productPayload = {
-        name: formData.name,
-        description: formData.description,
-        price: formData.price,
-        quantity: formData.quantity,
-        brand: formData.brand,
-        category: formData.category,
-      };
-
-      formDataToSend.append("product", JSON.stringify(productPayload));
-
-      const url =
-        popup.type === "edit"
-          ? `http://localhost:8080/api/admin/products/${popup.productId}`
-          : "http://localhost:8080/api/admin/products";
-
-      const method = popup.type === "edit" ? "PUT" : "POST";
-
       const response = await axios({
         method,
         url,
-        data: formDataToSend,
+        data: productPayload,
         headers: {
-          "Content-Type": "multipart/form-data",
+          "Content-Type": "application/json",
+          'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
         },
       });
 
-      if (response.status === 200) {
-        alert("Sản phẩm đã được cập nhật/thêm thành công!");
-        setPopup({ show: false, type: "", productId: null });
-        fetchProducts(currentPage, pageSize); // Refresh product list
+      if (response.status === 200 || response.status === 201) {
+        Swal.fire({
+          title: 'Thành công!',
+          text: isEditMode ? 'Sản phẩm đã được cập nhật thành công!' : 'Sản phẩm đã được thêm thành công!',
+          icon: 'success',
+          confirmButtonText: 'OK',
+          timer: 3000,
+          timerProgressBar: true,
+        });
+
+        setIsPopupOpen(false);
+        fetchProducts(currentPage, pageSize);
       }
     } catch (error) {
       if (error.response) {
-        setErrors(error.response.data.errors || {});
+        console.error("Server Error:", error.response.data);
+        alert("Lỗi từ máy chủ: " + JSON.stringify(error.response.data));
       } else {
         console.error("Unexpected error:", error);
+        alert("Lỗi bất ngờ xảy ra.");
       }
     }
   };
+
+
+
+
   const handleReset = () => {
     setSearchTerm(""); // Clear search input
     fetchProducts(currentPage, pageSize); // Reload product list without search filter
   };
 
-  // Hàm sắp xếp theo quantity
   const sortProducts = (order) => {
+    if (!Array.isArray(productList) || productList.length === 0) {
+      console.error("productList is either not an array or is empty.");
+      return [];
+    }
+
     return [...productList].sort((a, b) => {
-      if (order === "asc") {
-        return a.quantity - b.quantity; // Tăng dần
-      } else {
-        return b.quantity - a.quantity; // Giảm dần
-      }
+      const quantityA = a.quantity ?? 0;
+      const quantityB = b.quantity ?? 0;
+
+      return order === "asc" ? quantityA - quantityB : quantityB - quantityA;
     });
   };
 
-  // Hàm thay đổi thứ tự sắp xếp khi nhấn nút
   const toggleSortOrder = () => {
     setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
   };
 
-  // Lấy danh sách sản phẩm đã sắp xếp
   const sortedProducts = sortProducts(sortOrder);
 
   return (
     <>
       {/* Popup for Add / Edit Product */}
-      {popup.show && (
+      {isPopupOpen && (
         <div
           style={{
             position: "fixed",
@@ -238,29 +337,13 @@ const Management = () => {
                 fontWeight: "bold",
               }}
             >
-              {popup.type === "edit" ? "Sửa Sản Phẩm" : "Thêm Sản Phẩm"}
+              {isEditMode ? "Sửa Sản Phẩm" : "Thêm Sản Phẩm"}
             </h3>
-            <form
-              onSubmit={handleSubmit}
-              style={{ maxWidth: "600px", margin: "0 auto" }}
-            >
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(2, 1fr)",
-                  gap: "20px",
-                }}
-              >
+            <form onSubmit={handleSubmit} style={{ maxWidth: "600px", margin: "0 auto" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "20px" }}>
                 {/* Tên sản phẩm */}
                 <div className="form-group">
-                  <label
-                    htmlFor="name"
-                    style={{
-                      fontWeight: "bold",
-                      marginBottom: "5px",
-                      color: "#333",
-                    }}
-                  >
+                  <label htmlFor="name" style={{ fontWeight: "bold", marginBottom: "5px", color: "#333" }}>
                     Tên sản phẩm
                   </label>
                   <input
@@ -279,39 +362,19 @@ const Management = () => {
                       boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
                       marginBottom: "10px",
                       width: "100%",
-                      transition: "border 0.3s ease, box-shadow 0.3s ease", // Add transition for hover effect
+                      transition: "border 0.3s ease, box-shadow 0.3s ease",
                     }}
-                    onFocus={(e) =>
-                      (e.target.style.border = "1px solid #007bff")
-                    } // Focus state for border color
-                    onBlur={(e) => (e.target.style.border = "1px solid #ccc")} // Blur state to reset the border color
-                    onMouseEnter={(e) =>
-                    (e.target.style.boxShadow =
-                      "0 2px 8px rgba(0, 123, 255, 0.5)")
-                    } // Hover state for shadow
-                    onMouseLeave={(e) =>
-                    (e.target.style.boxShadow =
-                      "0 2px 5px rgba(0, 0, 0, 0.1)")
-                    } // Reset shadow on mouse leave
+                    onFocus={(e) => (e.target.style.border = "1px solid #007bff")}
+                    onBlur={(e) => (e.target.style.border = "1px solid #ccc")}
+                    onMouseEnter={(e) => (e.target.style.boxShadow = "0 2px 8px rgba(0, 123, 255, 0.5)")}
+                    onMouseLeave={(e) => (e.target.style.boxShadow = "0 2px 5px rgba(0, 0, 0, 0.1)")}
                   />
-                  {errors.name && (
-                    <div className="text-danger" style={{ fontSize: "14px" }}>
-                      {errors.name}
-                    </div>
-                  )}
+                  {errors.name && <div className="text-danger" style={{ fontSize: "14px" }}>{errors.name}</div>}
                 </div>
 
-                {/* Repeat similar hover effects for other inputs */}
                 {/* Giá */}
                 <div className="form-group">
-                  <label
-                    htmlFor="price"
-                    style={{
-                      fontWeight: "bold",
-                      marginBottom: "5px",
-                      color: "#333",
-                    }}
-                  >
+                  <label htmlFor="price" style={{ fontWeight: "bold", marginBottom: "5px", color: "#333" }}>
                     Giá
                   </label>
                   <input
@@ -332,36 +395,15 @@ const Management = () => {
                       width: "100%",
                       transition: "border 0.3s ease, box-shadow 0.3s ease",
                     }}
-                    onFocus={(e) =>
-                      (e.target.style.border = "1px solid #007bff")
-                    }
+                    onFocus={(e) => (e.target.style.border = "1px solid #007bff")}
                     onBlur={(e) => (e.target.style.border = "1px solid #ccc")}
-                    onMouseEnter={(e) =>
-                    (e.target.style.boxShadow =
-                      "0 2px 8px rgba(0, 123, 255, 0.5)")
-                    }
-                    onMouseLeave={(e) =>
-                    (e.target.style.boxShadow =
-                      "0 2px 5px rgba(0, 0, 0, 0.1)")
-                    }
                   />
-                  {errors.price && (
-                    <div className="text-danger" style={{ fontSize: "14px" }}>
-                      {errors.price}
-                    </div>
-                  )}
+                  {errors.price && <div className="text-danger" style={{ fontSize: "14px" }}>{errors.price}</div>}
                 </div>
 
                 {/* Số lượng */}
                 <div className="form-group">
-                  <label
-                    htmlFor="quantity"
-                    style={{
-                      fontWeight: "bold",
-                      marginBottom: "5px",
-                      color: "#333",
-                    }}
-                  >
+                  <label htmlFor="quantity" style={{ fontWeight: "bold", marginBottom: "5px", color: "#333" }}>
                     Số lượng
                   </label>
                   <input
@@ -382,36 +424,15 @@ const Management = () => {
                       width: "100%",
                       transition: "border 0.3s ease, box-shadow 0.3s ease",
                     }}
-                    onFocus={(e) =>
-                      (e.target.style.border = "1px solid #007bff")
-                    }
+                    onFocus={(e) => (e.target.style.border = "1px solid #007bff")}
                     onBlur={(e) => (e.target.style.border = "1px solid #ccc")}
-                    onMouseEnter={(e) =>
-                    (e.target.style.boxShadow =
-                      "0 2px 8px rgba(0, 123, 255, 0.5)")
-                    }
-                    onMouseLeave={(e) =>
-                    (e.target.style.boxShadow =
-                      "0 2px 5px rgba(0, 0, 0, 0.1)")
-                    }
                   />
-                  {errors.quantity && (
-                    <div className="text-danger" style={{ fontSize: "14px" }}>
-                      {errors.quantity}
-                    </div>
-                  )}
+                  {errors.quantity && <div className="text-danger" style={{ fontSize: "14px" }}>{errors.quantity}</div>}
                 </div>
 
                 {/* Danh mục */}
                 <div className="form-group">
-                  <label
-                    htmlFor="category"
-                    style={{
-                      fontWeight: "bold",
-                      marginBottom: "5px",
-                      color: "#333",
-                    }}
-                  >
+                  <label htmlFor="category" style={{ fontWeight: "bold", marginBottom: "5px", color: "#333" }}>
                     Danh mục
                   </label>
                   <select
@@ -431,43 +452,20 @@ const Management = () => {
                       width: "100%",
                       transition: "border 0.3s ease, box-shadow 0.3s ease",
                     }}
-                    onFocus={(e) =>
-                      (e.target.style.border = "1px solid #007bff")
-                    }
+                    onFocus={(e) => (e.target.style.border = "1px solid #007bff")}
                     onBlur={(e) => (e.target.style.border = "1px solid #ccc")}
-                    onMouseEnter={(e) =>
-                    (e.target.style.boxShadow =
-                      "0 2px 8px rgba(0, 123, 255, 0.5)")
-                    }
-                    onMouseLeave={(e) =>
-                    (e.target.style.boxShadow =
-                      "0 2px 5px rgba(0, 0, 0, 0.1)")
-                    }
                   >
                     <option value="">-- Chọn danh mục --</option>
                     {categories.map((category) => (
-                      <option key={category.id} value={category.id}>
-                        {category.name}
-                      </option>
+                      <option key={category.id} value={category.id}>{category.name}</option>
                     ))}
                   </select>
-                  {errors.category && (
-                    <div className="text-danger" style={{ fontSize: "14px" }}>
-                      {errors.category}
-                    </div>
-                  )}
+                  {errors.category && <div className="text-danger" style={{ fontSize: "14px" }}>{errors.category}</div>}
                 </div>
 
                 {/* Thương hiệu */}
                 <div className="form-group">
-                  <label
-                    htmlFor="brand"
-                    style={{
-                      fontWeight: "bold",
-                      marginBottom: "5px",
-                      color: "#333",
-                    }}
-                  >
+                  <label htmlFor="brand" style={{ fontWeight: "bold", marginBottom: "5px", color: "#333" }}>
                     Thương hiệu
                   </label>
                   <select
@@ -487,44 +485,21 @@ const Management = () => {
                       width: "100%",
                       transition: "border 0.3s ease, box-shadow 0.3s ease",
                     }}
-                    onFocus={(e) =>
-                      (e.target.style.border = "1px solid #007bff")
-                    }
+                    onFocus={(e) => (e.target.style.border = "1px solid #007bff")}
                     onBlur={(e) => (e.target.style.border = "1px solid #ccc")}
-                    onMouseEnter={(e) =>
-                    (e.target.style.boxShadow =
-                      "0 2px 8px rgba(0, 123, 255, 0.5)")
-                    }
-                    onMouseLeave={(e) =>
-                    (e.target.style.boxShadow =
-                      "0 2px 5px rgba(0, 0, 0, 0.1)")
-                    }
                   >
                     <option value="">-- Chọn thương hiệu --</option>
                     {brands.map((brand) => (
-                      <option key={brand.id} value={brand.id}>
-                        {brand.name}
-                      </option>
+                      <option key={brand.id} value={brand.id}>{brand.name}</option>
                     ))}
                   </select>
-                  {errors.brand && (
-                    <div className="text-danger" style={{ fontSize: "14px" }}>
-                      {errors.brand}
-                    </div>
-                  )}
+                  {errors.brand && <div className="text-danger" style={{ fontSize: "14px" }}>{errors.brand}</div>}
                 </div>
               </div>
 
               {/* Mô tả sản phẩm */}
               <div className="form-group" style={{ marginTop: "20px" }}>
-                <label
-                  htmlFor="description"
-                  style={{
-                    fontWeight: "bold",
-                    marginBottom: "5px",
-                    color: "#333",
-                  }}
-                >
+                <label htmlFor="description" style={{ fontWeight: "bold", marginBottom: "5px", color: "#333" }}>
                   Mô tả
                 </label>
                 <textarea
@@ -546,62 +521,17 @@ const Management = () => {
                   }}
                   onFocus={(e) => (e.target.style.border = "1px solid #007bff")}
                   onBlur={(e) => (e.target.style.border = "1px solid #ccc")}
-                  onMouseEnter={(e) =>
-                  (e.target.style.boxShadow =
-                    "0 2px 8px rgba(0, 123, 255, 0.5)")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.target.style.boxShadow = "0 2px 5px rgba(0, 0, 0, 0.1)")
-                  }
                 />
-                {errors.description && (
-                  <div className="text-danger" style={{ fontSize: "14px" }}>
-                    {errors.description}
-                  </div>
-                )}
+                {errors.description && <div className="text-danger" style={{ fontSize: "14px" }}>{errors.description}</div>}
               </div>
 
               {/* Button Submit & Close */}
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  marginTop: "20px",
-                }}
-              >
-                <button
-                  type="submit"
-                  className="btn btn-primary"
-                  style={{
-                    padding: "10px 20px",
-                    fontSize: "16px",
-                    fontWeight: "bold",
-                    borderRadius: "8px",
-                    border: "none",
-                    cursor: "pointer",
-                    boxShadow: "0 5px 10px rgba(0, 123, 255, 0.3)",
-                    transition: "all 0.3s ease",
-                  }}
-                >
-                  {popup.type === "edit" ? "Cập nhật" : "Thêm mới"}
+              <div style={{ display: "flex", justifyContent: "space-between", marginTop: "20px" }}>
+                <button type="submit" className="btn btn-primary" style={{ padding: "10px 20px", fontSize: "16px", fontWeight: "bold", borderRadius: "8px", border: "none", cursor: "pointer", boxShadow: "0 5px 10px rgba(0, 123, 255, 0.3)", transition: "all 0.3s ease" }}>
+                  {isEditMode ? "Cập nhật" : "Thêm mới"}
                 </button>
 
-                <button
-                  className="btn btn-secondary"
-                  onClick={() =>
-                    setPopup({ show: false, type: "", productId: null })
-                  }
-                  style={{
-                    padding: "10px 20px",
-                    fontSize: "16px",
-                    fontWeight: "bold",
-                    borderRadius: "8px",
-                    border: "none",
-                    cursor: "pointer",
-                    boxShadow: "0 5px 10px rgba(0, 123, 255, 0.3)",
-                    transition: "all 0.3s ease",
-                  }}
-                >
+                <button className="btn btn-secondary" onClick={() => setIsPopupOpen(false)} style={{ padding: "10px 20px", fontSize: "16px", fontWeight: "bold", borderRadius: "8px", border: "none", cursor: "pointer", boxShadow: "0 5px 10px rgba(0, 123, 255, 0.3)", transition: "all 0.3s ease" }}>
                   Đóng
                 </button>
               </div>
@@ -611,47 +541,32 @@ const Management = () => {
       )}
 
       {/* Product Table */}
-
       <div className="be-wrapper be-fixed-sidebar">
+        {popup.show && (
+          <Popup
+            message={popup.message}
+            onClose={() => setPopup({ show: false, message: '', onConfirm: null })}
+            onConfirm={popup.onConfirm}
+          />
+        )}
         <div className="be-content">
           <div className="container-fluid">
             <div className="content">
               <div className="card">
                 <div className="card-header">
                   <h5 className="card-title m-0" style={{ fontSize: '30px', fontWeight: '700' }}>Quản lý sản phẩm</h5>
-                  <button
-                    className="btn btn-success mb-3"
-                    onClick={() => openPopup('add')}
-                    style={{
-                      marginTop: '18px',
-                      backgroundColor: '#28a745',
-                      color: '#fff',
-                      padding: '12px 30px',
-                      borderRadius: '8px',
-                      border: 'none',
-                      cursor: 'pointer',
-                      fontSize: '16px',
-                      fontWeight: 'bold',
-                      boxShadow: '0 5px 10px rgba(40, 167, 69, 0.3)',
-                      transition: 'all 0.3s ease',
-                    }}
-                    onMouseOver={(e) => e.target.style.backgroundColor = '#218838'}
-                    onMouseOut={(e) => e.target.style.backgroundColor = '#28a745'}
-                  >
+                  <button className="btn btn-success mb-3" onClick={openAddPopup} style={{ marginTop: '18px', backgroundColor: '#28a745', color: '#fff', padding: '12px 30px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold', boxShadow: '0 5px 10px rgba(40, 167, 69, 0.3)', transition: 'all 0.3s ease' }}>
                     <i className="bi bi-plus-circle" style={{ fontSize: '32px' }}></i>
                   </button>
                 </div>
 
                 <div className="card-body">
-                  <div
-                    className="d-flex"
-                    style={{ alignItems: "center", gap: "10px" }}
-                  >
+                  <div className="d-flex" style={{ alignItems: "center", gap: "10px" }}>
                     <input
                       type="text"
                       placeholder="Nhập tên sản phẩm..."
                       className="form-control"
-                      value={searchTerm} // Liên kết giá trị với searchTerm
+                      value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       style={{
                         padding: "10px",
@@ -662,138 +577,44 @@ const Management = () => {
                         boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
                         transition: "border 0.3s ease, box-shadow 0.3s ease",
                       }}
-                      onFocus={(e) =>
-                        (e.target.style.border = "1px solid #007bff")
-                      }
+                      onFocus={(e) => (e.target.style.border = "1px solid #007bff")}
                       onBlur={(e) => (e.target.style.border = "1px solid #ddd")}
-                      onMouseEnter={(e) =>
-                      (e.target.style.boxShadow =
-                        "0 2px 8px rgba(0, 123, 255, 0.5)")
-                      }
-                      onMouseLeave={(e) =>
-                      (e.target.style.boxShadow =
-                        "0 2px 5px rgba(0, 0, 0, 0.1)")
-                      }
                     />
 
-                    <button
-                      onClick={handleSearch}
-                      className="btn btn-primary"
-                      style={{
-                        backgroundColor: "#007bff",
-                        color: "#fff",
-                        padding: "10px 20px",
-                        borderRadius: "8px",
-                        border: "none",
-                        cursor: "pointer",
-                        fontSize: "16px",
-                        fontWeight: "bold",
-                        boxShadow: "0 5px 10px rgba(0, 123, 255, 0.3)",
-                        transition: "all 0.3s ease",
-                      }}
-                      onMouseOver={(e) =>
-                        (e.target.style.backgroundColor = "#0056b3")
-                      }
-                      onMouseOut={(e) =>
-                        (e.target.style.backgroundColor = "#007bff")
-                      }
-                    >
+                    <button onClick={handleSearch} className="btn btn-primary" style={{ backgroundColor: "#007bff", color: "#fff", padding: "10px 20px", borderRadius: "8px", border: "none", cursor: "pointer", fontSize: "16px", fontWeight: "bold", boxShadow: "0 5px 10px rgba(0, 123, 255, 0.3)", transition: "all 0.3s ease" }}>
                       Tìm kiếm
                     </button>
-                    <button
-                      onClick={() => handleReset()}
-                      className="btn btn-secondary"
-                      style={{
-                        backgroundColor: "#6c757d",
-                        color: "#fff",
-                        padding: "10px 20px",
-                        borderRadius: "8px",
-                        border: "none",
-                        cursor: "pointer",
-                        fontSize: "16px",
-                        fontWeight: "bold",
-                        boxShadow: "0 5px 10px rgba(108, 117, 125, 0.3)",
-                        transition: "all 0.3s ease",
-                      }}
-                      onMouseOver={(e) =>
-                        (e.target.style.backgroundColor = "#5a6268")
-                      }
-                      onMouseOut={(e) =>
-                        (e.target.style.backgroundColor = "#6c757d")
-                      }
-                    >
+                    <button onClick={() => handleReset()} className="btn btn-secondary" style={{ backgroundColor: "#6c757d", color: "#fff", padding: "10px 20px", borderRadius: "8px", border: "none", cursor: "pointer", fontSize: "16px", fontWeight: "bold", boxShadow: "0 5px 10px rgba(108, 117, 125, 0.3)", transition: "all 0.3s ease" }}>
                       Đặt lại
                     </button>
 
-                    <div
-                      className="page-size"
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "10px",
-                      }}
-                    >
-
-
-                      <button onClick={toggleSortOrder} style={{
-                        backgroundColor: "#6c757d",
-                        color: "#fff",
-                        padding: "11px 23px",
-                        borderRadius: "8px",
-                        border: "none",
-                        cursor: "pointer",
-                        fontSize: "16px",
-                        fontWeight: "bold",
-                        boxShadow: "0 5px 10px rgba(108, 117, 125, 0.3)",
-                        transition: "all 0.3s ease",
-                      }}>
+                    <div className="page-size" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                      <button onClick={toggleSortOrder} style={{ backgroundColor: "#6c757d", color: "#fff", padding: "11px 23px", borderRadius: "8px", border: "none", cursor: "pointer", fontSize: "16px", fontWeight: "bold", boxShadow: "0 5px 10px rgba(108, 117, 125, 0.3)", transition: "all 0.3s ease" }}>
                         {sortOrder === "asc" ? "Sắp xếp từ thấp đến cao" : "Sắp xếp từ cao đến thấp"}
                       </button>
 
-                      <label
-                        htmlFor="pageSize"
-                        style={{
-                          fontSize: "16px",
-                          fontWeight: "bold",
-                          color: "#333",
-                        }}
-                      >
+                      <label htmlFor="pageSize" style={{ fontSize: "16px", fontWeight: "bold", color: "#333" }}>
                         Số sản phẩm mỗi trang:
                       </label>
-                      <select
-                        id="pageSize"
-                        value={pageSize}
-                        onChange={handlePageSizeChange}
-                        style={{
-                          padding: "10px",
-                          fontSize: "16px",
-                          borderRadius: "8px",
-                          border: "1px solid #ddd",
-                          boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
-                          cursor: "pointer",
-                        }}
-                      >
+                      <select id="pageSize" value={pageSize} onChange={handlePageSizeChange} style={{ padding: "10px", fontSize: "16px", borderRadius: "8px", border: "1px solid #ddd", boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)", cursor: "pointer" }}>
                         <option value={5}>5</option>
                         <option value={10}>10</option>
                         <option value={20}>20</option>
                       </select>
-
                     </div>
                   </div>
-
 
                   <table className="table">
                     <thead>
                       <tr>
-                        <th style={{ textAlign: 'center' }} >STT</th>
-                        <th style={{ textAlign: 'center' }} >Tên sản phẩm</th>
-
-                        <th style={{ textAlign: 'center' }} >Giá</th>
-                        <th style={{ textAlign: 'center' }} >Số lượng </th>
-                        <th style={{ textAlign: 'center' }} >Danh mục</th>
-                        <th style={{ textAlign: 'center' }} >Thương hiệu</th>
-                        <th style={{ textAlign: 'center' }} >Mô tả</th>
-                        <th style={{ textAlign: 'center' }} >Thao tác</th>
+                        <th style={{ textAlign: 'center' }}>STT</th>
+                        <th style={{ textAlign: 'center' }}>Tên sản phẩm</th>
+                        <th style={{ textAlign: 'center' }}>Giá</th>
+                        <th style={{ textAlign: 'center' }}>Số lượng</th>
+                        <th style={{ textAlign: 'center' }}>Danh mục</th>
+                        <th style={{ textAlign: 'center' }}>Thương hiệu</th>
+                        <th style={{ textAlign: 'center' }}>Mô tả</th>
+                        <th style={{ textAlign: 'center' }}>Thao tác</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -802,73 +623,18 @@ const Management = () => {
                           <tr key={product.id}>
                             <td style={{ width: "20px" }}>{index + 1}</td>
                             <td>{product.name}</td>
-
                             <td>{product.price}</td>
-                            <td
-                              style={{
-                                color: product.quantity < 20 ? "red" : "inherit",
-                                fontWeight:
-                                  product.quantity < 20 ? "bold" : "normal",
-                              }}
-                            >
+                            <td style={{ color: product.quantity < 20 ? "red" : "inherit", fontWeight: product.quantity < 20 ? "bold" : "normal" }}>
                               {product.quantity}
                             </td>
-                            <td>
-                              {product.category ? product.category.name : "N/A"}
-                            </td>
-                            <td>
-                              {product.brand ? product.brand.name : "N/A"}
-                            </td>
+                            <td>{product.category ? product.category.name : "N/A"}</td>
+                            <td>{product.brand ? product.brand.name : "N/A"}</td>
                             <td>{product.description}</td>
                             <td>
-                              <button
-                                onClick={() => openPopup('edit', product.id)}
-                                style={{
-                                  backgroundColor: '#ffc107',
-                                  color: '#fff',
-                                  padding: '12px 30px',
-                                  borderRadius: '10px',
-                                  border: 'none',
-                                  cursor: 'pointer',
-                                  fontSize: '16px',
-                                  fontWeight: 'bold',
-                                  boxShadow: '0 5px 10px rgba(255, 193, 7, 0.3)',
-                                  transition: 'all 0.3s ease',
-                                }}
-                                onMouseOver={(e) => {
-                                  e.target.style.backgroundColor = '#e0a800';
-                                }}
-                                onMouseOut={(e) => {
-                                  e.target.style.backgroundColor = '#ffc107';
-                                }}
-                              >
+                              <button onClick={() => openEditPopup(product.id)} style={{ backgroundColor: '#ffc107', color: '#fff', padding: '12px 30px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold', boxShadow: '0 5px 10px rgba(255, 193, 7, 0.3)', transition: 'all 0.3s ease' }}>
                                 <i className="bi bi-pencil" style={{ fontSize: '20px' }}></i>
-
                               </button>
-
-
-                              <button
-                                onClick={() => handleDelete(product.id)}
-                                style={{
-                                  marginLeft: '10px',
-                                  backgroundColor: '#dc3545',
-                                  color: '#fff',
-                                  padding: '12px 30px',
-                                  borderRadius: '10px',
-                                  border: 'none',
-                                  cursor: 'pointer',
-                                  fontSize: '16px',
-                                  fontWeight: 'bold',
-                                  boxShadow: '0 5px 10px rgba(220, 53, 69, 0.3)',
-                                  transition: 'all 0.3s ease',
-                                }}
-                                onMouseOver={(e) => {
-                                  e.target.style.backgroundColor = '#a71d2a';
-                                }}
-                                onMouseOut={(e) => {
-                                  e.target.style.backgroundColor = '#dc3545';
-                                }}
-                              >
+                              <button onClick={() => handleDelete(product.id)} style={{ marginLeft: '10px', backgroundColor: '#dc3545', color: '#fff', padding: '12px 30px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold', boxShadow: '0 5px 10px rgba(220, 53, 69, 0.3)', transition: 'all 0.3s ease' }}>
                                 <i className="bi bi-trash" style={{ fontSize: '20px' }}></i>
                               </button>
                             </td>
@@ -876,96 +642,23 @@ const Management = () => {
                         ))
                       ) : (
                         <tr>
-                          <td colSpan="8" style={{ textAlign: "center" }}>
-                            Không có sản phẩm nào
-                          </td>
+                          <td colSpan="8" style={{ textAlign: "center" }}>Không có sản phẩm nào</td>
                         </tr>
                       )}
                     </tbody>
                   </table>
-                  <div
-                    className="pagination"
-                    style={{
-                      width: "100%",
-                      justifyContent: "center",
-                      paddingRight: "70px",
-                    }}
-                  >
-                    <button
-                      disabled={currentPage === 0}
-                      onClick={() => setCurrentPage(currentPage - 1)}
-                      style={{
-                        backgroundColor: '#007bff',
-                        color: '#fff',
-                        padding: '12px 30px',
-                        borderRadius: '10px',
-
-                        border: 'none',
-                        cursor: currentPage === 0 ? 'not-allowed' : 'pointer',
-                        fontSize: '16px',
-                        fontWeight: 'bold',
-                        boxShadow: '0 5px 10px rgba(0, 123, 255, 0.3)',
-                        transition: 'all 0.3s ease',
-                        opacity: currentPage === 0 ? '0.5' : '1', // Disable button opacity when disabled
-                      }}
-                      onMouseOver={(e) => {
-                        if (currentPage !== 0) e.target.style.backgroundColor = '#0056b3';
-                      }}
-                      onMouseOut={(e) => {
-                        if (currentPage !== 0) e.target.style.backgroundColor = '#007bff';
-                      }}
-                      disabled={currentPage === 0}
-                    >
+                  <div className="pagination" style={{ width: "100%", justifyContent: "center", paddingRight: "70px" }}>
+                    <button disabled={currentPage === 0} onClick={() => setCurrentPage(currentPage - 1)} style={{ backgroundColor: '#007bff', color: '#fff', padding: '12px 30px', borderRadius: '10px', border: 'none', cursor: currentPage === 0 ? 'not-allowed' : 'pointer', fontSize: '16px', fontWeight: 'bold', boxShadow: '0 5px 10px rgba(0, 123, 255, 0.3)', transition: 'all 0.3s ease', opacity: currentPage === 0 ? '0.5' : '1' }}>
                       <i class="bi bi-caret-left-square-fill"></i>
                     </button>
 
-                    <span
-                      style={{
-                        fontSize: '18px',
-                        fontWeight: 'bold',
-                        color: '#333',
-                        textAlign: 'center',
-                        margin: '0 15px',
-                        padding: '8px 15px',
-                        borderRadius: '10px',
-                        backgroundColor: '#f0f0f0',
-                        boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
-                        display: 'inline-block',
-                        minWidth: '80px',
-                      }}
-                    >
+                    <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#333', textAlign: 'center', margin: '0 15px', padding: '8px 15px', borderRadius: '10px', backgroundColor: '#f0f0f0', boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', display: 'inline-block', minWidth: '80px' }}>
                       {currentPage + 1} / {totalPages}
                     </span>
 
-
-                    <button
-                      disabled={currentPage === totalPages - 1}
-                      onClick={() => setCurrentPage(currentPage + 1)}
-                      style={{
-                        backgroundColor: '#007bff',
-                        color: '#fff',
-                        padding: '12px 30px',
-                        borderRadius: '10px',
-                        border: 'none',
-                        width: '106px',
-                        cursor: currentPage === totalPages - 1 ? 'not-allowed' : 'pointer',
-                        fontSize: '16px',
-                        fontWeight: 'bold',
-                        boxShadow: '0 5px 10px rgba(0, 123, 255, 0.3)',
-                        transition: 'all 0.3s ease',
-                        opacity: currentPage === totalPages - 1 ? '0.5' : '1', // Disable button opacity when disabled
-                      }}
-                      onMouseOver={(e) => {
-                        if (currentPage !== totalPages - 1) e.target.style.backgroundColor = '#0056b3';
-                      }}
-                      onMouseOut={(e) => {
-                        if (currentPage !== totalPages - 1) e.target.style.backgroundColor = '#007bff';
-                      }}
-                      disabled={currentPage === totalPages - 1}
-                    >
+                    <button disabled={currentPage === totalPages - 1} onClick={() => setCurrentPage(currentPage + 1)} style={{ backgroundColor: '#007bff', color: '#fff', padding: '12px 30px', borderRadius: '10px', border: 'none', width: '106px', cursor: currentPage === totalPages - 1 ? 'not-allowed' : 'pointer', fontSize: '16px', fontWeight: 'bold', boxShadow: '0 5px 10px rgba(0, 123, 255, 0.3)', transition: 'all 0.3s ease', opacity: currentPage === totalPages - 1 ? '0.5' : '1' }}>
                       <i class="bi bi-caret-right-square-fill"></i>
                     </button>
-
                   </div>
                 </div>
               </div>

@@ -34,6 +34,10 @@ public class EvaluateModel {
 	@JoinColumn(name = "user_id")
 	private UserModel user;
 
+	@ManyToOne
+	@JoinColumn(name = "order_detail_id")
+	private OrderDetailModel order_detail_id;
+
 	public int getId() {
 		return id;
 	}
@@ -80,6 +84,13 @@ public class EvaluateModel {
 
 	public void setUser(UserModel user) {
 		this.user = user;
+	}
+	public OrderDetailModel getOrderDetail() {
+		return order_detail_id;
+	}
+	
+	public void setOrderDetail(OrderDetailModel orderDetail) {
+		this.order_detail_id = orderDetail;
 	}
 
 }

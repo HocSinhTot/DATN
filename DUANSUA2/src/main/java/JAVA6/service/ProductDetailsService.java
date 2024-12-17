@@ -30,12 +30,15 @@ public class ProductDetailsService {
     public List<Map<String, Object>> getProductCapacitiesAndPrices(int productId) {
         return productDetailsRepository.findCapacitiesAndPricesByProductId(productId);
     }
+    public List<Map<String, Object>> getProductColor(int productId) {
+        return productDetailsRepository.findProductColor(productId);
+    }
 
     public List<ProductModel> getSimilarProducts(int productId) {
         ProductModel product = productDetailsRepository.findById(productId).orElse(null);
         if (product != null) {
             // Tìm các sản phẩm có cùng thương hiệu hoặc danh mục
-            return productDetailsRepository.findByCategoryIdOrBrandId(product.getCategory(), product.getBrand());
+            return productDetailsRepository.findByCategoryIdOrBrandId(product.getCategory().getId(), product.getBrand().getId());
         }
         return Collections.emptyList(); // Trả về danh sách rỗng nếu không tìm thấy sản phẩm
     }

@@ -16,7 +16,7 @@ const EditImagePage  = () => {
     // Fetch user data by user ID
     const fetchCategoryData = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/api/images/${id}`);
+        const response = await axios.get(`http://localhost:8080/api/admin/images/${id}`);
         setImage(response.data);
       } catch (err) {
         console.log(err);
@@ -37,7 +37,7 @@ const EditImagePage  = () => {
     }));
   
     try {
-      const response = await axios.put(`http://localhost:8080/api/images/${id}`, formData, {
+      const response = await axios.put(`http://localhost:8080/api/admin/images/${id}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

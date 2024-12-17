@@ -26,7 +26,7 @@ import JAVA6.service.BrandService;
 import JAVA6.service.CapacityService;
 import JAVA6.service.CategoryService;
 import JAVA6.service.ColorService;
-import JAVA6.service.ImagesService;
+// import JAVA6.service.ImagesService;
 import JAVA6.service.UserService;
 
 import java.io.IOException;
@@ -36,7 +36,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/images")
+@RequestMapping("/api/admin/images")
 public class ImageController {
 
     private static final Logger logger = LoggerFactory.getLogger(ImageController.class);
@@ -44,7 +44,7 @@ public class ImageController {
     @Autowired
     private ImageRepository imageRepository ;
 
-    private  ImagesService imagesService;
+    // private  ImagesService imagesService;
 
     // Lấy danh sách tất cả người dùng
     @GetMapping
@@ -69,50 +69,59 @@ public class ImageController {
     }
 
     // Thêm người dùng mới hoặc khách hàng
-@PostMapping
-public ResponseEntity<String> createImage(
-        @RequestPart("image") String imageJson) {
-    try {
-        ObjectMapper mapper = new ObjectMapper();
-        ImageModel image = mapper.readValue(imageJson, ImageModel.class);
-
-        // Kiểm tra dữ liệu hợp lệ
-        if (image.getUrl() == null || image.getUrl().isEmpty()) {
-            return ResponseEntity.badRequest().body("Url is required.");
+    @PostMapping
+    public ResponseEntity<String> createImage(@RequestPart("image") String imageJson,
+                                               @RequestParam("product_id") int productId) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            ImageModel image = mapper.readValue(imageJson, ImageModel.class);
+            
+            // Thiết lập sản phẩm dựa vào productId
+            ProductModel product = new ProductModel(); // Tạo mới một đối tượng sản phẩm
+            product.setId(productId);
+            image.setProduct(product);
+    
+            // Kiểm tra dữ liệu hợp lệ
+            if (image.getUrl() == null || image.getUrl().isEmpty()) {
+                return ResponseEntity.badRequest().body("Url is required.");
+            }
+    
+            imageRepository.save(image);
+            return ResponseEntity.ok("Image created successfully.");
+        } catch (IOException e) {
+            logger.error("Error processing request: ", e);
+            return ResponseEntity.status(500).body("Error creating image: " + e.getMessage());
         }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateImage(
+            @PathVariable("id") int id,
+            @RequestPart("image") String imageJson,
+            @RequestParam("product_id") int productId) {
         
-
-        imageRepository.save(image);
-        return ResponseEntity.ok("Image created successfully.");
-    } catch (IOException e) {
-        logger.error("Error processing request: ", e);
-        return ResponseEntity.status(500).body("Error creating color: " + e.getMessage());
+        logger.info("Updating image with ID: {}", id);
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            ImageModel image = mapper.readValue(imageJson, ImageModel.class);
+            
+            // Thiết lập sản phẩm
+            ProductModel product = new ProductModel();
+            product.setId(productId);
+            image.setProduct(product);
+            
+            return imageRepository.findById(id)
+                    .map(existingImage -> {
+                        image.setId(id); // Đảm bảo ID được giữ nguyên
+                        imageRepository.save(image);
+                        return ResponseEntity.ok("Image updated successfully.");
+                    })
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (IOException e) {
+            logger.error("Error processing request: ", e);
+            return ResponseEntity.status(500).body("Error updating image: " + e.getMessage());
+        }
     }
-}
-
-@PutMapping("/{id}")
-public ResponseEntity<String> updateImage(
-        @PathVariable("id") int id,
-        @RequestPart("image") String imageJson) {
-    logger.info("Updating image with ID: {}", id);
-
-    try {
-        // Chuyển đổi JSON thành đối tượng UserModel
-        ObjectMapper mapper = new ObjectMapper();
-        ImageModel image = mapper.readValue(imageJson, ImageModel.class);
-
-        return imageRepository.findById(id)
-                .map(existingImage -> {
-                    image.setId(id); // Đảm bảo ID được giữ nguyên
-                    imageRepository.save(image);
-                    return ResponseEntity.ok("Image updated successfully.");
-                })
-                .orElse(ResponseEntity.notFound().build()); // Trả về 404 nếu không tìm thấy user
-    } catch (IOException e) {
-        logger.error("Error processing request: ", e);
-        return ResponseEntity.status(500).body("Error updating color: " + e.getMessage());
-    }
-}
 
 
 

@@ -5,7 +5,7 @@ const UserManagement = () => {
     const [favouriteList, setFavouriteList] = useState([]);
 
     useEffect(() => {
-        fetch('http://localhost:8080/api/favourite') // API URL for fetching favourite list
+        fetch('http://localhost:8080/api/admin/favourite') // API URL for fetching favourite list
             .then((response) => response.json())
             .then((data) => setFavouriteList(data))
             .catch((error) => console.error('Error fetching favourite data:', error));
@@ -18,16 +18,16 @@ const UserManagement = () => {
                     <div className="content">
                         <div className="card">
                             <div className="card-header">
-                                <h5 className="card-title m-0">Quản lý yêu thích</h5>
-                                <Link to="/nguoidung/add" className="btn btn-light">Thêm mới</Link>
+                                <h5 className="card-title m-0" style={{ fontSize: '30px', fontWeight: '700' }}>Quản lý yêu thích</h5>
+                               
                             </div>
                             <div className="card-body">
                                 <table className="table">
                                     <thead>
                                         <tr>
-                                            <th>STT</th>
-                                            <th>Tên người dùng</th>
-                                            <th>Tên sản phẩm</th>
+                                            <th style={{ padding: '15px', textAlign: 'center' }}>STT</th>
+                                            <th style={{ padding: '15px', textAlign: 'center' }}>Tên người dùng</th>
+                                            <th style={{ padding: '15px', textAlign: 'center' }}>Tên sản phẩm</th>
                                         </tr>
                                     </thead>
                                     <tbody>

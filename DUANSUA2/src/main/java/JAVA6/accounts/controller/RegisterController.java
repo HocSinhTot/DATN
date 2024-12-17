@@ -4,7 +4,9 @@ import JAVA6.Model.UserModel;
 import JAVA6.repository.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
 import java.sql.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +17,9 @@ public class RegisterController {
 
     @Autowired
     private UsersRepository usersRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder; // Inject PasswordEncoder
 
     @PostMapping("/register")
     public ResponseEntity<?> handleRegister(@RequestBody Map<String, String> registerRequest) {
@@ -47,14 +52,19 @@ public class RegisterController {
         // Tạo và lưu user mới
         UserModel newUser = new UserModel();
         newUser.setUsername(username);
-        newUser.setPassword(password);
+
+        // Mã hóa mật khẩu trước khi lưu
+        String encodedPassword = passwordEncoder.encode(password);
+        newUser.setPassword(encodedPassword);
+
         newUser.setEmail(email);
         newUser.setPhone(phone);
         newUser.setName(username); // Giả định `name` giống `username`
         newUser.setBirthday(Date.valueOf(registerRequest.get("dob")));
         newUser.setRole(false); // Set default role
-        newUser.setImage("defautlt.jpg");
+        newUser.setImage("default.jpg");
         newUser.setStatus(true);
+
         usersRepository.saveAndFlush(newUser);
 
         // Phản hồi thành công

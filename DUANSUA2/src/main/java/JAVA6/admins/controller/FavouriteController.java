@@ -11,7 +11,7 @@ import JAVA6.Model.FavouriteModel;
 import JAVA6.service.FavouriteService;
 
 @RestController
-@RequestMapping("/api/favourite")
+@RequestMapping("/api/admin/favourite")
 public class FavouriteController {
 
     @Autowired

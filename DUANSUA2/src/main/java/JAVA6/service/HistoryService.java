@@ -11,7 +11,7 @@ import JAVA6.repository.OrderRepository;
 
 @Service
 public class HistoryService {
-	@Autowired
+    @Autowired
     private OrderRepository orderRepository;
 
     @Autowired

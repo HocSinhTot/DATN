@@ -29,7 +29,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/colors")
+@RequestMapping("/api/admin/colors")
 public class ColorController {
 
     private static final Logger logger = LoggerFactory.getLogger(ColorController.class);

@@ -35,6 +35,8 @@ public class ProductModel {
 	@Column(name = "quantity", nullable = false)
 	private int quantity;
 
+	
+
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "categories_id", nullable = false)
 	private CategoryModel category;
@@ -43,28 +45,18 @@ public class ProductModel {
 	@JoinColumn(name = "brand_id", nullable = false)
 	
 	private BrandModel brand;
-
+	@OneToMany(mappedBy = "product")
+    private List<ImageModel> images;
 	
-	@OneToMany(mappedBy = "product",fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonIgnoreProperties({"product"})
-	private List<ProductsImagesModel> productsImages;
-
-	// Thêm trường images để lưu danh sách hình ảnh
-	@Transient // @Transient để trường này không được ánh xạ trong cơ sở dữ liệu
-	private List<ImageModel> images;
-
-	/**
-	 * Lấy danh sách các ảnh liên kết từ ProductsImagesModel.
-	 */
+	// Getter và Setter
 	public List<ImageModel> getImages() {
-		if (productsImages == null) {
-			return List.of(); // Trả về danh sách rỗng nếu không có liên kết ảnh
-		}
-		return productsImages.stream()
-				.map(ProductsImagesModel::getImage) // Lấy ImageModel từ ProductsImagesModel
-				.toList();
+		return images;
 	}
-
+	
+	public void setImages(List<ImageModel> images) {
+		this.images = images;
+	}
+	
 	// Phương thức tính giá tổng cộng nếu cần
 	public BigDecimal getTotalPrice() {
 		return price.multiply(BigDecimal.valueOf(quantity));
@@ -136,9 +128,7 @@ public class ProductModel {
 				", quantity=" + quantity +
 				", category=" + (category != null ? category.getName() : "N/A") + // Lấy tên danh mục
 				", brand=" + (brand != null ? brand.getName() : "N/A") + // Lấy tên thương hiệu
-				", images=" + (images != null ? images.size() : 0) + " images" + // In ra số lượng hình ảnh
 				'}';
 	}
-
     
 }
