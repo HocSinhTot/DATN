@@ -35,11 +35,12 @@ public class ProductService {
     @Autowired
     private ProductdetailsRepositoryy productDetailsRepository;
 
-public ProductDetailsModel getProductDetailsById(int productDetailId) {
+    public ProductDetailsModel getProductDetailsById(int productDetailId) {
         // Tìm chi tiết sản phẩm trong cơ sở dữ liệu
         return productDetailsRepository.findById(productDetailId)
                 .orElse(null); // Trả về null nếu không tìm thấy
     }
+
     // Lấy sản phẩm theo các tiêu chí lọc với phân trang
     public Page<ProductModel> getProductsByFilters(
             Integer categoryId, Integer brandId, Boolean ascending, Integer minPrice,
@@ -73,23 +74,22 @@ public ProductDetailsModel getProductDetailsById(int productDetailId) {
     }
 
     // // Thêm chi tiết sản phẩm
-    // public ProductsPriceModel addProductDetails(Integer productId, Integer capacityId,
-    //         BigDecimal price) {
-    //     ProductModel product = getProductById(productId);
+    // public ProductsPriceModel addProductDetails(Integer productId, Integer
+    // capacityId,
+    // BigDecimal price) {
+    // ProductModel product = getProductById(productId);
 
-    //      productsPriceId = new ProductsPriceId();
-    //     productsPriceId.setProductId(productId);
-    //     productsPriceId.setCapacityId(capacityId);
+    // productsPriceId = new ProductsPriceId();
+    // productsPriceId.setProductId(productId);
+    // productsPriceId.setCapacityId(capacityId);
 
-    //     ProductsPriceModel productPrice = new ProductsPriceModel();
-    //     productPrice.setId(productsPriceId);
-    //     productPrice.setProduct(product);
-    //     productPrice.setPrice(price);
+    // ProductsPriceModel productPrice = new ProductsPriceModel();
+    // productPrice.setId(productsPriceId);
+    // productPrice.setProduct(product);
+    // productPrice.setPrice(price);
 
-    //     return productsPriceRepository.save(productPrice);
+    // return productsPriceRepository.save(productPrice);
     // }
-
-    
 
     // Lấy tất cả sản phẩm
     public Page<ProductModel> getAllProducts(int page, int size) {

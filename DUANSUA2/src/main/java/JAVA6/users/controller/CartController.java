@@ -67,7 +67,7 @@ public class CartController {
     private ProductdetailsRepositoryy productDetailsRepositoryy;
     @Autowired
     private ProductRepository productRepository;
-    
+
     @Autowired
     private CapacityAdminRepository capacityAdminRepository;
     @Autowired
@@ -107,82 +107,87 @@ public class CartController {
     }
 
     // Thêm sản phẩm vào giỏ hàng
-   // Thêm sản phẩm vào giỏ hàng
-   @PostMapping("/addToCart")
-   public ResponseEntity<Map<String, String>> addToCart(@RequestParam("productId") int productId,
-           @RequestParam("quantity") int quantity,
-           @RequestParam("userId") Integer userId,
-           @RequestParam("colorId") int colorId,   // Lấy thông tin màu sắc từ frontend
-           @RequestParam("capacity") int capacityId) { // Lấy thông tin dung lượng từ frontend
-   
-       if (userId == null) {
-           return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                   .body(Map.of("message", "Vui lòng đăng nhập để thêm sản phẩm vào giỏ."));
-       }
-   
-       // Lấy thông tin người dùng từ database
-       UserModel user = userService.getUserById(userId);
-       if (user == null) {
-           return ResponseEntity.badRequest().body(Map.of("message", "Người dùng không tồn tại"));
-       }
-   
-       // Lấy thông tin sản phẩm chính từ database (Product)
-       ProductModel product = productService.getProductById(productId);
-       if (product == null) {
-           return ResponseEntity.badRequest().body(Map.of("message", "Sản phẩm không tồn tại"));
-       }
-   
-       // Lấy màu sắc từ ColorModel
-       Optional<ColorModel> selectedColorOpt = colorAdminRepository.findById(colorId);
-       if (!selectedColorOpt.isPresent()) {
-           return ResponseEntity.badRequest().body(Map.of("message", "Màu sắc không hợp lệ"));
-       }
-       ColorModel selectedColor = selectedColorOpt.get();
-   
-       // Lấy thông tin dung lượng từ ProductPriceModel
-       ProductsPriceModel selectedPrice = productsPriceService.getPriceByProductAndCapacity(productId, capacityId);
-       if (selectedPrice == null) {
-           return ResponseEntity.badRequest().body(Map.of("message", "Dung lượng không hợp lệ"));
-       }
-   
-       // Tạo ProductDetailsModel mới với các thông tin màu sắc và dung lượng
-       ProductDetailsModel productDetails = new ProductDetailsModel();
-       productDetails.setProduct(product);
-       productDetails.setColor(selectedColor);
-       productDetails.setProductPrice(selectedPrice);
-       productDetails = productDetailsRepositoryy.save(productDetails);
-   
-       // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
-       CartModel existingCartItem = cartRepository.findByUserAndProduct(user, productDetails);
-       if (existingCartItem != null) {
-           // Nếu có, cập nhật số lượng và giá
-           existingCartItem.setUser(user);
-           existingCartItem.setProduct(productDetails); // Đảm bảo rằng productDetails được set lại
-   
-           // Cập nhật số lượng và tính lại giá
-           existingCartItem.setTotalQuantity(existingCartItem.getTotalQuantity() + quantity);
-           BigDecimal updatedPrice = productDetails.getProductPrice().getPrice().multiply(BigDecimal.valueOf(existingCartItem.getTotalQuantity()));
-           existingCartItem.setTotalPrice(updatedPrice);
-   
-           cartRepository.save(existingCartItem);
-       } else {
-           // Nếu chưa có, tạo mới sản phẩm trong giỏ
-           BigDecimal price = productDetails.getProductPrice().getPrice();
-           CartModel cartItem = new CartModel(user, productDetails, quantity, price.multiply(BigDecimal.valueOf(quantity)));
-           cartRepository.save(cartItem);
-       }
-   
-       return ResponseEntity.ok(Map.of(
-           "message", "Sản phẩm đã được thêm vào giỏ.",
-           "redirectUrl", "/cart" // URL để frontend chuyển hướng
-       ));
-   }
-   
+    // Thêm sản phẩm vào giỏ hàng
+    @PostMapping("/addToCart")
+    public ResponseEntity<Map<String, String>> addToCart(@RequestParam("productId") int productId,
+            @RequestParam("quantity") int quantity,
+            @RequestParam("userId") Integer userId,
+            @RequestParam("colorId") int colorId, // Lấy thông tin màu sắc từ frontend
+            @RequestParam("capacity") int capacityId) { // Lấy thông tin dung lượng từ frontend
+
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Vui lòng đăng nhập để thêm sản phẩm vào giỏ."));
+        }
+
+        // Lấy thông tin người dùng từ database
+        UserModel user = userService.getUserById(userId);
+        if (user == null) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Người dùng không tồn tại"));
+        }
+
+        // Lấy thông tin sản phẩm chính từ database (Product)
+        ProductModel product = productService.getProductById(productId);
+        if (product == null) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Sản phẩm không tồn tại"));
+        }
+
+        // Lấy màu sắc từ ColorModel
+        Optional<ColorModel> selectedColorOpt = colorAdminRepository.findById(colorId);
+        if (!selectedColorOpt.isPresent()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Màu sắc không hợp lệ"));
+        }
+        ColorModel selectedColor = selectedColorOpt.get();
+
+        // Lấy thông tin dung lượng từ ProductPriceModel
+        ProductsPriceModel selectedPrice = productsPriceService.getPriceByProductAndCapacity(productId, capacityId);
+        if (selectedPrice == null) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Dung lượng không hợp lệ"));
+        }
+
+        // Tạo ProductDetailsModel mới với các thông tin màu sắc và dung lượng
+        ProductDetailsModel productDetails = new ProductDetailsModel();
+        productDetails.setProduct(product);
+        productDetails.setColor(selectedColor);
+        productDetails.setProductPrice(selectedPrice);
+        productDetails = productDetailsRepositoryy.save(productDetails);
+
+        // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
+        CartModel existingCartItem = cartRepository.findByUserAndProduct_ProductAndProduct_ColorAndProduct_ProductPrice(
+                user, product, selectedColor, selectedPrice);
+        if (existingCartItem != null) {
+            // Nếu có, cập nhật số lượng và giá
+            existingCartItem.setUser(user);
+            existingCartItem.setProduct(productDetails); // Đảm bảo rằng productDetails được set lại
+
+            // Cập nhật số lượng và tính lại giá
+            existingCartItem.setTotalQuantity(existingCartItem.getTotalQuantity() + quantity);
+            BigDecimal updatedPrice = productDetails.getProductPrice().getPrice()
+                    .multiply(BigDecimal.valueOf(existingCartItem.getTotalQuantity()));
+            existingCartItem.setTotalPrice(updatedPrice);
+
+            cartRepository.save(existingCartItem);
+        } else {
+            // Nếu chưa có, tạo mới sản phẩm trong giỏ
+            BigDecimal price = productDetails.getProductPrice().getPrice();
+            CartModel cartItem = new CartModel(user, productDetails, quantity,
+                    price.multiply(BigDecimal.valueOf(quantity)));
+            cartRepository.save(cartItem);
+        }
+
+        return ResponseEntity.ok(Map.of(
+                "message", "Sản phẩm đã được thêm vào giỏ.",
+                "redirectUrl", "/cart" // URL để frontend chuyển hướng
+        ));
+    }
+
     // Cập nhật số lượng sản phẩm trong giỏ hàng
     @PostMapping("/updateQuantity")
     public ResponseEntity<Map<String, String>> updateQuantity(@RequestParam("productId") int productId,
             @RequestParam("quantity") int quantity,
-            @RequestParam("userId") Integer userId) {
+            @RequestParam("userId") Integer userId, @RequestParam("colorId") int colorId, // Lấy thông tin màu sắc từ
+                                                                                          // frontend
+            @RequestParam("capacity") int capacityId) {
         if (userId == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("message", "Vui lòng đăng nhập để cập nhật giỏ hàng."));
@@ -191,13 +196,27 @@ public class CartController {
         if (user == null) {
             return ResponseEntity.badRequest().body(Map.of("message", "Người dùng không tồn tại."));
         }
-
+        ProductModel product = productService.getProductById(productId);
+        if (product == null) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Sản phẩm không tồn tại"));
+        }
         ProductDetailsModel productDetails = productService.getProductDetailsById(productId);
         if (productDetails == null) {
             return ResponseEntity.badRequest().body(Map.of("message", "Sản phẩm không tồn tại."));
         }
+        Optional<ColorModel> selectedColorOpt = colorAdminRepository.findById(colorId);
+        if (!selectedColorOpt.isPresent()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Màu sắc không hợp lệ"));
+        }
+        ColorModel selectedColor = selectedColorOpt.get();
 
-        CartModel cartItem = cartRepository.findByUserAndProduct(user, productDetails);
+        // Lấy thông tin dung lượng từ ProductPriceModel
+        ProductsPriceModel selectedPrice = productsPriceService.getPriceByProductAndCapacity(productId, capacityId);
+        if (selectedPrice == null) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Dung lượng không hợp lệ"));
+        }
+        CartModel cartItem = cartRepository.findByUserAndProduct_ProductAndProduct_ColorAndProduct_ProductPrice(user,
+                product, selectedColor, selectedPrice);
         if (cartItem == null) {
             return ResponseEntity.badRequest().body(Map.of("message", "Sản phẩm này chưa có trong giỏ hàng."));
         }
@@ -217,7 +236,9 @@ public class CartController {
     // Xóa sản phẩm khỏi giỏ hàng
     @PostMapping("/removeFromCart")
     public ResponseEntity<Map<String, String>> removeFromCart(@RequestParam("productId") int productId,
-            @RequestParam("userId") Integer userId) {
+            @RequestParam("userId") Integer userId, @RequestParam("colorId") int colorId, // Lấy thông tin màu sắc từ
+                                                                                          // frontend
+            @RequestParam("capacity") int capacityId) {
         if (userId == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("message", "Vui lòng đăng nhập để xóa sản phẩm khỏi giỏ hàng."));
@@ -227,13 +248,27 @@ public class CartController {
         if (user == null) {
             return ResponseEntity.badRequest().body(Map.of("message", "Người dùng không tồn tại."));
         }
-
+        ProductModel product = productService.getProductById(productId);
+        if (product == null) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Sản phẩm không tồn tại"));
+        }
         ProductDetailsModel productDetails = productService.getProductDetailsById(productId);
         if (productDetails == null) {
             return ResponseEntity.badRequest().body(Map.of("message", "Sản phẩm không tồn tại."));
         }
+        Optional<ColorModel> selectedColorOpt = colorAdminRepository.findById(colorId);
+        if (!selectedColorOpt.isPresent()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Màu sắc không hợp lệ"));
+        }
+        ColorModel selectedColor = selectedColorOpt.get();
 
-        CartModel cartItem = cartRepository.findByUserAndProduct(user, productDetails);
+        // Lấy thông tin dung lượng từ ProductPriceModel
+        ProductsPriceModel selectedPrice = productsPriceService.getPriceByProductAndCapacity(productId, capacityId);
+        if (selectedPrice == null) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Dung lượng không hợp lệ"));
+        }
+        CartModel cartItem = cartRepository.findByUserAndProduct_ProductAndProduct_ColorAndProduct_ProductPrice(user,
+                product, selectedColor, selectedPrice);
         if (cartItem == null) {
             return ResponseEntity.badRequest().body(Map.of("message", "Sản phẩm không có trong giỏ hàng."));
         }
@@ -272,30 +307,31 @@ public class CartController {
         List<Map<String, Object>> cartItems = new ArrayList<>();
         BigDecimal totalAmount = BigDecimal.ZERO;
         Integer userId = cartRequest.getUserId();
-    
+
         // Kiểm tra nếu userId không có
         if (userId == null) {
             return ResponseEntity.badRequest().body(Map.of("error", "User ID is required"));
         }
-    
+
         // Duyệt qua các sản phẩm trong giỏ hàng
         for (Map.Entry<Integer, Integer> entry : cartRequest.getCart().entrySet()) {
             // Lấy thông tin chi tiết sản phẩm từ productId
             ProductDetailsModel productDetails = productService.getProductDetailsById(entry.getKey());
-            System.out.println("productID "+productDetails.getProduct().getId());
-            ProductModel product = productService.getProductById( productDetails.getProduct().getId());
+            System.out.println("productID " + productDetails.getProduct().getId());
+            ProductModel product = productService.getProductById(productDetails.getProduct().getId());
             if (productDetails != null) {
                 Integer colorId = productDetails.getColor().getId(); // Màu sắc từ cartRequest
                 int quantity = entry.getValue(); // Số lượng sản phẩm
-    
+
                 // Lấy tên màu sắc từ ColorModel
                 Optional<ColorModel> colorOpt = colorAdminRepository.findById(colorId);
                 String colorName = colorOpt.isPresent() ? colorOpt.get().getName() : "Không xác định";
-    
+
                 // Lấy thông tin dung lượng từ ProductsPriceModel (cần capacityId)
-                ProductsPriceModel priceDetails = productsPriceService.getPriceByProductAndCapacity(productDetails.getProduct().getId(), productDetails.getCapacityy());
+                ProductsPriceModel priceDetails = productsPriceService.getPriceByProductAndCapacity(
+                        productDetails.getProduct().getId(), productDetails.getCapacityy());
                 String capacityName = priceDetails != null ? priceDetails.getCapacity().getName() : "Không xác định";
-    
+
                 // Tính giá tổng cho sản phẩm
                 BigDecimal productTotalPrice = productDetails.getPrice().multiply(BigDecimal.valueOf(quantity));
                 List<ImageModel> images = product.getImages();
@@ -308,23 +344,24 @@ public class CartController {
                 productData.put("quantity", quantity);
                 productData.put("image", firstImageUrl);
                 productData.put("totalPrice", productTotalPrice);
-                productData.put("color", colorName);  // Thêm tên màu sắc
-                productData.put("capacity", capacityName);  // Thêm tên dung lượng
+                productData.put("color", colorName); // Thêm tên màu sắc
+                productData.put("capacity", capacityName); // Thêm tên dung lượng
                 cartItems.add(productData);
-    
+
                 // Cộng dồn tổng giá trị của hóa đơn
                 totalAmount = totalAmount.add(productTotalPrice);
             }
         }
-    
+
         // Trả lại dữ liệu hóa đơn
         Map<String, Object> invoiceData = new HashMap<>();
         invoiceData.put("userId", userId);
         invoiceData.put("items", cartItems);
         invoiceData.put("totalAmount", totalAmount);
-    
+
         return ResponseEntity.ok(invoiceData);
     }
+
     @PostMapping("/order/redirectPayment")
     public ResponseEntity<Map<String, Object>> processOrder(@RequestBody @Valid PaymentRequest paymentRequest) {
         UserModel user = userService.getUserById(paymentRequest.getUserId());
@@ -334,7 +371,6 @@ public class CartController {
         PaymentMethodModel paymentMethod = paymentMethodRepository.findById(paymentRequest.getPayMethod())
                 .orElseThrow(() -> new RuntimeException(
                         "Phương thức thanh toán không hợp lệ: " + paymentRequest.getPayMethod()));
-
         // Tạo đơn hàng tạm thời mà chưa lưu vào CSDL
         OrderModel order = createTempOrder(paymentRequest, user, paymentMethod);
 
@@ -385,75 +421,73 @@ public class CartController {
         // Lấy các tham số từ VNPay trả về
         Map<String, String> vnp_Params = new HashMap<>();
         request.getParameterMap().forEach((key, value) -> vnp_Params.put(key, value[0]));
-    
+
         // Kiểm tra mã checksum (vnp_SecureHash) để xác minh tính toàn vẹn dữ liệu
         String vnp_SecureHash = vnp_Params.remove("vnp_SecureHash");
         String hashData = VnPayConfig.hashAllFields(vnp_Params); // Tạo chuỗi hash từ tham số
         String calculatedHash = VnPayConfig.hmacSHA512(VnPayConfig.secretKey, hashData);
-    
-    
+
         // Kiểm tra trạng thái giao dịch
         String vnp_ResponseCode = vnp_Params.get("vnp_ResponseCode");
         if (!"00".equals(vnp_ResponseCode)) {
             return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Giao dịch không thành công"));
         }
-    
+
         // Lưu đơn hàng sau khi xác minh giao dịch thành công
         UserModel user = userService.getUserById(userId);
         if (user == null) {
             return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Người dùng không hợp lệ"));
         }
-    
+
         // Lấy thông tin phương thức thanh toán VNPay
         PaymentMethodModel paymentMethod = paymentMethodRepository.findById(2)
                 .orElseThrow(() -> new RuntimeException("Phương thức thanh toán VNPay không hợp lệ"));
-    
+
         // Tạo đơn hàng sau khi thanh toán thành công
-        OrderModel order = handleVNPayOrder(user,address, paymentMethod, vnp_Params);
-    
+        OrderModel order = handleVNPayOrder(user, address, paymentMethod, vnp_Params);
+
         // Cập nhật trạng thái đơn hàng sau khi thanh toán thành công
-        order.setOrderStatus(orderStatusRepository.getReferenceById(3));  // Trạng thái "đã thanh toán"
+        order.setOrderStatus(orderStatusRepository.getReferenceById(3)); // Trạng thái "đã thanh toán"
         orderRepository.save(order);
-    
+
         // Trả về kết quả
         Map<String, Object> response = new HashMap<>();
         response.put("message", "Đặt hàng thành công qua VNPay.");
         response.put("orderId", order.getId());
-        
-        return ResponseEntity.status(HttpStatus.FOUND)
-        .header("Location", "http://localhost:3000/history")
-        .body(response); 
-    }
-    
-        private OrderModel handleVNPayOrder(UserModel user, String address,PaymentMethodModel paymentMethod,
-                Map<String, String> vnp_Params) {
-            // Tạo đơn hàng sau khi thanh toán thành công
-            
-            OrderModel order = new OrderModel();
-            order.setDate(new Timestamp(System.currentTimeMillis()));
-            order.setAddress(address);
-            order.setUser(user);
-            BigDecimal amount = new BigDecimal(vnp_Params.get("vnp_Amount"));
-            BigDecimal total = amount.divide(BigDecimal.valueOf(100), 0, RoundingMode.HALF_UP); // Chia và làm tròn 2 chữ số
-                                                                                                // thập phân
-            order.setTotal(total); // Giá trị từ VNPay là nhân 100
-            order.setPaymentMethod(paymentMethod);
-            order.setOrderStatus(orderStatusRepository.getReferenceById(1)); // Trạng thái mặc định là "Chờ xử lý"
-    
-            // Lấy sản phẩm trong giỏ hàng
-            List<CartModel> cartItems = cartRepository.findByUser(user);
-            if (cartItems.isEmpty()) {
-                throw new RuntimeException("Giỏ hàng rỗng, không thể tạo đơn hàng");
-            }
-    
-            orderRepository.save(order);
-    
-            for (CartModel cartItem : cartItems) {
-                ProductModel product = cartItem.getProduct().getProduct();
 
-                if (product.getQuantity() < cartItem.getTotalQuantity()) {
-                    throw new RuntimeException("Sản phẩm " + product.getName() + " không đủ hàng trong kho.");
-                }else{
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .header("Location", "http://localhost:3000/history")
+                .body(response);
+    }
+
+    private OrderModel handleVNPayOrder(UserModel user, String address, PaymentMethodModel paymentMethod,
+            Map<String, String> vnp_Params) {
+        // Tạo đơn hàng sau khi thanh toán thành công
+
+        OrderModel order = new OrderModel();
+        order.setDate(new Timestamp(System.currentTimeMillis()));
+        order.setAddress(address);
+        order.setUser(user);
+        BigDecimal amount = new BigDecimal(vnp_Params.get("vnp_Amount"));
+        BigDecimal total = amount.divide(BigDecimal.valueOf(100), 0, RoundingMode.HALF_UP); // Chia và làm tròn 2 chữ số
+                                                                                            // thập phân
+        order.setTotal(total); // Giá trị từ VNPay là nhân 100
+        order.setPaymentMethod(paymentMethod);
+        order.setOrderStatus(orderStatusRepository.getReferenceById(1)); // Trạng thái mặc định là "Chờ xử lý"
+
+        // Lấy sản phẩm trong giỏ hàng
+        List<CartModel> cartItems = cartRepository.findByUser(user);
+        if (cartItems.isEmpty()) {
+            throw new RuntimeException("Giỏ hàng rỗng, không thể tạo đơn hàng");
+        }
+
+        orderRepository.save(order);
+
+        for (CartModel cartItem : cartItems) {
+            ProductModel product = cartItem.getProduct().getProduct();
+            if (product.getQuantity() < cartItem.getTotalQuantity()) {
+                throw new RuntimeException("Sản phẩm " + product.getName() + " không đủ hàng trong kho.");
+            } else {
                 product.setQuantity(product.getQuantity() - cartItem.getTotalQuantity());
                 productRepository.save(product);
                 OrderDetailModel orderDetail = new OrderDetailModel();
@@ -462,40 +496,41 @@ public class CartController {
                 orderDetail.setTotalQuantity(cartItem.getTotalQuantity());
                 orderDetail.setTotalPrice(cartItem.getTotalPrice());
                 orderDetailRepository.save(orderDetail);
-            }}
-    
-            // Xóa giỏ hàng sau khi lưu đơn hàng
-            cartRepository.deleteAll(cartItems);
-            return order;
-        }
-    
-        private OrderModel handleCodPayment(PaymentRequest paymentRequest, UserModel user,
-                PaymentMethodModel paymentMethod) {
-            // Logic tạo đơn hàng COD
-            OrderModel order = new OrderModel();
-            order.setDate(new Timestamp(System.currentTimeMillis()));
-            order.setAddress(paymentRequest.getAddress());
-            order.setUser(user);
-            order.setTotal(paymentRequest.getTotalAmount());
-            order.setPaymentMethod(paymentMethod);
-            order.setOrderStatus(orderStatusRepository.getReferenceById(1));
-    
-            List<CartModel> cartItems = cartRepository.findByUser(user);
-            if (cartItems.isEmpty()) {
-                throw new RuntimeException("Giỏ hàng rỗng, không thể tạo đơn hàng");
             }
-    
-            orderRepository.save(order);
-    
-            for (CartModel cartItem : cartItems) {
-                ProductModel product = cartItem.getProduct().getProduct();
+        }
 
-        // Kiểm tra tồn kho trước khi tạo chi tiết đơn hàng
-        if (product.getQuantity() < cartItem.getTotalQuantity()) {
-            throw new RuntimeException("Sản phẩm " + product.getName() + " không đủ hàng trong kho.");
-        }else{
-        product.setQuantity(product.getQuantity() - cartItem.getTotalQuantity());
-        productRepository.save(product);
+        // Xóa giỏ hàng sau khi lưu đơn hàng
+        cartRepository.deleteAll(cartItems);
+        return order;
+    }
+
+    private OrderModel handleCodPayment(PaymentRequest paymentRequest, UserModel user,
+            PaymentMethodModel paymentMethod) {
+        // Logic tạo đơn hàng COD
+        OrderModel order = new OrderModel();
+        order.setDate(new Timestamp(System.currentTimeMillis()));
+        order.setAddress(paymentRequest.getAddress());
+        order.setUser(user);
+        order.setTotal(paymentRequest.getTotalAmount());
+        order.setPaymentMethod(paymentMethod);
+        order.setOrderStatus(orderStatusRepository.getReferenceById(1));
+
+        List<CartModel> cartItems = cartRepository.findByUser(user);
+        if (cartItems.isEmpty()) {
+            throw new RuntimeException("Giỏ hàng rỗng, không thể tạo đơn hàng");
+        }
+
+        orderRepository.save(order);
+
+        for (CartModel cartItem : cartItems) {
+            ProductModel product = cartItem.getProduct().getProduct();
+
+            // Kiểm tra tồn kho trước khi tạo chi tiết đơn hàng
+            if (product.getQuantity() < cartItem.getTotalQuantity()) {
+                throw new RuntimeException("Sản phẩm " + product.getName() + " không đủ hàng trong kho.");
+            } else {
+                product.setQuantity(product.getQuantity() - cartItem.getTotalQuantity());
+                productRepository.save(product);
                 OrderDetailModel orderDetail = new OrderDetailModel();
 
                 orderDetail.setProduct(cartItem.getProduct());
@@ -505,8 +540,8 @@ public class CartController {
                 orderDetailRepository.save(orderDetail);
             }
         }
-    
-            cartRepository.deleteAll(cartItems);
-            return order;
-        }
+
+        cartRepository.deleteAll(cartItems);
+        return order;
     }
+}

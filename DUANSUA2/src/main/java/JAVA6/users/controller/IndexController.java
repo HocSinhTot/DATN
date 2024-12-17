@@ -22,6 +22,7 @@ import JAVA6.service.CategoryService;
 import JAVA6.repository.ProductdetailsRepository;
 
 import java.util.List;
+
 @RestController
 public class IndexController {
 
@@ -34,8 +35,6 @@ public class IndexController {
 
     @Autowired
     private CategoryService categoryService;
-
-
 
     @Autowired
     private ProductdetailsRepository productdetailsRepository;
@@ -51,23 +50,22 @@ public class IndexController {
             @RequestParam(value = "keyword", required = false) String keyword,
             @RequestParam(value = "page", defaultValue = "0") int page, // Thêm tham số page
             @RequestParam(value = "size", defaultValue = "20") int size) { // Thêm tham số size
-    
+
         // Lọc sản phẩm theo các tiêu chí và trả về danh sách sản phẩm
         Page<ProductModel> pageProducts = productService.getProductsByFilters(
-                categoryId, 
+                categoryId,
                 brandId,
-                sort != null && sort.equalsIgnoreCase("asc"), 
-                minPrice, 
-                maxPrice, 
-                keyword, 
-                page, 
+                sort != null && sort.equalsIgnoreCase("asc"),
+                minPrice,
+                maxPrice,
+                keyword,
+                page,
                 size);
-    
+
         return ResponseEntity.ok(pageProducts.getContent()); // Trả về danh sách sản phẩm
     }
-    
+
     // API Endpoint để lấy sản phẩm theo ID
- 
 
     // API Endpoint để lấy ảnh của sản phẩm theo productId
     @GetMapping("/api/product/{id}/images")
@@ -89,6 +87,7 @@ public class IndexController {
         }
         return ResponseEntity.ok(categories); // Trả về 200 OK nếu có danh mục
     }
+
     @GetMapping("/api/brands")
     public ResponseEntity<List<BrandModel>> getAllBrands() {
         List<BrandModel> brands = brandsService.getAllBrands();

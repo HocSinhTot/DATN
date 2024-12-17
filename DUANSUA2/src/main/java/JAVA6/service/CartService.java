@@ -38,7 +38,7 @@ public class CartService {
     private ProductdetailsRepositoryy productDetailRepositoryy;
     @Autowired
     private ColorAdminRepository colorRepository;
-  
+
     @Autowired
     private UsersRepository userRepository;
 
@@ -53,66 +53,62 @@ public class CartService {
 
     // Thêm sản phẩm vào giỏ hàng
     public CartModel addToCart(int userId, int productId, int colorId, int priceId, int quantity) {
-    // Kiểm tra người dùng
-    UserModel user = userRepository.findById(userId).orElseThrow(() -> 
-        new IllegalArgumentException("Người dùng không tồn tại.")
-    );
+        // Kiểm tra người dùng
+        UserModel user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Người dùng không tồn tại."));
 
-    // Lấy thông tin sản phẩm
-    ProductModel product = productRepository.findById(productId).orElseThrow(() -> 
-        new IllegalArgumentException("Sản phẩm không tồn tại.")
-    );
+        // Lấy thông tin sản phẩm
+        ProductModel product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("Sản phẩm không tồn tại."));
 
-    // Lấy thông tin màu sắc
-    ColorModel color = colorRepository.findById(colorId).orElseThrow(() -> 
-        new IllegalArgumentException("Màu sắc không tồn tại.")
-    );
+        // Lấy thông tin màu sắc
+        ColorModel color = colorRepository.findById(colorId)
+                .orElseThrow(() -> new IllegalArgumentException("Màu sắc không tồn tại."));
 
-    ProductsPriceModel price = productsPriceRepository.findById(priceId).orElseThrow(() -> 
-    new IllegalArgumentException("Giá sản phẩm không tồn tại.")
-);
+        ProductsPriceModel price = productsPriceRepository.findById(priceId)
+                .orElseThrow(() -> new IllegalArgumentException("Giá sản phẩm không tồn tại."));
 
+        // Kiểm tra xem ProductDetailsModel đã tồn tại chưa
+        ProductDetailsModel productDetail = productDetailRepository.findByProductAndColorAndProductPrice(product, color,
+                price);
 
-    // Kiểm tra xem ProductDetailsModel đã tồn tại chưa
-    ProductDetailsModel productDetail = productDetailRepository.findByProductAndColorAndProductPrice(product, color, price);
+        if (productDetail == null) {
+            // Nếu chưa tồn tại, tạo mới ProductDetailsModel
+            productDetail = new ProductDetailsModel();
+            productDetail.setProduct(product);
+            productDetail.setColor(color);
+            productDetail.setProductPrice(price);
+            productDetail.setTotalQuantity(0); // Tổng số lượng ban đầu là 0
+            productDetail = productDetailRepositoryy.save(productDetail);
+        }
 
-    if (productDetail == null) {
-        // Nếu chưa tồn tại, tạo mới ProductDetailsModel
-        productDetail = new ProductDetailsModel();
-        productDetail.setProduct(product);
-        productDetail.setColor(color);
-        productDetail.setProductPrice(price);
-        productDetail.setTotalQuantity(0); // Tổng số lượng ban đầu là 0
-        productDetail = productDetailRepositoryy.save(productDetail);
+        // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
+        CartModel existingCartItem = cartRepository.findByUserAndProduct(user, productDetail);
+
+        if (existingCartItem != null) {
+            // Nếu đã có, cập nhật số lượng và tổng giá
+            existingCartItem.setTotalQuantity(existingCartItem.getTotalQuantity() + quantity);
+
+            BigDecimal updatedTotalPrice = existingCartItem.getTotalPrice()
+                    .add(productDetail.getProductPrice().getPrice().multiply(BigDecimal.valueOf(quantity)));
+
+            existingCartItem.setTotalPrice(updatedTotalPrice);
+
+            return cartRepository.save(existingCartItem);
+        } else {
+            // Nếu chưa có, tạo mới sản phẩm trong giỏ hàng
+            CartModel newCartItem = new CartModel();
+            newCartItem.setUser(user);
+            newCartItem.setProduct(productDetail);// Liên kết ProductDetail
+            newCartItem.setTotalQuantity(quantity);
+
+            BigDecimal totalPrice = productDetail.getProductPrice().getPrice().multiply(BigDecimal.valueOf(quantity));
+            newCartItem.setTotalPrice(totalPrice);
+
+            return cartRepository.save(newCartItem);
+        }
+
     }
-
-    // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
-    CartModel existingCartItem = cartRepository.findByUserAndProduct(user, productDetail);
-
-    if (existingCartItem != null) {
-        // Nếu đã có, cập nhật số lượng và tổng giá
-        existingCartItem.setTotalQuantity(existingCartItem.getTotalQuantity() + quantity);
-    
-        BigDecimal updatedTotalPrice = existingCartItem.getTotalPrice()
-                .add(productDetail.getProductPrice().getPrice().multiply(BigDecimal.valueOf(quantity)));
-    
-        existingCartItem.setTotalPrice(updatedTotalPrice);
-    
-        return cartRepository.save(existingCartItem);
-    } else {
-        // Nếu chưa có, tạo mới sản phẩm trong giỏ hàng
-        CartModel newCartItem = new CartModel();
-        newCartItem.setUser(user);
-        newCartItem.setProduct(productDetail);// Liên kết ProductDetail
-        newCartItem.setTotalQuantity(quantity);
-    
-        BigDecimal totalPrice = productDetail.getProductPrice().getPrice().multiply(BigDecimal.valueOf(quantity));
-        newCartItem.setTotalPrice(totalPrice);
-    
-        return cartRepository.save(newCartItem);
-    }
-    
-}
 
     // Xóa sản phẩm khỏi giỏ hàng
     public void removeFromCart(int userId, int productId) {

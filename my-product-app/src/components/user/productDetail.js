@@ -20,10 +20,33 @@ const ProductDetail = () => {
   const [similarProducts, setSimilarProducts] = useState([]); // Dữ liệu sản phẩm tương tự
   const [activeTab, setActiveTab] = useState('description'); // Quản lý tab hiện tại
   const [quantity, setQuantity] = useState(1);
+  const [isFavorited, setIsFavorited] = useState(false); // Trạng thái ban đầu là chưa yêu thích
+  const [likedProducts, setLikedProducts] = useState([]); // Giả sử bạn đã có danh sách sản phẩm yêu thích của người dùng
 
   // Chuyển đổi tab khi người dùng click vào
   const handleTabClick = (tab) => {
     setActiveTab(tab);
+  };
+  const addToWishlist = async (productId) => {
+    const username = sessionStorage.getItem('username');
+    if (!username) {
+      console.error('User not logged in');
+      return;
+    }
+
+    try {
+      await axios.post('http://localhost:8080/api/likes/add', null, {
+        params: { productId },
+        headers: {
+          'Authorization': `Bearer ${username}`, // Gửi thông tin username trong header
+        },
+        withCredentials: true,
+      });
+      console.log('Sản phẩm đã được thêm vào danh sách yêu thích');
+      setIsFavorited(true); // Cập nhật trạng thái sau khi thêm thành công
+    } catch (error) {
+      console.error('Lỗi khi thêm vào danh sách yêu thích:', error);
+    }
   };
   const formatCurrencyVND = (amount) => {
     return new Intl.NumberFormat('vi-VN', {
@@ -31,7 +54,30 @@ const ProductDetail = () => {
       currency: 'VND',
     }).format(amount);
   };
+  useEffect(() => {
+    const username = sessionStorage.getItem('username');
+    if (!username) {
+      console.error('User not logged in');
+      return;
+    }
 
+    fetch('http://localhost:8080/api/likes/like-products', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${username}`,
+      },
+      credentials: 'include',
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch liked products');
+        }
+        return response.json();
+      })
+      .then((data) => setLikedProducts(data))
+      .catch((error) => console.error('Error fetching liked products:', error));
+  }, []);
   useEffect(() => {
     if (id) {
       // Gọi API để lấy thông tin sản phẩm theo ID
@@ -78,8 +124,9 @@ const ProductDetail = () => {
         setColors(data);
 
         // Chọn dung lượng đầu tiên làm mặc định
-        if (data.length > 0) {
-          setSelectedColor(data[0].colorId);
+        if (data.length > 0 && !selectedColor) {
+          setSelectedColor(data[0].colorId); // Chọn màu đầu tiên nếu chưa chọn
+          console.log("Colors data:", data);
         }
       })
       .catch((error) => console.error("Error fetching colors data", error));
@@ -95,7 +142,11 @@ const ProductDetail = () => {
   }, [id]);
 
   const handleColorChange = (colorId) => {
-    setSelectedColor(colorId);
+    const selected = colors.find((item) => item.colorId === colorId);
+    if (selected) {
+      setSelectedColor(colorId);
+    }
+
 
   };
   const navigate = useNavigate();  // Use useNavigate instead of useHistory
@@ -128,7 +179,7 @@ const ProductDetail = () => {
             userId,  // Truyền userId vào yêu cầu
             productId: product.id,
             quantity,
-            colorId: selectedColor?.colorId,
+            colorId: selectedColor || selectedColor?.colorId,
             capacity: selectedCapacity,
             priceId,
           },
@@ -162,13 +213,15 @@ const ProductDetail = () => {
   }
 
 
+
+
+  // Lấy sản phẩm yêu thích từ API
+
   return (
     <div className="body-content outer-top-xs">
-      <div className style={{ justifyContent: 'center', display: 'flex', paddingBottom: '20px' }} >
+      <div className="container">
         <div className="row single-product">
-
-          <div style={{ width: '1400px' }}>
-
+          <div style={{ width: '1400px' }}>'
             <div className="col-md-3 sidebar" style={{ backgroundColor: '#f8f8f8', padding: '15px', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }}>
               <div className="sidebar-module-container">
                 <div className="sidebar-widget">
@@ -245,184 +298,181 @@ const ProductDetail = () => {
                 </div>
               </div>
             </div>
-
-
-            <div className="detail-block">
-              <div className="row wow fadeInUp">
-                {/* Product Gallery */}
-                <div className="col-xs-12 col-sm-6 col-md-5 gallery-holder">
-                  <div className="product-item-holder size-big single-product-gallery small-gallery">
-                    <div className="image">
-                      {/* Hiển thị ảnh lớn dựa trên trạng thái */}
-                      {currentImage && (
-                        <img
-                          src={`/assets/images/${currentImage}`}
-                          className="img-responsive"
-                          alt="Product Image"
-                        />
-                      )}
-                    </div>
-                  </div>
-                  <div className="single-product-gallery-thumbs gallery-thumbs">
-                    <Swiper
-                      slidesPerView={4}
-                      spaceBetween={0}
-                      loop={true}
-                      modules={[Pagination, Navigation]}
-                      className="mySwiper"
-                    >
-                      {filteredImages.map((image, index) => (
-                        <SwiperSlide className="item" key={index}>
-                          <a
-                            className={`horizontal-thumb ${currentImage === image?.url ? "active" : ""
-                              }`}
-                            href={`#slide${index + 1}`}
-                            data-slide={index + 1}
-                            onClick={(e) => {
-                              e.preventDefault(); // Ngăn chuyển hướng
-                              handleImageClick(image?.url); // Cập nhật ảnh lớn
-                            }}
-                          >
-                            <img
-                              className="img-responsive"
-                              width="85"
-                              alt={`Product Image ${index + 1}`}
-                              src={`/assets/images/${image?.url || "default.jpg"}`}
-                            />
-                          </a>
-                        </SwiperSlide>
-                      ))}
-                    </Swiper>
-                  </div>
-                </div>
-
-                {/* Product Info */}
-                <div className="col-sm-6 col-md-7 product-info-block">
-                  <div className="product-info">
-                    <h1 className="name">{product.name}</h1>
-                    <div className="description-container m-t-20">
-                      <span>{product.description}</span>
-                      <div class="stock-container info-container m-t-10">
-                        <div class="row">
-                          <div class="col-sm-2">
-                            <div class="stock-box">
-                              <span class="label">Kho :</span>
-                            </div>
-                          </div>
-                          <div class="col-sm-9">
-                            <div class="stock-box">
-                              <span class="value" >{product.quantity}</span>
-                            </div>
-                          </div>
-                        </div>
+            <div className="col-md-9">
+              <div className="detail-block">
+                <div className="row wow fadeInUp">
+                  {/* Product Gallery */}
+                  <div className="col-xs-12 col-sm-6 col-md-5 gallery-holder">
+                    <div className="product-item-holder size-big single-product-gallery small-gallery">
+                      <div className="image">
+                        {/* Hiển thị ảnh lớn dựa trên trạng thái */}
+                        {currentImage && (
+                          <img
+                            src={`/assets/images/${currentImage}`}
+                            className="img-responsive"
+                            alt="Product Image"
+                          />
+                        )}
                       </div>
                     </div>
-                    <form onSubmit={handleAddToCart}>
-                      <input type="hidden" name="productId" value={product.id} />
-
-                      {/* Color Options */}
-                      <div className="color-options m-t-20">
-                        <h4>Chọn màu:</h4>
-                        <div style={{ display: "flex", gap: "10px" }}>
-                          {colors.map((color) => (
-                            <i
-                              key={color.colorId}
-                              style={{
-                                padding: "5px 10px",
-                                border: selectedColor === color || selectedColor === color.colorId ? "2px solid black" : "1px solid #ddd",
-                                cursor: "pointer",
-                                borderRadius: "5px",
+                    <div className="single-product-gallery-thumbs gallery-thumbs">
+                      <Swiper
+                        slidesPerView={4}
+                        spaceBetween={0}
+                        loop={true}
+                        modules={[Pagination, Navigation]}
+                        className="mySwiper"
+                      >
+                        {filteredImages.map((image, index) => (
+                          <SwiperSlide className="item" key={index}>
+                            <a
+                              className={`horizontal-thumb ${currentImage === image?.url ? "active" : ""
+                                }`}
+                              href={`#slide${index + 1}`}
+                              data-slide={index + 1}
+                              onClick={(e) => {
+                                e.preventDefault(); // Ngăn chuyển hướng
+                                handleImageClick(image?.url); // Cập nhật ảnh lớn
                               }}
-                              onClick={() => handleColorChange(color)}
                             >
-                              {color.colorName}
-                            </i>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="capacity-options m-t-20">
-                        <h4>Chọn dung lượng:</h4>
-                        <div style={{ display: "flex", gap: "10px" }}>
-                          {capacities.map((item) => (
-                            <i
-                              key={item.capacityId}
-                              style={{
-                                padding: "5px 10px",
-                                border:
-                                  selectedCapacity === item.capacityId
-                                    ? "2px solid black"
-                                    : "1px solid #9999",
-                                cursor: "pointer",
-                                borderRadius: "5px",
-                              }}
-                              onClick={() => handleCapacityChange(item.capacityId)}
-                            >
-
-                              {item.capacityName}
-                            </i>
-                          ))}
-                        </div>
-                      </div>
-                      {/* Price and Cart */}
-                      <div className="price-container info-container m-t-20">
-                        <div className="row">
-                          <div className="col-sm-6">
-                            <div className="price-box">
-                              <span className="price"> {formatCurrencyVND(price)}</span>
-                            </div>
-                          </div>
-                          <div className="col-sm-6">
-                            <div class="favorite-button m-t-10">
-
-
-                            </div>
-                          </div>
-                          <div className="col-sm-6">
-                            <div class="favorite-button m-t-10">
-
-                            </div>
-                          </div>
-
-                        </div>
-
-                      </div>
-                      <div class="quantity-container info-container">
-                        <div class="row">
-                          <div class="col-sm-2">
-                            <span class="label">Số lượng :</span>
-                          </div>
-                          <div class="col-sm-2">
-                            <div className="form-group">
-
-                              <input style={{ width: '60px' }}
-                                type="number"
-                                name="quantity"
-                                className="form-control"
-                                min="1"
-                                value={quantity}
-                                onChange={(e) => setQuantity(parseInt(e.target.value))}
+                              <img
+                                className="img-responsive"
+                                width="85"
+                                alt={`Product Image ${index + 1}`}
+                                src={`/assets/images/${image?.url || "default.jpg"}`}
                               />
+                            </a>
+                          </SwiperSlide>
+                        ))}
+                      </Swiper>
+                    </div>
+                  </div>
+
+                  {/* Product Info */}
+                  <div className="col-sm-6 col-md-7 product-info-block">
+                    <div className="product-info">
+                      <h1 className="name">{product.name}</h1>
+                      <div className="description-container m-t-20">
+                        <span>{product.description}</span>
+                        <div class="stock-container info-container m-t-10">
+                          <div class="row">
+                            <div class="col-sm-2">
+                              <div class="stock-box">
+                                <span class="label">Kho :</span>
+                              </div>
+                            </div>
+                            <div class="col-sm-9">
+                              <div class="stock-box">
+                                <span class="value" >{product.quantity}</span>
+                              </div>
                             </div>
                           </div>
-                          <div class="col-sm-4">
-                            <button type="submit" className="btn btn-primary">Thêm vào giỏ hàng</button>
+                        </div>
+                      </div>
+                      <form onSubmit={handleAddToCart}>
+                        <input type="hidden" name="productId" value={product.id} />
+
+                        {/* Color Options */}
+                        <div className="color-options m-t-20">
+                          <h4>Chọn màu:</h4>
+                          <div style={{ display: "flex", gap: "10px" }}>
+                            {colors.map((color) => (
+                              <i
+                                key={color.colorId}
+                                style={{
+                                  padding: "5px 10px",
+                                  border: selectedColor === color.colorId
+                                    ? "2px solid black" : "1px solid #ddd",
+                                  cursor: "pointer",
+                                  borderRadius: "5px",
+                                }}
+                                onClick={() => handleColorChange(color.colorId)}
+                              >
+                                {color.colorName}
+                              </i>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="capacity-options m-t-20">
+                          <h4>Chọn dung lượng:</h4>
+                          <div style={{ display: "flex", gap: "10px" }}>
+                            {capacities.map((item) => (
+                              <i
+                                key={item.capacityId}
+                                style={{
+                                  padding: "5px 10px",
+                                  border:
+                                    selectedCapacity === item.capacityId
+                                      ? "2px solid black"
+                                      : "1px solid #9999",
+                                  cursor: "pointer",
+                                  borderRadius: "5px",
+                                }}
+                                onClick={() => handleCapacityChange(item.capacityId)}
+                              >
+
+                                {item.capacityName}
+                              </i>
+                            ))}
+                          </div>
+                        </div>
+                        {/* Price and Cart */}
+                        <div className="price-container info-container m-t-20">
+                          <div className="row">
+                            <div className="col-sm-6">
+                              <div className="price-box">
+                                <span className="price"> {formatCurrencyVND(price)}</span>
+                              </div>
+                            </div>
+                            <div className="col-sm-6">
+                              <div class="favorite-button m-t-10">
+
+
+                              </div>
+                            </div>
 
                           </div>
 
                         </div>
+                        <div class="quantity-container info-container">
+                          <div class="row">
+                            <div class="col-sm-2">
+                              <span class="label">Số lượng :</span>
+                            </div>
+                            <div class="col-sm-2">
+                              <div className="form-group">
+
+                                <input style={{ width: '60px' }}
+                                  type="number"
+                                  name="quantity"
+                                  className="form-control"
+                                  min="1"
+                                  value={quantity}
+                                  onChange={(e) => setQuantity(parseInt(e.target.value))}
+                                />
+                              </div>
+                            </div>
+                            <div class="col-sm-4">
+                              <button type="submit" className="btn btn-primary">Thêm vào giỏ hàng</button>
+
+                            </div>
+
+                          </div>
 
 
-                      </div>
-                    </form>
+                        </div>
+                      </form>
+
+                    </div>
 
                   </div>
+                  {/* End Product Info */}
 
                 </div>
-                {/* End Product Info */}
-
               </div>
             </div>
           </div>
+
         </div>
       </div>
     </div>
