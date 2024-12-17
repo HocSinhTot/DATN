@@ -45,18 +45,10 @@ public class ProductModel {
 	@JoinColumn(name = "brand_id", nullable = false)
 	
 	private BrandModel brand;
-	@OneToMany(mappedBy = "product")
-	@JsonManagedReference
-	private List<ImageModel> images;
+
 	
-	// Getter và Setter
-	public List<ImageModel> getImages() {
-		return images;
-	}
 	
-	public void setImages(List<ImageModel> images) {
-		this.images = images;
-	}
+	
 	
 	// Phương thức tính giá tổng cộng nếu cần
 	public BigDecimal getTotalPrice() {

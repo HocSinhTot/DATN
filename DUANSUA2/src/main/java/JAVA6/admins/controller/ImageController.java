@@ -6,34 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import JAVA6.Model.BrandModel;
-import JAVA6.Model.CapacityModel;
-import JAVA6.Model.CategoryModel;
-import JAVA6.Model.ColorModel;
 import JAVA6.Model.ImageModel;
 import JAVA6.Model.ProductModel;
-import JAVA6.Model.UserModel;
-import JAVA6.repository.BrandRepository;
 import JAVA6.repository.ImageRepository;
-import JAVA6.repository.CapacityAdminRepository;
-import JAVA6.repository.CategoryRepository;
-import JAVA6.repository.ColorAdminRepository;
-import JAVA6.repository.UsersRepository;
-import JAVA6.service.BrandService;
-import JAVA6.service.CapacityService;
-import JAVA6.service.CategoryService;
-import JAVA6.service.ColorService;
-// import JAVA6.service.ImagesService;
-import JAVA6.service.UserService;
+import JAVA6.repository.ProductRepository;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/admin/images")
@@ -44,17 +25,22 @@ public class ImageController {
     @Autowired
     private ImageRepository imageRepository ;
 
+    @Autowired
+    private ProductRepository productRepository ;
+
     // private  ImagesService imagesService;
 
     // Lấy danh sách tất cả người dùng
     @GetMapping
-    public ResponseEntity<List<ImageModel>> getAllImage() {
-        List<ImageModel> images = imageRepository.findAllWithProducts(); // Sử dụng phương thức mới
-        if (images.isEmpty()) {
-            return ResponseEntity.noContent().build(); 
-        }
-        return ResponseEntity.ok(images); 
+public ResponseEntity<List<ImageModel>> getAllImage() {
+    List<ImageModel> images = imageRepository.findAllWithProducts(); 
+    if (images.isEmpty()) {
+        return ResponseEntity.noContent().build(); 
     }
+    logger.info("Found images: {}", images);  // Log dữ liệu để debug
+    return ResponseEntity.ok(images); 
+}
+
 
     // Lấy thông tin người dùng theo ID
     @GetMapping("/{id}")
@@ -68,72 +54,49 @@ public class ImageController {
                 .orElse(ResponseEntity.notFound().build()); // Trả về 404 nếu không tìm thấy
     }
 
-    // Thêm người dùng mới hoặc khách hàng
     @PostMapping
-    public ResponseEntity<String> createImage(@RequestPart("image") String imageJson,
-                                               @RequestParam("product_id") int productId) {
+    public ResponseEntity<String> createImage(@RequestBody ImageModel image) {
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            ImageModel image = mapper.readValue(imageJson, ImageModel.class);
-            
-            // Thiết lập sản phẩm dựa vào productId
-            ProductModel product = new ProductModel(); // Tạo mới một đối tượng sản phẩm
-            product.setId(productId);
-            image.setProduct(product);
-    
             // Kiểm tra dữ liệu hợp lệ
             if (image.getUrl() == null || image.getUrl().isEmpty()) {
                 return ResponseEntity.badRequest().body("Url is required.");
             }
-    
+            if (image.getProduct() == null ) {
+                return ResponseEntity.badRequest().body("Product is required.");
+            }
+            // Lưu sản phẩm vào cơ sở dữ liệu
             imageRepository.save(image);
             return ResponseEntity.ok("Image created successfully.");
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Error processing request: ", e);
             return ResponseEntity.status(500).body("Error creating image: " + e.getMessage());
         }
     }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<String> updateImage(
-            @PathVariable("id") int id,
-            @RequestPart("image") String imageJson,
-            @RequestParam("product_id") int productId) {
-        
-        logger.info("Updating image with ID: {}", id);
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            ImageModel image = mapper.readValue(imageJson, ImageModel.class);
-            
-            // Thiết lập sản phẩm
-            ProductModel product = new ProductModel();
-            product.setId(productId);
-            image.setProduct(product);
-            
+    
+    
+        @PutMapping("/{id}")
+        public ResponseEntity<String> updateImage(
+                @PathVariable("id") int id,
+                @RequestBody ImageModel image) {
+            logger.info("Updating product with ID: {}", id);
+    
             return imageRepository.findById(id)
                     .map(existingImage -> {
-                        image.setId(id); // Đảm bảo ID được giữ nguyên
+                        image.setId(id); // Đảm bảo giữ nguyên ID
                         imageRepository.save(image);
                         return ResponseEntity.ok("Image updated successfully.");
                     })
-                    .orElse(ResponseEntity.notFound().build());
-        } catch (IOException e) {
-            logger.error("Error processing request: ", e);
-            return ResponseEntity.status(500).body("Error updating image: " + e.getMessage());
+                    .orElse(ResponseEntity.notFound().build()); // Trả về 404 nếu không tìm thấy sản phẩm
         }
-    }
-
-
-
-    // Xóa người dùng
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteCImage(@PathVariable("id") int id) {
-        return imageRepository.findById(id)
-                .map(image -> {
-                    imageRepository.delete(image);
-                    return ResponseEntity.ok("Image deleted successfully.");
-                })
-                .orElse(ResponseEntity.notFound().build()); // Trả về 404 nếu không tìm thấy user
-    }
-
+    
+        // // Xóa người dùng
+        // @DeleteMapping("/{id}")
+        // public ResponseEntity<String> deleteImage(@PathVariable("id") int id) {
+        //     return productRepository.findById(id)
+        //             .map(image -> {
+        //                 imageRepository.delete(image);
+        //                 return ResponseEntity.ok("Image deleted successfully.");
+        //             })
+        //             .orElse(ResponseEntity.notFound().build()); // Trả về 404 nếu không tìm thấy user
+        // }
 }

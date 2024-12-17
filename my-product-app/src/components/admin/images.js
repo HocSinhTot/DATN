@@ -5,25 +5,27 @@ import axios from "axios";
 const ImageManagement = () => {
   const [image, setImage] = useState([]);
   const [popup, setPopup] = useState({ show: false, type: "", image: null });
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState([]); // Khởi tạo là mảng rỗng
 
   useEffect(() => {
     const fetchData = async () => {
-        try {
-            const [imagesRes, productRes] = await Promise.all([
-                axios.get("http://localhost:8080/api/admin/images"),
-                axios.get("http://localhost:8080/api/admin/products"),
-            ]);
-            console.log(imagesRes.data); // Kiểm tra cấu trúc dữ liệu
-            setImage(imagesRes.data);
-            setProducts(productRes.data);
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
+      try {
+        const [imagesRes, productRes] = await Promise.all([
+          axios.get("http://localhost:8080/api/admin/images"),
+          axios.get("http://localhost:8080/api/admin/products"),
+        ]);
+  
+        setImage(imagesRes.data);
+        setProducts(Array.isArray(productRes.data) ? productRes.data : []); // Kiểm tra nếu dữ liệu là mảng
+        console.log("Products:", productRes.data); // Kiểm tra xem dữ liệu sản phẩm có đầy đủ không
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     };
-
+  
     fetchData();
-}, []);
+  }, []);
+  
 
   const handleDelete = (id) => {
     setPopup({ show: true, type: "delete", image: { id } });
@@ -52,16 +54,15 @@ const ImageManagement = () => {
     e.preventDefault();
     try {
       const formData = new FormData();
-      // Thêm thông tin product_id nếu có
       formData.append("product_id", popup.image.product.id); // Thêm product_id
-      formData.append("image", JSON.stringify({ url: popup.image.url }));
-  
+      formData.append("image", popup.image.file);
+
       const method = popup.type === "edit" ? "PUT" : "POST";
       const url =
         popup.type === "edit"
           ? `http://localhost:8080/api/admin/images/${popup.image.id}`
           : "http://localhost:8080/api/admin/images";
-  
+
       const response = await axios({ method, url, data: formData });
       if (response.status === 200 || response.status === 201) {
         alert(
@@ -70,7 +71,7 @@ const ImageManagement = () => {
             : "Thêm hình ảnh thành công!"
         );
       }
-  
+
       const updatedData = await axios.get("http://localhost:8080/api/admin/images");
       setImage(updatedData.data);
       closePopup();
@@ -120,10 +121,7 @@ const ImageManagement = () => {
                 }
                 onMouseOut={(e) => (e.target.style.backgroundColor = "#28a745")}
               >
-                <i
-                  className="bi bi-plus-circle"
-                  style={{ fontSize: "32px" }}
-                ></i>
+                <i className="bi bi-plus-circle" style={{ fontSize: "32px" }}></i>
               </button>
             </div>
             <div className="card-body">
@@ -134,9 +132,7 @@ const ImageManagement = () => {
                     <th style={{ textAlign: "center" }}>Url</th>
                     <th style={{ textAlign: "center" }}>Hình ảnh</th>
                     <th style={{ textAlign: "center" }}>Sản phẩm</th>
-                    <th style={{ width: "500px", textAlign: "center" }}>
-                      Thao tác
-                    </th>
+                    <th style={{ width: "500px", textAlign: "center" }}>Thao tác</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -150,7 +146,7 @@ const ImageManagement = () => {
                           {image.url}
                         </td>
                         <td style={{ padding: "15px", textAlign: "center" }}>
-                        {image.product ? image.product.name : "N/A"}
+                          {image.product ? image.product.name : "N/A"}
                         </td>
                         <td style={{ padding: "15px", textAlign: "center" }}>
                           <img
@@ -222,7 +218,7 @@ const ImageManagement = () => {
                   ) : (
                     <tr>
                       <td colSpan="3" style={{ textAlign: "center" }}>
-                        Không tìm thấy dung lượng nào
+                        Không tìm thấy hình ảnh
                       </td>
                     </tr>
                   )}
@@ -233,7 +229,7 @@ const ImageManagement = () => {
         </div>
       </div>
 
-      {/* Popup for Add / Edit / Delete Brand */}
+      {/* Popup for Add / Edit / Delete Image */}
       {popup.show && (
         <div
           style={{
@@ -275,7 +271,6 @@ const ImageManagement = () => {
             </h3>
 
             {popup.type !== "delete" ? (
-              // Form for Add/Edit Capacity
               <form
                 onSubmit={handleSubmit}
                 style={{ maxWidth: "600px", margin: "0 auto" }}
@@ -293,14 +288,45 @@ const ImageManagement = () => {
                     name="image"
                     className="form-control"
                     onChange={(e) => {
-                      const file = e.target.files[0]; // Lấy tệp người dùng chọn
+                      const file = e.target.files[0];
                       if (file) {
-                        // Cập nhật trạng thái với tệp người dùng đã chọn
                         setPopup({ ...popup, image: { ...popup.image, file } });
                       }
                     }}
                     required
                   />
+                </div>
+                <div className="form-group">
+                  <label
+                    htmlFor="product"
+                    style={{ fontWeight: 600, fontSize: "20px" }}
+                  >
+                    Chọn sản phẩm
+                  </label>
+                  <select
+  id="product"
+  className="form-control"
+  value={popup.image && popup.image.product ? popup.image.product.id : ""} // Đảm bảo đúng value
+  onChange={(e) => {
+    const selectedProduct = products.find(
+      (product) => product.id === Number(e.target.value)  // Sử dụng Number() thay vì parseInt
+    );
+    setPopup({
+      ...popup,
+      image: { ...popup.image, product: selectedProduct }, // Cập nhật sản phẩm đã chọn
+    });
+  }}
+  required
+>
+  <option value="">Chọn sản phẩm</option>
+  {Array.isArray(products) &&
+    products.map((product) => (
+      <option key={product.id} value={product.id}>
+        {product.name}
+      </option>
+    ))}
+</select>
+
                 </div>
                 <div
                   style={{
@@ -309,20 +335,19 @@ const ImageManagement = () => {
                     marginTop: "20px",
                   }}
                 >
-                  <button type="submit" className="btn btn-primary">
-                    {popup.type === "edit" ? "Cập nhật" : "Thêm"}
+                  <button type="submit" className="btn btn-success">
+                    Lưu
                   </button>
                   <button
                     type="button"
                     className="btn btn-secondary"
                     onClick={closePopup}
                   >
-                    Đóng
+                    Hủy
                   </button>
                 </div>
               </form>
             ) : (
-              // Delete Confirmation
               <div>
                 <p>Bạn có chắc chắn muốn xóa hình ảnh này không?</p>
                 <div
@@ -333,12 +358,16 @@ const ImageManagement = () => {
                   }}
                 >
                   <button
-                    className="btn btn-danger"
                     onClick={() => confirmDelete(popup.image.id)}
+                    className="btn btn-danger"
                   >
                     Xóa
                   </button>
-                  <button className="btn btn-secondary" onClick={closePopup}>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={closePopup}
+                  >
                     Hủy
                   </button>
                 </div>

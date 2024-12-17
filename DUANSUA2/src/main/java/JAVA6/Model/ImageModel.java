@@ -1,6 +1,7 @@
 package JAVA6.Model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,7 +23,7 @@ public class ImageModel {
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 @JoinColumn(name = "product_id", nullable = false)
-@JsonBackReference
+@JsonManagedReference
 private ProductModel product;
 	
 	// Getter và Setter

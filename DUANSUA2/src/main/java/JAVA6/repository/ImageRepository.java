@@ -11,6 +11,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ImageRepository extends JpaRepository<ImageModel, Integer> {
-      @Query("SELECT i FROM ImageModel i JOIN FETCH i.product")
-    List<ImageModel> findAllWithProducts();
+  @Query("SELECT i FROM ImageModel i JOIN i.product p")
+  List<ImageModel> findAllWithProducts();
+
+
+  
 }
