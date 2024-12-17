@@ -7,6 +7,16 @@ const Header = ({ setKeyword, setCategoryId }) => {
   const [username, setUsername] = useState('');
   const [localKeyword, setLocalKeyword] = useState('');
   const [showAlert, setShowAlert] = useState(false); // Trạng thái hiển thị thông báo
+
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [options, setOptions] = useState([]);
+  const [searchLink, setSearchLink] = useState('');
+  const [userMessage, setUserMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [showSearchButton, setShowSearchButton] = useState(false);  // Trạng thái hiển thị nút tìm kiếm sau 2 giây
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,11 +34,178 @@ const Header = ({ setKeyword, setCategoryId }) => {
     }
   }, []);
 
-  const handleSearch = (e) => {
+  useEffect(() => {
+    if (chatOpen) {
+      setChatMessages([
+        { text: 'Xin chào!Bạn muốn tìm sản phẩm nào?', type: 'bot' },
+      ]);
+      setOptions(['Điện thoại', 'Laptop', 'Máy tính bảng', 'Phụ kiện']);
+    }
+  }, [chatOpen]);
+
+  useEffect(() => {
+    if (searchLink) {
+      // Sau 2 giây, hiển thị nút tìm kiếm
+      const timer = setTimeout(() => {
+        setShowSearchButton(true);
+      }, 2000); // 2 giây
+
+      return () => clearTimeout(timer); // Dọn dẹp timer khi component unmount
+    }
+  }, [searchLink]);
+
+  const handleSearch = async (e) => {
     e.preventDefault();
-    setKeyword(localKeyword);
-    navigate('/categorys');
+    if (searchLink || localKeyword) {
+      const keywordToSearch = searchLink || localKeyword; // Chọn từ khóa tìm kiếm từ searchLink hoặc localKeyword
+      setKeyword(keywordToSearch);
+      setLoading(true);
+      setErrorMessage('');
+
+      try {
+        const result = await fetch(`/api/search?query=${keywordToSearch}`);
+        if (result.ok) {
+          navigate('/categorys');
+        } else {
+          setErrorMessage('Không tìm thấy sản phẩm phù hợp.');
+        }
+      } catch (error) {
+        setErrorMessage('Đã xảy ra lỗi khi tìm kiếm.');
+      } finally {
+        setLoading(false);
+      }
+    }
   };
+
+
+  const handleOptionClick = (option) => {
+    let newMessages = [...chatMessages];
+
+    // Thêm lựa chọn của người dùng vào
+    newMessages.push({ text: option, type: 'user' });
+
+    if (option === 'Phụ kiện.') {
+      setOptions(['Phụ kiện']);
+      newMessages.push({ text: 'Chức năng này chưa có.', type: 'bot' });
+    } else if (option === 'Điện thoại') {
+      setOptions(['Apple', 'Samsung', 'Oppo', 'Xiaomi']);
+      newMessages.push({ text: 'Vui lòng chọn hãng điện thoại bạn muốn tìm:', type: 'bot' });
+    } else if (option === 'Laptop') {
+      setOptions(['Acer', 'Asus', 'Dell', 'HP', 'MSI']);
+      newMessages.push({ text: 'Vui lòng chọn hãng laptop bạn muốn tìm:', type: 'bot' });
+
+    }
+    //điện thoại
+    else if (option === 'Apple') {
+      setSearchLink('iPhone');
+      setOptions([]); // Ẩn các nút khi đã chọn
+      newMessages.push({
+        text: 'Đã tìm thành công. Vui lòng ấn vào đây để xem chi tiết.',
+
+        type: 'bot',
+      });
+    } else if (option === 'Samsung') {
+      setSearchLink('Samsung');
+      setOptions([]); // Ẩn các nút khi đã chọn
+      newMessages.push({
+        text: 'Đã tìm thành công. Vui lòng ấn vào đây để xem chi tiết.',
+        type: 'bot',
+      });
+    } else if (option === 'Oppo') {
+      setSearchLink('Oppo'); setOptions([]); // Ẩn các nút khi đã chọn
+      newMessages.push({
+        text: 'Đã tìm thành công. Vui lòng ấn vào đây để xem chi tiết.',
+        type: 'bot',
+      });
+    } else if (option === 'Xiaomi') {
+      setSearchLink('Xiaomi');
+      setOptions([]); // Ẩn các nút khi đã chọn
+      newMessages.push({
+        text: 'Đã tìm thành công. Vui lòng ấn vào đây để xem chi tiết.',
+        type: 'bot',
+      });
+
+
+
+      //laptop
+    } else if (option === 'Acer') {
+      setSearchLink('Acer');
+      setOptions([]); // Ẩn các nút khi đã chọn
+      newMessages.push({
+        text: 'Đã tìm thành công. Vui lòng ấn vào đây để xem chi tiết.',
+        type: 'bot',
+      });
+    } else if (option === 'Asus') {
+      setSearchLink('Asus');
+      setOptions([]); // Ẩn các nút khi đã chọn
+      newMessages.push({
+        text: 'Đã tìm thành công. Vui lòng ấn vào đây để xem chi tiết.',
+        type: 'bot',
+      });
+    } else if (option === 'Dell') {
+      setSearchLink('Dell');
+      setOptions([]); // Ẩn các nút khi đã chọn
+      newMessages.push({
+        text: 'Đã tìm thành công. Vui lòng ấn vào đây để xem chi tiết.',
+        type: 'bot',
+      });
+    } else if (option === 'HP') {
+      setSearchLink('HP');
+      setOptions([]); // Ẩn các nút khi đã chọn
+      newMessages.push({
+        text: 'Đã tìm thành công. Vui lòng ấn vào đây để xem chi tiết.',
+        type: 'bot',
+      });
+    } else if (option === 'MSI') {
+      setSearchLink('MSI');
+      setOptions([]); // Ẩn các nút khi đã chọn
+      newMessages.push({
+        text: 'Đã tìm thành công. Vui lòng ấn vào đây để xem chi tiết.',
+        type: 'bot',
+      });
+
+      //phụ kiện
+
+    } else if (option === 'Phụ kiện') {
+      setSearchLink('Phụ kiện');
+      setOptions([]); // Ẩn các nút khi đã chọn
+      newMessages.push({
+        text: 'Đã tìm thành công. Vui lòng ấn vào đây để xem chi tiết.',
+        type: 'bot',
+      });
+
+
+    } else {
+      setOptions([]); // Ẩn các nút nếu không có lựa chọn hợp lệ
+    }
+
+    // Cập nhật lại các tin nhắn
+    setChatMessages(newMessages);
+  };
+
+  // Reset lại trạng thái của trang
+  // Hàm reset lại chat
+  const handleResetChat = () => {
+    setChatMessages([{ text: 'Xin chào! Tôi có thể giúp gì cho bạn?', type: 'bot' }]);
+    setOptions(['Sản phẩm', 'Hỗ trợ']);
+    setSearchLink('');
+    setShowSearchButton(false);
+  };
+
+  const handleSendMessage = () => {
+    if (userMessage.trim()) {
+      setChatMessages(prevMessages => [
+        ...prevMessages,
+        { text: userMessage, type: 'user' }
+      ]);
+      setUserMessage('');
+    }
+  };
+
+
+
+
+
 
 
   const handleVoiceSearch = () => {
@@ -431,7 +608,137 @@ const Header = ({ setKeyword, setCategoryId }) => {
           </div>
         </div>
       </div>
+
+
+
+      <header className="header-style-1 container-fluid bg-light py-3">
+        <div className="container">
+          <div className="row">
+
+            <div className="col-xs-12 col-sm-12 col-md-3 top-search">
+              <button
+                onClick={() => setChatOpen(!chatOpen)}
+                className="btn btn-primary"
+                style={{ position: 'fixed', bottom: '20px', right: '20px', borderRadius: '50%', width: '50px', height: '50px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+              >
+                <span role="img" aria-label="chat">💬</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {chatOpen && (
+          <div className="chat-box" style={{
+            position: 'fixed', bottom: '70px', right: '20px', width: '300px', height: '400px', backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.2)', padding: '20px', zIndex: '9999', display: 'flex', flexDirection: 'column'
+          }}>
+            <div className="chat-header" style={{ marginBottom: '15px', fontSize: '18px', fontWeight: 'bold' }}>Chat với chúng tôi</div>
+            <div className="chat-messages" style={{
+              height: '70%', overflowY: 'auto', borderBottom: '1px solid #ccc', paddingBottom: '10px', marginBottom: '15px'
+            }}>
+              {chatMessages.map((msg, index) => (
+                <div
+                  key={index}
+                  style={{
+                    display: 'flex',
+                    justifyContent: msg.type === 'user' ? 'flex-end' : 'flex-start', // Chỉnh sửa ở đây
+                    marginBottom: '10px',
+                    opacity: 0,
+                    animation: `fadeIn 0.3s ease-out forwards ${index * 0.2}s`,
+                  }}
+                >
+                  <p
+                    style={{
+                      fontSize: '14px',
+                      color: msg.type === 'user' ? 'blue' : 'green',
+                      backgroundColor: msg.type === 'user' ? '#d1f7d6' : '#f1f1f1',
+                      borderRadius: '10px',
+                      padding: '10px',
+                      maxWidth: '80%',
+                      fontWeight: msg.type === 'user' ? 'bold' : 'normal',
+                      textAlign: msg.type === 'user' ? 'right' : 'left',
+                    }}
+                  >
+                    {msg.text}
+                  </p>
+                </div>
+              ))}
+
+              {options.length > 0 && (
+                <div className="chat-options" style={{ marginTop: '10px', display: 'flex', flexDirection: 'column' }}>
+                  {options.map((option, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleOptionClick(option)}
+                      className="btn btn-secondary"
+                      style={{
+                        marginRight: '5px', marginBottom: '5px', transition: 'background-color 0.3s ease'
+                      }}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {searchLink && !loading && showSearchButton && (
+
+                <a
+                  href="#"
+                  onClick={handleSearch}
+                  className="btn btn-info"
+                  style={{
+                    width: '100%',
+                    textAlign: 'center',
+                    textDecoration: 'underline',
+                    backgroundColor: 'transparent',  // Giảm màu nền
+                    color: '#007bff',  // Màu sắc giống liên kết
+                    border: 'none',  // Bỏ viền
+                    padding: '0',  // Loại bỏ padding mặc định
+                    fontSize: '16px',  // Kích thước font
+                    cursor: 'pointer',  // Thêm con trỏ chuột khi hover
+                  }}
+                >
+                  Tìm kiếm
+                </a>
+
+              )}
+
+              {loading && <div className="text-center">Đang tìm kiếm...</div>}
+              {errorMessage && <div className="text-danger text-center">{errorMessage}</div>}
+            </div>
+
+            {/* Nút reset trang */}
+            {/* Nút Reset */}
+            <button
+              onClick={handleResetChat}
+              className="btn btn-danger"
+              style={{
+                marginTop: '10px',
+                padding: '10px 20px',
+                backgroundColor: 'red',
+                color: 'white',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer',
+                transition: 'background-color 0.3s ease'
+              }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z" />
+                <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466" />
+              </svg>
+            </button>
+
+          </div>
+        )}
+
+
+
+      </header>
     </header>
+
+
+
   );
 };
 
