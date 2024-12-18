@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 
 const Header = ({ setKeyword, setCategoryId }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -16,7 +17,8 @@ const Header = ({ setKeyword, setCategoryId }) => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showSearchButton, setShowSearchButton] = useState(false);  // Trạng thái hiển thị nút tìm kiếm sau 2 giây
-
+  const token = sessionStorage.getItem("token"); // Lấy token từ localStorage
+  let isAdmin = false;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -54,6 +56,18 @@ const Header = ({ setKeyword, setCategoryId }) => {
     }
   }, [searchLink]);
 
+
+
+  //kiểm tra vai trò
+  if (token) {
+    try {
+      const decoded = jwtDecode(token); // Giải mã token
+      isAdmin = decoded.roles === "ROLE_ADMIN"; // Kiểm tra vai trò
+
+    } catch (error) {
+      console.error("Token không hợp lệ:", error);
+    }
+  }
   const handleSearch = async (e) => {
     e.preventDefault();
     if (searchLink || localKeyword) {
@@ -283,9 +297,11 @@ const Header = ({ setKeyword, setCategoryId }) => {
                     <li>
                       <Link to="/change" className="menu-item">Đổi mật khẩu</Link>
                     </li>
-                    <li>
-                      <Link to="/admin" className="menu-item">Quản lý</Link>
-                    </li>
+                    {isAdmin && (
+                      <li>
+                        <Link to="/admin" className="menu-item">Quản lý</Link>
+                      </li>
+                    )}
                     <li>
                       <a href="/" onClick={handleLogout} className="menu-item">Đăng xuất</a>
                     </li>
@@ -614,12 +630,21 @@ const Header = ({ setKeyword, setCategoryId }) => {
       <header className="header-style-1 container-fluid bg-light py-3">
         <div className="container">
           <div className="row">
-
             <div className="col-xs-12 col-sm-12 col-md-3 top-search">
               <button
                 onClick={() => setChatOpen(!chatOpen)}
                 className="btn btn-primary"
-                style={{ position: 'fixed', bottom: '20px', right: '20px', borderRadius: '50%', width: '50px', height: '50px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+                style={{
+                  position: 'fixed',
+                  bottom: '20px',
+                  right: '20px',
+                  borderRadius: '50%',
+                  width: '50px',
+                  height: '50px',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
               >
                 <span role="img" aria-label="chat">💬</span>
               </button>
@@ -629,19 +654,57 @@ const Header = ({ setKeyword, setCategoryId }) => {
 
         {chatOpen && (
           <div className="chat-box" style={{
-            position: 'fixed', bottom: '70px', right: '20px', width: '300px', height: '400px', backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.2)', padding: '20px', zIndex: '9999', display: 'flex', flexDirection: 'column'
+            position: 'fixed',
+            bottom: '70px',
+            right: '20px',
+            width: '350px', // Increase width
+            height: '500px', // Increase height
+            backgroundColor: '#fff',
+            borderRadius: '12px',
+            boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)', // Add smooth shadow
+            padding: '20px',
+            zIndex: '9999',
+            display: 'flex',
+            flexDirection: 'column',
+            fontFamily: 'Arial, sans-serif',
           }}>
-            <div className="chat-header" style={{ marginBottom: '15px', fontSize: '18px', fontWeight: 'bold' }}>Chat với chúng tôi</div>
+            <div className="chat-pointer" style={{
+              position: 'absolute',
+              bottom: '-10px', // Position below the chat box
+              right: '20px', // Align with the chat button
+              width: '0',
+              height: '0',
+              borderLeft: '10px solid transparent',
+              borderRight: '10px solid transparent',
+              borderTop: '10px solid #fff', // Color of the triangle (pointing downwards)
+            }} />
+
+
+            <div className="chat-header" style={{
+              marginBottom: '20px',
+              fontSize: '20px',
+              fontWeight: 'bold',
+              color: '#333',
+              borderBottom: '2px solid #007bff',
+              paddingBottom: '10px',
+            }}>
+              Chat với chúng tôi
+            </div>
+
             <div className="chat-messages" style={{
-              height: '70%', overflowY: 'auto', borderBottom: '1px solid #ccc', paddingBottom: '10px', marginBottom: '15px'
+              height: '75%', // Adjust height for message area
+              overflowY: 'auto',
+              borderBottom: '1px solid #ddd',
+              paddingBottom: '10px',
+              marginBottom: '15px',
             }}>
               {chatMessages.map((msg, index) => (
                 <div
                   key={index}
                   style={{
                     display: 'flex',
-                    justifyContent: msg.type === 'user' ? 'flex-end' : 'flex-start', // Chỉnh sửa ở đây
-                    marginBottom: '10px',
+                    justifyContent: msg.type === 'user' ? 'flex-end' : 'flex-start',
+                    marginBottom: '12px',
                     opacity: 0,
                     animation: `fadeIn 0.3s ease-out forwards ${index * 0.2}s`,
                   }}
@@ -649,13 +712,14 @@ const Header = ({ setKeyword, setCategoryId }) => {
                   <p
                     style={{
                       fontSize: '14px',
-                      color: msg.type === 'user' ? 'blue' : 'green',
-                      backgroundColor: msg.type === 'user' ? '#d1f7d6' : '#f1f1f1',
-                      borderRadius: '10px',
-                      padding: '10px',
+                      color: msg.type === 'user' ? '#0066cc' : '#444',
+                      backgroundColor: msg.type === 'user' ? '#e0f7fa' : '#f4f4f4',
+                      borderRadius: '15px',
+                      padding: '10px 15px',
                       maxWidth: '80%',
                       fontWeight: msg.type === 'user' ? 'bold' : 'normal',
                       textAlign: msg.type === 'user' ? 'right' : 'left',
+                      boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
                     }}
                   >
                     {msg.text}
@@ -664,14 +728,26 @@ const Header = ({ setKeyword, setCategoryId }) => {
               ))}
 
               {options.length > 0 && (
-                <div className="chat-options" style={{ marginTop: '10px', display: 'flex', flexDirection: 'column' }}>
+                <div className="chat-options" style={{
+                  marginTop: '10px',
+                  display: 'flex',
+                  justifyContent: 'space-between', // Align options in a row
+                  flexWrap: 'wrap', // Allow options to wrap if needed
+                }}>
                   {options.map((option, index) => (
                     <button
                       key={index}
                       onClick={() => handleOptionClick(option)}
                       className="btn btn-secondary"
                       style={{
-                        marginRight: '5px', marginBottom: '5px', transition: 'background-color 0.3s ease'
+                        padding: '6px 12px', // Smaller button size
+                        fontSize: '12px', // Smaller font size
+                        borderRadius: '8px',
+                        backgroundColor: '#007bff',
+                        color: '#fff',
+                        border: 'none',
+                        marginBottom: '5px',
+                        transition: 'background-color 0.3s ease',
                       }}
                     >
                       {option}
@@ -681,7 +757,6 @@ const Header = ({ setKeyword, setCategoryId }) => {
               )}
 
               {searchLink && !loading && showSearchButton && (
-
                 <a
                   href="#"
                   onClick={handleSearch}
@@ -690,51 +765,54 @@ const Header = ({ setKeyword, setCategoryId }) => {
                     width: '100%',
                     textAlign: 'center',
                     textDecoration: 'underline',
-                    backgroundColor: 'transparent',  // Giảm màu nền
-                    color: '#007bff',  // Màu sắc giống liên kết
-                    border: 'none',  // Bỏ viền
-                    padding: '0',  // Loại bỏ padding mặc định
-                    fontSize: '16px',  // Kích thước font
-                    cursor: 'pointer',  // Thêm con trỏ chuột khi hover
+                    backgroundColor: 'transparent',
+                    color: '#007bff',
+                    border: 'none',
+                    padding: '0',
+                    fontSize: '16px',
+                    cursor: 'pointer',
+                    fontWeight: 'bold',
+                    transition: 'color 0.3s ease',
                   }}
                 >
                   Tìm kiếm
                 </a>
-
               )}
 
-              {loading && <div className="text-center">Đang tìm kiếm...</div>}
+              {loading && <div className="text-center" style={{ color: '#007bff' }}>Đang tìm kiếm...</div>}
               {errorMessage && <div className="text-danger text-center">{errorMessage}</div>}
             </div>
 
-            {/* Nút reset trang */}
-            {/* Nút Reset */}
+            {/* Reset button */}
             <button
               onClick={handleResetChat}
               className="btn btn-danger"
               style={{
                 marginTop: '10px',
                 padding: '10px 20px',
-                backgroundColor: 'red',
+                backgroundColor: '#f44336',
                 color: 'white',
                 border: 'none',
                 borderRadius: '5px',
                 cursor: 'pointer',
-                transition: 'background-color 0.3s ease'
+                transition: 'background-color 0.3s ease',
+                fontSize: '16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
               }}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z" />
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+                <path fillRule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z" />
                 <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466" />
               </svg>
+              <span style={{ marginLeft: '8px' }}>Làm mới</span>
             </button>
-
           </div>
         )}
-
-
-
       </header>
+
     </header>
 
 
