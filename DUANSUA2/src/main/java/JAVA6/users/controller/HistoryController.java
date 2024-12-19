@@ -1,8 +1,10 @@
 package JAVA6.users.controller;
 
+import JAVA6.service.EvaluaesService;
 import JAVA6.service.HistoryService;
 import JAVA6.service.OrderDetailService;
 import JAVA6.service.OrderService; // Đảm bảo import service OrderService
+import JAVA6.Model.EvaluateModel;
 import JAVA6.Model.OrderDetailModel;
 import JAVA6.Model.OrderModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,10 @@ public class HistoryController {
     @Autowired
     private OrderService orderService;
 
+    @Autowired
+    private EvaluaesService evaluaesService;
+    
+
     @PostMapping("/api/history")
     public List<OrderModel> getOrdersByUserId(@RequestBody UserRequest userRequest) {
         return historyService.getbyIdOrders(userRequest.getUserId());
@@ -46,6 +52,17 @@ public class HistoryController {
             return new ResponseEntity<>("Không thể hủy đơn hàng. Lỗi: " + e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+    @PostMapping("/api/history/evaluate")
+public ResponseEntity<String> submitEvaluation(@RequestBody EvaluateModel evaluateModel) {
+    try {
+        evaluaesService.saveEvaluation(evaluateModel);  // Lưu trực tiếp đối tượng evaluateModel mà không cần tạo mới
+        return new ResponseEntity<>("Đánh giá của bạn đã được gửi thành công!", HttpStatus.OK);
+    } catch (Exception e) {
+        // Thêm thông báo lỗi chi tiết
+        return new ResponseEntity<>("Lỗi khi gửi đánh giá: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+}
+    
 
     // Lớp CancelRequest phải là static
     public static class CancelRequest {

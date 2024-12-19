@@ -26,6 +26,15 @@ const Discount = () => {
   const handleClosePopup = () => {
     setIsOpen(false);
   };
+
+  // Format ngày
+  const formatDate = (date) => {
+    const d = new Date(date);
+    return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1)
+      .toString()
+      .padStart(2, '0')}/${d.getFullYear()}`;
+  };
+
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -35,19 +44,27 @@ const Discount = () => {
             'Content-Type': 'application/json',
           },
         });
-  
+
         if (!response.ok) throw new Error('Failed to fetch orders');
-  
+
         const data = await response.json();
         console.log(data); // Kiểm tra dữ liệu nhận được từ API
-        setDiscount(data);
+
+        // Lọc mã giảm giá chưa hết hạn
+        const filteredDiscounts = data.filter((discount) => {
+          const currentDate = new Date();
+          const endDate = new Date(discount.endDate);
+          return endDate >= currentDate; // Lọc những mã giảm giá có ngày kết thúc lớn hơn hoặc bằng ngày hiện tại
+        });
+
+        setDiscount(filteredDiscounts);
       } catch (err) {
         setError(err.message);
       } finally {
         setLoading(false);
       }
     };
-  
+
     fetchOrders();
   }, [userId]);
 
@@ -69,17 +86,8 @@ const Discount = () => {
 
   const closeModal = () => {
     setDiscountDetails(null);
-
     setIsCancelModalOpen(false);
   };
-
-  const formatDate = (date) => {
-    const d = new Date(date);
-    return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1)
-      .toString()
-      .padStart(2, '0')}/${d.getFullYear()}`;
-  };
-
 
   return (
     <div
