@@ -12,36 +12,35 @@ import lombok.*;
 @Table(name = "Evaluates")
 public class EvaluateModel {
 
-	
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private int id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
+	private int id;
 
-    @Column(name = "star", nullable = false)
-    private int star;
+	@Column(name = "star", nullable = false)
+	private int star;
 
-    @Column(name = "comment", length = 255)
-    private String comment;
+	@Column(name = "comment", length = 255)
+	private String comment;
 
-    @Column(name = "image")
-    private String img;
+	@Column(name = "image")
+	private String img;
 
-    @Column(name = "status")
-    private Boolean status;  // Thay đổi kiểu String thành Boolean để phù hợp với kiểu dữ liệu trong cơ sở dữ liệu
-
-    @ManyToOne
-    @JoinColumn(name = "product_id")
-    private ProductModel product;
+	@Column(name = "status")
+	private Boolean status; // Thay đổi kiểu String thành Boolean để phù hợp với kiểu dữ liệu trong cơ sở dữ
+							// liệu
 
 	@ManyToOne
-    @JoinColumn(name = "user_id")
-    private UserModel user;  // Đây là đối tượng User, không phải chỉ là user_id
+	@JoinColumn(name = "product_id")
+	private ProductModel product;
 
+	@ManyToOne
+	@JoinColumn(name = "user_id")
+	private UserModel user; // Đây là đối tượng User, không phải chỉ là user_id
 
-    @ManyToOne
-    @JoinColumn(name = "order_detail_id")
-    private OrderDetailModel orderDetail;
+	@ManyToOne
+	@JoinColumn(name = "order_detail_id")
+	private OrderDetailModel orderDetail;
 
 	public int getId() {
 		return id;
@@ -90,12 +89,25 @@ public class EvaluateModel {
 	public void setUser(UserModel user) {
 		this.user = user;
 	}
+
 	public OrderDetailModel getOrderDetail() {
 		return orderDetail;
 	}
-	
+
 	public void setOrderDetail(OrderDetailModel orderDetail) {
 		this.orderDetail = orderDetail;
 	}
 
+	public int getProductId() {
+		return product != null ? product.getId() : 0; // Trả về productId nếu product không null
+	}
+
+	// Nếu cần thêm getter cho các ID khác (userId, orderDetailId)
+	public int getUserId() {
+		return user != null ? user.getId() : 0; // Trả về userId nếu user không null
+	}
+
+	public int getOrderDetailId() {
+		return orderDetail != null ? orderDetail.getId() : 0; // Trả về orderDetailId nếu orderDetail không null
+	}
 }

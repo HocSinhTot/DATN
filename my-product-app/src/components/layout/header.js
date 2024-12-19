@@ -5,8 +5,8 @@ import { jwtDecode } from 'jwt-decode';
 
 const Header = ({ setKeyword, setCategoryId }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [username, setUsername] = useState('');
-  const [localKeyword, setLocalKeyword] = useState('');
+  const [username, setUsername] = useState("");
+  const [localKeyword, setLocalKeyword] = useState("");
   const [showAlert, setShowAlert] = useState(false); // Trạng thái hiển thị thông báo
 
   const [chatOpen, setChatOpen] = useState(false);
@@ -223,15 +223,16 @@ const Header = ({ setKeyword, setCategoryId }) => {
 
 
   const handleVoiceSearch = () => {
-    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-    recognition.lang = 'vi-VN'; // Set the language for recognition (Vietnamese)
+    const recognition = new (window.SpeechRecognition ||
+      window.webkitSpeechRecognition)();
+    recognition.lang = "vi-VN"; // Set the language for recognition (Vietnamese)
     recognition.start();
 
     recognition.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
       setLocalKeyword(transcript);
       setKeyword(transcript);
-      navigate('/categorys');
+      navigate("/categorys");
     };
 
     recognition.onerror = (event) => {
@@ -242,16 +243,18 @@ const Header = ({ setKeyword, setCategoryId }) => {
   const handleLogout = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post("http://localhost:8080/api/auth/logout");
+      const response = await axios.post(
+        "http://localhost:8080/api/auth/logout"
+      );
       if (response.data.success) {
         // Clear the localStorage and update state
-        sessionStorage.removeItem('rememberMe');
-        sessionStorage.removeItem('token');
-        sessionStorage.removeItem('userId');
+        sessionStorage.removeItem("rememberMe");
+        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("userId");
         sessionStorage.removeItem("username");
         localStorage.removeItem("alertDisplayed"); // Xóa trạng thái thông báo khi đăng xuất
         setIsLoggedIn(false);
-        setUsername('');
+        setUsername("");
         navigate("/login");
       } else {
         alert("Đăng xuất không thành công.");
@@ -266,14 +269,22 @@ const Header = ({ setKeyword, setCategoryId }) => {
     navigate(`/categorys`);
   };
 
-
   return (
     <header className="header-style-1 container-fluid bg-light py-3">
-      <div className="top-bar animate-dropdown" style={{ paddingLeft: '371px' }}>
+      <div
+        className="top-bar animate-dropdown"
+        style={{ paddingLeft: "371px" }}
+      >
         <div className="container">
           <div className="header-top-inner">
             <div className="cnt-account">
               <ul className="account-menu">
+                <li>
+                  <Link to="/discount" className="menu-item">
+                    <i className="icon fa fa-tag"></i> Mã giảm giá
+                  </Link>
+                </li>
+
                 <li>
                   <Link to="/account" className="menu-item">
                     <i className="icon fa fa-user"></i> Tài khoản
@@ -295,7 +306,9 @@ const Header = ({ setKeyword, setCategoryId }) => {
                       Xin chào, <span className="username">{username}</span>!
                     </li>
                     <li>
-                      <Link to="/change" className="menu-item">Đổi mật khẩu</Link>
+                      <Link to="/change" className="menu-item">
+                        Đổi mật khẩu
+                      </Link>
                     </li>
                     {isAdmin && (
                       <li>
@@ -303,7 +316,9 @@ const Header = ({ setKeyword, setCategoryId }) => {
                       </li>
                     )}
                     <li>
-                      <a href="/" onClick={handleLogout} className="menu-item">Đăng xuất</a>
+                      <a href="/" onClick={handleLogout} className="menu-item">
+                        Đăng xuất
+                      </a>
                     </li>
                   </>
                 ) : (
@@ -320,51 +335,61 @@ const Header = ({ setKeyword, setCategoryId }) => {
       </div>
 
       {/* Hiệu ứng vòng tròn */}
-      <div className={`alert ${showAlert ? 'show' : ''}`} style={{
-        position: 'fixed',
-        top: '30px',
-        left: '85%',
-        transform: 'translateX(-50%)',
-        background: 'linear-gradient(45deg, #4caf50, #8bc34a)',
-        color: 'white',
-        padding: '8px 25px',
-        width: '350px',
-        borderRadius: '8px',
-        fontSize: '12px',
-        boxShadow: '0 3px 8px rgba(0, 0, 0, 0.15)',
-        zIndex: 1000,
-        opacity: showAlert ? 1 : 0,
-        transform: showAlert ? 'translate(-50%, 0)' : 'translateY(-50px)',
-        transition: 'opacity 0.6s ease-in-out, transform 0.6s ease-in-out',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}>
-        <div className="containers" style={{
-          position: 'absolute',
-          top: '50%',
-          left: '10%',
-          transform: 'translate(-50%, -50%)',
-          borderRadius: '50%',
-          height: '30px',
-          width: '30px',
-          animation: 'rotate_3922 1.2s linear infinite',
-          backgroundColor: '#9b59b6',
-          backgroundImage: 'linear-gradient(#9b59b6, #84cdfa, #5ad1cd)',
-          overflow: 'hidden',
-        }}>
+      <div
+        className={`alert ${showAlert ? "show" : ""}`}
+        style={{
+          position: "fixed",
+          top: "30px",
+          left: "85%",
+          transform: "translateX(-50%)",
+          background: "linear-gradient(45deg, #4caf50, #8bc34a)",
+          color: "white",
+          padding: "8px 25px",
+          width: "350px",
+          borderRadius: "8px",
+          fontSize: "12px",
+          boxShadow: "0 3px 8px rgba(0, 0, 0, 0.15)",
+          zIndex: 1000,
+          opacity: showAlert ? 1 : 0,
+          transform: showAlert ? "translate(-50%, 0)" : "translateY(-50px)",
+          transition: "opacity 0.6s ease-in-out, transform 0.6s ease-in-out",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <div
+          className="containers"
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "10%",
+            transform: "translate(-50%, -50%)",
+            borderRadius: "50%",
+            height: "30px",
+            width: "30px",
+            animation: "rotate_3922 1.2s linear infinite",
+            backgroundColor: "#9b59b6",
+            backgroundImage: "linear-gradient(#9b59b6, #84cdfa, #5ad1cd)",
+            overflow: "hidden",
+          }}
+        >
           {/* Lỗ tròn ở giữa */}
-          <div style={{
-            position: 'absolute',
-            top: '10px',
-            left: '10px',
-            right: '10px',
-            bottom: '10px',
-            backgroundColor: 'white',
-            borderRadius: '50%',
-          }}></div>
+          <div
+            style={{
+              position: "absolute",
+              top: "10px",
+              left: "10px",
+              right: "10px",
+              bottom: "10px",
+              backgroundColor: "white",
+              borderRadius: "50%",
+            }}
+          ></div>
         </div>
-        <p style={{ marginLeft: '50px' }}>Đăng nhập thành công! Chào mừng bạn!</p>
+        <p style={{ marginLeft: "50px" }}>
+          Đăng nhập thành công! Chào mừng bạn!
+        </p>
       </div>
 
       <style>
@@ -380,24 +405,32 @@ const Header = ({ setKeyword, setCategoryId }) => {
         `}
       </style>
 
-      <div className="main-header" style={{
-        width: '1567px'
-      }}>
+      <div
+        className="main-header"
+        style={{
+          width: "1567px",
+        }}
+      >
         <div className="container">
-          <div className="row" style={{ width: '1330px' }}>
+          <div className="row" style={{ width: "1330px" }}>
             <div className="col-xs-12 col-sm-12 col-md-3 logo-holder">
               <div className="logo">
                 <Link to="/">
-                  <img style={{
-                    width: '120px',
-                    height: '111px', marginRight: "100px"
-                  }} src="/assets/images/banners/logo1.jpg" alt="logo" />
+                  <img
+                    style={{
+                      width: "120px",
+                      height: "111px",
+                      marginRight: "100px",
+                    }}
+                    src="/assets/images/banners/logo1.jpg"
+                    alt="logo"
+                  />
                 </Link>
               </div>
             </div>
 
             <div className="col-xs-12 col-sm-12 col-md-6 top-search-holder">
-              <div className="search-area" style={{ width: '620px' }}>
+              <div className="search-area" style={{ width: "620px" }}>
                 <form
                   onSubmit={handleSearch}
                   style={{
@@ -405,11 +438,11 @@ const Header = ({ setKeyword, setCategoryId }) => {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    width: "100%",  // Form chiếm toàn bộ chiều rộng
+                    width: "100%", // Form chiếm toàn bộ chiều rộng
                     maxWidth: "100%",
 
                     height: "56px",
-                    background: "transparent",  // Không có nền
+                    background: "transparent", // Không có nền
                     border: "none",
                     boxShadow: "none",
                   }}
@@ -421,35 +454,34 @@ const Header = ({ setKeyword, setCategoryId }) => {
                     style={{
                       flex: 1,
 
-                      border: "none",  // Không có viền
+                      border: "none", // Không có viền
                       height: "100%",
                       paddingLeft: "20px",
                       fontSize: "16px",
                       color: "#a9c7ff",
                       outline: "none",
-                      borderRadius: "0",  // Không bo góc
+                      borderRadius: "0", // Không bo góc
                     }}
                   />
                   <button
                     type="submit"
                     style={{
-                      width: "56px",  // Chiều rộng bằng với chiều rộng của input
-                      height: "56px",  // Chiều cao đầy đủ
+                      width: "56px", // Chiều rộng bằng với chiều rộng của input
+                      height: "56px", // Chiều cao đầy đủ
                       background: "linear-gradient(180deg, #1c2452, #2a3875)",
-                      border: "none",  // Không có viền
+                      border: "none", // Không có viền
                       color: "white",
                       fontSize: "16px",
                       cursor: "pointer",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      borderRadius: "0",  // Không bo góc
-                      padding: "0",  // Loại bỏ padding
+                      borderRadius: "0", // Không bo góc
+                      padding: "0", // Loại bỏ padding
                     }}
                   >
                     🔍
                   </button>
-
 
                   {/* Voice search button */}
                   <button
@@ -457,26 +489,32 @@ const Header = ({ setKeyword, setCategoryId }) => {
                     onClick={handleVoiceSearch}
                     className="btn btn-warning d-flex align-items-center justify-content-center rounded-circle"
                     style={{
-                      width: "56px",  // Chiều rộng bằng với chiều rộng của input
-                      height: "56px",  // Chiều cao đầy đủ
+                      width: "56px", // Chiều rộng bằng với chiều rộng của input
+                      height: "56px", // Chiều cao đầy đủ
                       background: "linear-gradient(180deg, #1c2452, #2a3875)",
-                      border: "none",  // Không có viền
+                      border: "none", // Không có viền
                       color: "white",
                       fontSize: "16px",
                       cursor: "pointer",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      borderRadius: "0",  // Không bo góc
-                      padding: "0",  // Loại bỏ padding
+                      borderRadius: "0", // Không bo góc
+                      padding: "0", // Loại bỏ padding
                     }}
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-mic" viewBox="0 0 16 16">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill="currentColor"
+                      class="bi bi-mic"
+                      viewBox="0 0 16 16"
+                    >
                       <path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5" />
                       <path d="M10 8a2 2 0 1 1-4 0V3a2 2 0 1 1 4 0zM8 0a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V3a3 3 0 0 0-3-3" />
                     </svg>
                   </button>
-
                 </form>
 
                 <div className="galaxy"></div>
@@ -569,29 +607,35 @@ const Header = ({ setKeyword, setCategoryId }) => {
   }
 `}
                 </style>
-
-
               </div>
             </div>
-            <div className="col-xs-12 col-sm-12 col-md-3 top-search" style={{ paddingTop: '9px', paddingLeft: '79px' }}>
-              <Link to="/cart" style={{
-                display: 'flex',
-                alignItems: 'center',
-                textDecoration: 'none',
-                backgroundColor: '#0f6cb2',  // Màu nền của ô vuông
-                padding: '10px 20px',      // Khoảng cách bên trong ô vuông
-                borderRadius: '5px',       // Bo tròn các góc của ô vuông
-                color: 'white',            // Màu chữ
-                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-                width: '158px',  // Đổ bóng nhẹ cho ô vuông
-              }}>
-                <i className="icon fa fa-shopping-cart" style={{ fontSize: '36px', marginRight: '10px' }}></i>
-                <span style={{ fontSize: '12px', fontWeight: '500' }}>Xem giỏ hàng</span>
+            <div
+              className="col-xs-12 col-sm-12 col-md-3 top-search"
+              style={{ paddingTop: "9px", paddingLeft: "79px" }}
+            >
+              <Link
+                to="/cart"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  textDecoration: "none",
+                  backgroundColor: "#0f6cb2", // Màu nền của ô vuông
+                  padding: "10px 20px", // Khoảng cách bên trong ô vuông
+                  borderRadius: "5px", // Bo tròn các góc của ô vuông
+                  color: "white", // Màu chữ
+                  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                  width: "158px", // Đổ bóng nhẹ cho ô vuông
+                }}
+              >
+                <i
+                  className="icon fa fa-shopping-cart"
+                  style={{ fontSize: "36px", marginRight: "10px" }}
+                ></i>
+                <span style={{ fontSize: "12px", fontWeight: "500" }}>
+                  Xem giỏ hàng
+                </span>
               </Link>
             </div>
-
-
-
           </div>
         </div>
       </div>
@@ -600,7 +644,12 @@ const Header = ({ setKeyword, setCategoryId }) => {
         <div className="container">
           <div className="yamm navbar navbar-default" role="navigation">
             <div className="navbar-header">
-              <button data-target="#mc-horizontal-menu-collapse" data-toggle="collapse" className="navbar-toggle collapsed" type="button">
+              <button
+                data-target="#mc-horizontal-menu-collapse"
+                data-toggle="collapse"
+                className="navbar-toggle collapsed"
+                type="button"
+              >
                 <span className="sr-only">Toggle navigation</span>
                 <span className="icon-bar"></span>
                 <span className="icon-bar"></span>
@@ -608,15 +657,78 @@ const Header = ({ setKeyword, setCategoryId }) => {
               </button>
             </div>
             <div className="nav-bg-class">
-              <div className="navbar-collapse collapse" id="mc-horizontal-menu-collapse">
+              <div
+                className="navbar-collapse collapse"
+                id="mc-horizontal-menu-collapse"
+              >
                 <div className="nav-outer">
-                  <ul className="nav navbar-nav" style={{ height: '55px', paddingLeft: '120px' }}>
-                    <li className="active dropdown yamm-fw"><Link style={{ padding: '15px 20px 0 20px', height: '54px' }} to="/" className="dropdown-toggle">Trang chủ</Link></li>
-                    <li className="dropdown yamm mega-menu"><Link style={{ padding: '15px 20px 0 20px', height: '54px' }} to="/categorys" onClick={() => handleCategoryClick(1)} className="dropdown-toggle" data-toggle="dropdown">Điện thoại di động</Link></li>
-                    <li className="dropdown mega-menu"><Link style={{ padding: '15px 20px 0 20px', height: '54px' }} to="/categorys" onClick={() => handleCategoryClick(2)} className="dropdown-toggle" data-toggle="dropdown">Laptop</Link></li>
-                    <li className="dropdown mega-menu"><Link style={{ padding: '15px 20px 0 20px', height: '54px' }} to="/categorys" onClick={() => handleCategoryClick(3)} className="dropdown-toggle" data-toggle="dropdown">Máy tính bảng</Link></li>
-                    <li className="dropdown mega-menu"><Link style={{ padding: '15px 20px 0 20px', height: '54px' }} to="/categorys" onClick={() => handleCategoryClick(4)} className="dropdown-toggle" data-toggle="dropdown">Phụ kiện</Link></li>
-                    <li className="dropdown yamm-fw"><Link style={{ padding: '15px 20px 0 20px', height: '54px' }} to="/categorys" onClick={() => handleCategoryClick()} className="dropdown-toggle">Sản phẩm</Link></li>
+                  <ul
+                    className="nav navbar-nav"
+                    style={{ height: "55px", paddingLeft: "120px" }}
+                  >
+                    <li className="active dropdown yamm-fw">
+                      <Link
+                        style={{ padding: "15px 20px 0 20px", height: "54px" }}
+                        to="/"
+                        className="dropdown-toggle"
+                      >
+                        Trang chủ
+                      </Link>
+                    </li>
+                    <li className="dropdown yamm mega-menu">
+                      <Link
+                        style={{ padding: "15px 20px 0 20px", height: "54px" }}
+                        to="/categorys"
+                        onClick={() => handleCategoryClick(1)}
+                        className="dropdown-toggle"
+                        data-toggle="dropdown"
+                      >
+                        Điện thoại di động
+                      </Link>
+                    </li>
+                    <li className="dropdown mega-menu">
+                      <Link
+                        style={{ padding: "15px 20px 0 20px", height: "54px" }}
+                        to="/categorys"
+                        onClick={() => handleCategoryClick(2)}
+                        className="dropdown-toggle"
+                        data-toggle="dropdown"
+                      >
+                        Laptop
+                      </Link>
+                    </li>
+                    <li className="dropdown mega-menu">
+                      <Link
+                        style={{ padding: "15px 20px 0 20px", height: "54px" }}
+                        to="/categorys"
+                        onClick={() => handleCategoryClick(3)}
+                        className="dropdown-toggle"
+                        data-toggle="dropdown"
+                      >
+                        Máy tính bảng
+                      </Link>
+                    </li>
+                    <li className="dropdown mega-menu">
+                      <Link
+                        style={{ padding: "15px 20px 0 20px", height: "54px" }}
+                        to="/categorys"
+                        onClick={() => handleCategoryClick(4)}
+                        className="dropdown-toggle"
+                        data-toggle="dropdown"
+                      >
+                        Phụ kiện
+                      </Link>
+                    </li>
+                    <li className="dropdown yamm-fw">
+                      <Link
+                        style={{ padding: "15px 20px 0 20px", height: "54px" }}
+                        to="/categorys"
+                        onClick={() => handleCategoryClick()}
+                        className="dropdown-toggle"
+                      >
+                        Sản phẩm
+                      </Link>
+                    </li>
                   </ul>
                 </div>
               </div>

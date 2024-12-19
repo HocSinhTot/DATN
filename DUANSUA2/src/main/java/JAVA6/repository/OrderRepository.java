@@ -35,4 +35,13 @@ public interface OrderRepository extends JpaRepository<OrderModel, Integer> {
 			"ORDER BY Month")
 	List<Object[]> getMonthlyRevenueByYear(@Param("year") Integer year);
 
-}
+	@Query(value = "SELECT c.name AS categoryName, " +
+			"(SUM(od.totalquantity) * 100.0 / (SELECT SUM(od2.totalquantity) FROM orderDetails od2)) AS percentage " +
+			"FROM orders o " +
+			"JOIN orderDetails od ON o.id = od.order_id " +
+			"JOIN productDetail pd ON od.product_detail_id = pd.id " +
+			"JOIN products p ON pd.product_id = p.id " +
+			"JOIN categories c ON p.categories_id = c.id " +
+			"GROUP BY c.name", nativeQuery = true)
+	List<Object[]> findTotalQuantityByCategory();
+};

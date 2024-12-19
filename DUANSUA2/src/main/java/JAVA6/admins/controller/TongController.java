@@ -50,19 +50,17 @@ public class TongController {
         return ResponseEntity.ok(totalRevenue);
     }
 
-    
-        @GetMapping("/monthly-revenue")
+    @GetMapping("/monthly-revenue")
     public ResponseEntity<List<Object[]>> getMonthlyRevenueByYear(@RequestParam("year") Integer year) {
         List<Object[]> monthlyRevenue = orderService.getMonthlyRevenueByYear(year);
         return ResponseEntity.ok(monthlyRevenue);
-    
-    
+
     }
 
-
-
-
-
-    
+    @GetMapping("/total-by-category")
+    public ResponseEntity<List<Object[]>> getTotalQuantityByCategory() {
+        List<Object[]> totalByCategory = orderService.getTotalQuantityByCategory();
+        return ResponseEntity.ok(totalByCategory);
+    }
 
 }

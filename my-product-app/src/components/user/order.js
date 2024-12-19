@@ -10,6 +10,7 @@ const OrderHistory = () => {
   const [cancelReason, setCancelReason] = useState('');
   const [orderIdToCancel, setOrderIdToCancel] = useState(null);
   const [loadingCancel, setLoadingCancel] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   const userId = sessionStorage.getItem('userId');
   const [rating, setRating] = useState(0); // State cho số sao
@@ -32,21 +33,22 @@ const OrderHistory = () => {
       console.error('Sự kiện không có target!');
     }
   };
-  
 
-  
+
+
   const [isOpen, setIsOpen] = useState(false);
 
   // Mở Popup
   const handleOpenPopup = () => {
     setIsOpen(true);
+
   };
 
   // Đóng Popup
   const handleClosePopup = () => {
     setIsOpen(false);
   };
-  
+
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -81,6 +83,13 @@ const OrderHistory = () => {
 
       const data = await response.json();
       setOrderDetails(data);
+
+      // Lấy sản phẩm từ chi tiết đơn hàng
+      if (data.length > 0) {
+        setSelectedProduct(data.product); // Lấy sản phẩm đầu tiên
+      } else {
+        setSelectedProduct(null);
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -88,12 +97,14 @@ const OrderHistory = () => {
     }
   };
 
+
   const closeModal = () => {
     setOrderDetails(null);
     setIsCancelModalOpen(false);
     setCancelReason('');
   };
-  
+
+
   const closeModalhuy = () => {
     setIsCancelModalOpen(false);
     setCancelReason('');
@@ -162,58 +173,47 @@ const OrderHistory = () => {
     );
 
   if (error) return <div>Error: {error}</div>;
-
-  const handleSubmitReview = async () => {
+  const handleSubmitReview = async (orderDetailId) => {
     const userId = sessionStorage.getItem('userId');
-    // Kiểm tra nếu userId là null hoặc không hợp lệ
     if (!userId || userId === 'null') {
-        alert('Bạn cần đăng nhập để gửi đánh giá.');
-        return;
+      alert('Bạn cần đăng nhập để gửi đánh giá.');
+      return;
     }
 
-    // Kiểm tra xem reviewText có hợp lệ không
     if (!reviewText || reviewText.trim() === "") {
-        alert('Vui lòng nhập nội dung đánh giá.');
-        return;
+      alert('Vui lòng nhập nội dung đánh giá.');
+      return;
     }
 
-    const productId = null; // Cấp giá trị thích hợp cho productId nếu có
-    const orderDetailId = null; // Cấp giá trị thích hợp cho orderDetailId nếu cần
-
-    // Gửi đối tượng user thay vì chỉ user_id
-    const user = { id: parseInt(userId, 10) }; // Tạo đối tượng user với userId hợp lệ
-
-    const evaluationData = {
-        star: rating,
-        image: image, // Nếu cần lưu trữ nhiều hình ảnh, bạn cần chuyển đổi chúng thành chuỗi hoặc lưu trữ theo cách bạn quản lý
-        comment: reviewText, // Đảm bảo reviewText không phải là null hay chuỗi rỗng
-        status: true, // Tạm thời bạn có thể để true
-        user: user, // Truyền đối tượng user
-        product_id: productId, // Truyền giá trị hợp lệ cho productId (có thể null nếu cần)
-        order_detail_id: orderDetailId // Truyền giá trị hợp lệ cho orderDetailId (có thể null nếu cần)
-    };
-
-    console.log('Evaluation Data:', evaluationData);
+    const productId = selectedProduct.product.id; // Lấy productId từ selectedProduct
+    const evaluationData = new FormData();
+    evaluationData.append('star', rating);
+    evaluationData.append('image', image);  // Đảm bảo 'image' là đối tượng File
+    evaluationData.append('comment', reviewText);
+    evaluationData.append('status', true);
+    evaluationData.append('userId', parseInt(userId, 10));
+    evaluationData.append('productId', productId);
+    evaluationData.append('orderDetailId', orderDetailId); // Sử dụng orderDetailId đã truyền vào
 
     try {
-        const response = await fetch('http://localhost:8080/api/history/evaluate', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(evaluationData), // Truyền trực tiếp data mà không cần thêm dấu {} quanh nó
-        });
+      const response = await fetch('http://localhost:8080/api/history/evaluate', {
+        method: 'POST',
+        body: evaluationData,  // Gửi FormData làm body của yêu cầu
+      });
 
-        if (!response.ok) {
-            throw new Error('Failed to submit review');
-        }
+      if (!response.ok) {
+        throw new Error('Failed to submit review');
+      }
 
-        alert('Đánh giá của bạn đã được gửi thành công!');
-        handleClosePopup(); // Đóng popup sau khi gửi thành công
+      alert('Đánh giá của bạn đã được gửi thành công!');
+      handleClosePopup();
     } catch (error) {
-        alert(`Lỗi: ${error.message}`);
+      alert(`Lỗi: ${error.message}`);
     }
-};
+  };
+
+
+
 
 
 
@@ -233,7 +233,7 @@ const OrderHistory = () => {
         <h2 style={{ textAlign: 'center', color: '#333', fontSize: '2.5rem' }}>
           Đơn hàng của bạn
         </h2>
-        
+
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'center' }}>
           {orders.map((order) => (
             <div
@@ -287,32 +287,105 @@ const OrderHistory = () => {
               <button
                 onClick={() => fetchOrderDetails(order.id)}
                 style={{
-                  width: "100%", 
-                  padding: "12px", 
-                  marginTop: "10px", 
-                  border: "none", 
-                  borderRadius: "10px", 
-                  backgroundColor: "#007bff", 
-                  color: "#fff", 
-                  cursor: "pointer", 
-                  fontWeight: "bold", 
-                  fontSize: "16px", 
-                  boxShadow: "0 5px 10px rgba(0, 123, 255, 0.3)", 
+                  width: "100%",
+                  padding: "12px",
+                  marginTop: "10px",
+                  border: "none",
+                  borderRadius: "10px",
+                  backgroundColor: "#007bff",
+                  color: "#fff",
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                  fontSize: "16px",
+                  boxShadow: "0 5px 10px rgba(0, 123, 255, 0.3)",
                   transition: "all 0.3s ease",
                 }}
                 onMouseOver={(e) => {
-                  e.target.style.backgroundColor = "#0056b3"; 
+                  e.target.style.backgroundColor = "#0056b3";
                   e.target.style.boxShadow = "0 8px 15px rgba(0, 86, 179, 0.4)";
                 }}
                 onMouseOut={(e) => {
-                  e.target.style.backgroundColor = "#007bff"; 
+                  e.target.style.backgroundColor = "#007bff";
                   e.target.style.boxShadow = "0 5px 10px rgba(0, 123, 255, 0.3)";
                 }}
               >
                 Xem chi tiết
               </button>
-              <button onClick={() => openCancelModal(order.id)} style={{ width: "100%", padding: "12px", marginTop: "10px", border: "none", borderRadius: "10px", backgroundColor: "#ff6b6b", color: "#fff", cursor: "pointer", fontWeight: "bold" }}>Hủy đơn hàng</button>
-              <button onClick={handleOpenPopup} style={{ width: "100%", padding: "12px", marginTop: "10px", border: "none", borderRadius: "10px", backgroundColor: "#28a745", color: "#fff", cursor: "pointer", fontWeight: "bold" }}>Đánh giá</button>
+              {/* Hiển thị nút "Hủy đơn hàng" khi trạng thái là Số 1 hoặc Số 2 */}
+              {(order.orderStatus.status === 'Chờ xác nhận' || order.orderStatus.status === 'Đã xác nhận') && (
+                <button
+                  onClick={() => openCancelModal(order.id)}
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    marginTop: "10px",
+                    border: "none",
+                    borderRadius: "10px",
+                    backgroundColor: "#ff6b6b",
+                    color: "#fff",
+                    cursor: "pointer",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Hủy đơn hàng
+                </button>
+              )}
+              {/* Kiểm tra trạng thái là số 6 và hiển thị nút "Đánh giá" */}
+              {order.orderStatus.status === 'Đã giao' && (
+                <button
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    marginTop: "10px",
+                    border: "none",
+                    borderRadius: "10px",
+                    backgroundColor: "#28a745",
+                    color: "#fff",
+                    cursor: "pointer",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Hoàn thành
+                </button>
+              )}
+              {/* Kiểm tra trạng thái là số 6 và hiển thị nút "Đánh giá" */}
+              {order.orderStatus.status === 'Đã giao' && (
+                <button
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    marginTop: "10px",
+                    border: "none",
+                    borderRadius: "10px",
+                    backgroundColor: "#ff6b6b",
+                    color: "#fff",
+                    cursor: "pointer",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Chưa nhận được hàng
+                </button>
+              )}
+
+              {/* Kiểm tra trạng thái là số 6 và hiển thị nút "Đánh giá" */}
+              {order.orderStatus.status === 'Đã hoàn thành' && (
+                <button
+                  onClick={handleOpenPopup}
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    marginTop: "10px",
+                    border: "none",
+                    borderRadius: "10px",
+                    backgroundColor: "red",
+                    color: "#fff",
+                    cursor: "pointer",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Đánh giá
+                </button>
+              )}
             </div>
           ))}
         </div>
@@ -365,12 +438,12 @@ const OrderHistory = () => {
                     transition: 'all 0.3s ease',
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#e6f0fa'; 
-                    e.currentTarget.style.boxShadow = '0 6px 15px rgba(0, 0, 0, 0.2)'; 
+                    e.currentTarget.style.backgroundColor = '#e6f0fa';
+                    e.currentTarget.style.boxShadow = '0 6px 15px rgba(0, 0, 0, 0.2)';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = '#f4f8fb'; 
-                    e.currentTarget.style.boxShadow = '0 4px 10px rgba(0, 0, 0, 0.1)'; 
+                    e.currentTarget.style.backgroundColor = '#f4f8fb';
+                    e.currentTarget.style.boxShadow = '0 4px 10px rgba(0, 0, 0, 0.1)';
                   }}
                 >
                   <strong style={{ color: '#4a90e2' }}>Sản phẩm:</strong> {detail.product.product.name} <br />
@@ -390,6 +463,24 @@ const OrderHistory = () => {
                   </div>
                   <strong style={{ color: '#4a90e2' }}>Số lượng:</strong> {detail.totalQuantity} <br />
                   <strong style={{ color: '#4a90e2' }}>Giá:</strong> {formatCurrency(detail.product.price)} <br />
+
+                  {/* Thêm nút đánh giá và truyền orderDetailId */}
+                  <button
+                    onClick={handleOpenPopup}
+                    style={{
+                      width: "100%",
+                      padding: "12px",
+                      marginTop: "10px",
+                      border: "none",
+                      borderRadius: "10px",
+                      backgroundColor: "red",
+                      color: "#fff",
+                      cursor: "pointer",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Đánh giá
+                  </button>
                 </li>
               ))}
             </ul>
@@ -398,24 +489,24 @@ const OrderHistory = () => {
               <button
                 onClick={closeModal}
                 style={{
-                  padding: "12px 24px", 
-                  backgroundColor: "#6c757d", 
-                  border: "none", 
-                  borderRadius: "10px", 
-                  color: "#fff", 
-                  fontWeight: "bold", 
-                  cursor: "pointer", 
-                  fontSize: "16px", 
-                  boxShadow: "0 5px 10px rgba(108, 117, 125, 0.3)", 
-                  transition: "all 0.3s ease", 
+                  padding: "12px 24px",
+                  backgroundColor: "#6c757d",
+                  border: "none",
+                  borderRadius: "10px",
+                  color: "#fff",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                  fontSize: "16px",
+                  boxShadow: "0 5px 10px rgba(108, 117, 125, 0.3)",
+                  transition: "all 0.3s ease",
                 }}
                 onMouseOver={(e) => {
-                  e.target.style.backgroundColor = "#5a6268"; 
-                  e.target.style.boxShadow = "0 8px 15px rgba(90, 98, 104, 0.4)"; 
+                  e.target.style.backgroundColor = "#5a6268";
+                  e.target.style.boxShadow = "0 8px 15px rgba(90, 98, 104, 0.4)";
                 }}
                 onMouseOut={(e) => {
-                  e.target.style.backgroundColor = "#6c757d"; 
-                  e.target.style.boxShadow = "0 5px 10px rgba(108, 117, 125, 0.3)"; 
+                  e.target.style.backgroundColor = "#6c757d";
+                  e.target.style.boxShadow = "0 5px 10px rgba(108, 117, 125, 0.3)";
                 }}
               >
                 Đóng
@@ -471,24 +562,24 @@ const OrderHistory = () => {
               <button
                 onClick={handleCancelOrder}
                 style={{
-                  padding: "12px 24px", 
-                  backgroundColor: "#e74c3c", 
-                  border: "none", 
-                  borderRadius: "10px", 
-                  color: "#fff", 
-                  fontWeight: "bold", 
-                  cursor: "pointer", 
-                  fontSize: "16px", 
-                  boxShadow: "0 5px 10px rgba(231, 76, 60, 0.3)", 
-                  transition: "all 0.3s ease", 
+                  padding: "12px 24px",
+                  backgroundColor: "#e74c3c",
+                  border: "none",
+                  borderRadius: "10px",
+                  color: "#fff",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                  fontSize: "16px",
+                  boxShadow: "0 5px 10px rgba(231, 76, 60, 0.3)",
+                  transition: "all 0.3s ease",
                 }}
                 onMouseOver={(e) => {
-                  e.target.style.backgroundColor = "#c0392b"; 
-                  e.target.style.boxShadow = "0 8px 15px rgba(192, 57, 43, 0.4)"; 
+                  e.target.style.backgroundColor = "#c0392b";
+                  e.target.style.boxShadow = "0 8px 15px rgba(192, 57, 43, 0.4)";
                 }}
                 onMouseOut={(e) => {
-                  e.target.style.backgroundColor = "#e74c3c"; 
-                  e.target.style.boxShadow = "0 5px 10px rgba(231, 76, 60, 0.3)"; 
+                  e.target.style.backgroundColor = "#e74c3c";
+                  e.target.style.boxShadow = "0 5px 10px rgba(231, 76, 60, 0.3)";
                 }}
               >
                 Xác nhận hủy
@@ -496,25 +587,25 @@ const OrderHistory = () => {
               <button
                 onClick={closeModalhuy}
                 style={{
-                  marginLeft: "10px", 
-                  padding: "12px 24px", 
-                  backgroundColor: "#6c757d", 
-                  border: "none", 
-                  borderRadius: "10px", 
-                  color: "#fff", 
-                  fontWeight: "bold", 
-                  cursor: "pointer", 
-                  fontSize: "16px", 
-                  boxShadow: "0 5px 10px rgba(108, 117, 125, 0.3)", 
-                  transition: "all 0.3s ease", 
+                  marginLeft: "10px",
+                  padding: "12px 24px",
+                  backgroundColor: "#6c757d",
+                  border: "none",
+                  borderRadius: "10px",
+                  color: "#fff",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                  fontSize: "16px",
+                  boxShadow: "0 5px 10px rgba(108, 117, 125, 0.3)",
+                  transition: "all 0.3s ease",
                 }}
                 onMouseOver={(e) => {
-                  e.target.style.backgroundColor = "#5a6268"; 
-                  e.target.style.boxShadow = "0 8px 15px rgba(90, 98, 104, 0.4)"; 
+                  e.target.style.backgroundColor = "#5a6268";
+                  e.target.style.boxShadow = "0 8px 15px rgba(90, 98, 104, 0.4)";
                 }}
                 onMouseOut={(e) => {
-                  e.target.style.backgroundColor = "#6c757d"; 
-                  e.target.style.boxShadow = "0 5px 10px rgba(108, 117, 125, 0.3)"; 
+                  e.target.style.backgroundColor = "#6c757d";
+                  e.target.style.boxShadow = "0 5px 10px rgba(108, 117, 125, 0.3)";
                 }}
               >
                 Hủy
@@ -524,7 +615,7 @@ const OrderHistory = () => {
         )}
       </div>
 
-      {isOpen && (
+      {isOpen && selectedProduct && (
         <div
           style={{
             position: 'fixed',
@@ -576,13 +667,13 @@ const OrderHistory = () => {
                 <h2>ĐÁNH GIÁ SẢN PHẨM</h2>
 
                 {/* Thông tin sản phẩm */}
-                <div style={{ display: "flex", alignItems: "center", marginBottom: "15px", justifyContent: "center" }}>
+                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px', justifyContent: 'center' }}>
                   <img
-                    src="https://via.placeholder.com/60"
-                    alt="Converse 03"
-                    style={{ width: "60px", height: "60px", marginRight: "10px" }}
+                    src={`/assets/images/${selectedProduct.images[0].url}`} // Sử dụng URL của sản phẩm
+                    alt={selectedProduct.name}
+                    style={{ width: "100px", height: "80px", marginRight: "10px" }}
                   />
-                  <span style={{ fontSize: "18px", fontWeight: "bold" }}>Converse 03</span>
+                  <span style={{ fontSize: "18px", fontWeight: "bold" }}>{selectedProduct.name}</span>
                 </div>
 
                 {/* Star Rating */}
@@ -617,43 +708,44 @@ const OrderHistory = () => {
                     resize: "none",
                   }}
                 />
-{/* Upload hình ảnh */}
-<div style={{ display: "flex", justifyContent: "center", margin: "15px 0" }}>
-<label
-  style={{
-    width: "100px",
-    height: "100px",
-    border: "1px dashed #ccc",
-    borderRadius: "4px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    cursor: "pointer",
-  }}
->
-  <input
-    type="file"
-    accept="image/*"
-    style={{ display: "none" }}
-    onChange={handleImageChange} // Gọi trực tiếp handleImageChange
-  />
-  {image ? (
-    <img
-      src={image}
-      alt="Upload"
-      style={{ maxWidth: "100%", maxHeight: "100%", borderRadius: "4px" }}
-    />
-  ) : (
-    <span>Thêm ảnh</span>
-  )}
-</label>
+                {/* Upload hình ảnh */}
+                <div style={{ display: "flex", justifyContent: "center", margin: "15px 0" }}>
+                  <label
+                    style={{
+                      width: "100px",
+                      height: "100px",
+                      border: "1px dashed #ccc",
+                      borderRadius: "4px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <input
+                      type="file"
+                      accept="image/*"
+                      style={{ display: "none" }}
+                      onChange={handleImageChange} // Gọi trực tiếp handleImageChange
+                    />
+                    {image ? (
+                      <img
+                        src={image}
+                        alt="Upload"
+                        style={{ maxWidth: "100%", maxHeight: "100%", borderRadius: "4px" }}
+                      />
+                    ) : (
+                      <span>Thêm ảnh</span>
+                    )}
+                  </label>
 
-</div>
+                </div>
 
 
                 {/* Button */}
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
                   <button
+                    onClick={handleClosePopup}
                     style={{
                       padding: "10px 20px",
                       background: "#ccc",
@@ -668,16 +760,16 @@ const OrderHistory = () => {
                   <button
                     onClick={handleSubmitReview} // Gọi hàm gửi đánh giá
                     style={{
-                        padding: "10px 20px",
-                        background: "#e53935",
-                        color: "#fff",
-                        border: "none",
-                        borderRadius: "4px",
-                        cursor: "pointer",
+                      padding: "10px 20px",
+                      background: "#e53935",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: "4px",
+                      cursor: "pointer",
                     }}
-                >
+                  >
                     Hoàn thành
-                </button>
+                  </button>
                 </div>
               </div>
             </div>

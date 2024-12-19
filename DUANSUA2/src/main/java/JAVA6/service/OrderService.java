@@ -89,4 +89,8 @@ public class OrderService {
         orderRepository.save(order);
     }
 
+    public List<Object[]> getTotalQuantityByCategory() {
+        return orderRepository.findTotalQuantityByCategory(); // Gọi repository để lấy dữ liệu
+    }
+
 }

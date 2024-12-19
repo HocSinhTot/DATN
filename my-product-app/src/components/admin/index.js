@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Helmet } from "react-helmet";
-import { Bar } from 'react-chartjs-2';
+import { Bar, Pie } from 'react-chartjs-2'; // Import Pie ở đây
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -10,10 +10,11 @@ import {
   Title,
   Tooltip,
   Legend,
+  ArcElement
 } from 'chart.js';
 
-// Đăng ký các thành phần của Chart.js
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+// Đăng ký tất cả các thành phần của Chart.js chỉ một lần
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
 const Dashboard = () => {
   const [totalCustomers, setTotalCustomers] = useState(0);
@@ -25,6 +26,7 @@ const Dashboard = () => {
   const [selectedYear, setSelectedYear] = useState(2023); // Default year
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [totalQuantityByCategory, setTotalQuantityByCategory] = useState({});
 
   useEffect(() => {
     setLoading(true);
@@ -68,6 +70,9 @@ const Dashboard = () => {
       .finally(() => {
         setLoading(false);
       });
+
+
+
   }, [selectedYear]); // Refetch data when the selected year changes
 
   const formatCurrency = (amount) => {
@@ -96,6 +101,66 @@ const Dashboard = () => {
       },
     ],
   };
+
+
+  //biểu đồ %
+  const [chartDatas, setChartData] = useState({
+    labels: [], // Sẽ được cập nhật từ API
+    datasets: [
+      {
+        data: [], // Dữ liệu phần trăm sẽ được cập nhật từ API
+        backgroundColor: ['#FF5733', '#33FF57', '#3357FF', '#FF33A6'],  // Màu sắc cho các phân đoạn
+
+        hoverOffset: 4,
+      },
+    ],
+  });
+
+  // useEffect để gọi API và lấy dữ liệu khi component được mount
+  useEffect(() => {
+    axios.get('http://localhost:8080/api/orders/total-by-category') // Đảm bảo đúng URL của API
+      .then(response => {
+        const data = response.data;  // Dữ liệu nhận từ API
+        const labels = data.map(item => item[0]); // Lấy tên danh mục (category) từ API
+        const percentages = data.map(item => item[1]); // Lấy phần trăm từ API
+
+        // Cập nhật chartData với dữ liệu từ API
+        setChartData({
+          labels: labels,  // Cập nhật labels
+          datasets: [
+            {
+              data: percentages,  // Cập nhật dữ liệu phần trăm
+              backgroundColor: ['#FF5733', '#33FF57', '#3357FF', '#FF33A6'],  // Màu sắc cho các phân đoạn
+              hoverOffset: 4,
+            },
+          ],
+        });
+      }).catch(error => {
+        console.error('Có lỗi xảy ra khi lấy dữ liệu:', error);
+      });
+  }, []); // Chỉ gọi API khi component mount // Tùy chọn cho biểu đồ
+  const chartOptionss = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top',  // Vị trí của legend
+        labels: {
+          boxWidth: 10, // Điều chỉnh kích thước hộp màu của các mục trong legend
+        },
+      },
+      tooltip: {
+        callbacks: {
+          label: function (tooltipItem) {
+            // Hiển thị phần trăm trong tooltip
+            return `${tooltipItem.label}: ${tooltipItem.raw.toFixed(2)}%`;
+          },
+        },
+      },
+    },
+  };
+
+
+
 
   const chartOptions = {
     responsive: true,
@@ -164,7 +229,7 @@ const Dashboard = () => {
         <title>Dashboard</title>
       </Helmet>
 
-      <div className="container mt-5" style={{ marginRight: '208px' }}>
+      <div className="container mt-5" style={{ marginRight: '120px' }}>
         {loading ? (
           <div className="d-flex justify-content-center" >
             <div className="spinner-border" role="status">
@@ -255,8 +320,6 @@ const Dashboard = () => {
               </select>
             </div>
 
-
-            {/* Biểu đồ cột doanh thu hàng tháng */}
             <div
               className="mb-4"
               style={{
@@ -268,15 +331,97 @@ const Dashboard = () => {
                 transition: 'all 0.3s ease',
                 marginBottom: '30px',
                 cursor: 'default',  // Bỏ hiệu ứng con trỏ chuột dạng pointer
+                display: 'flex',  // Sử dụng Flexbox để đặt 2 biểu đồ nằm bên cạnh nhau
+                justifyContent: 'space-between', // Đảm bảo các phần tử được căn đều
               }}
             >
-              <Bar data={chartData} options={chartOptions} />
-            </div>
+              {/* Biểu đồ cột doanh thu hàng tháng */}
+              <div
+                className="mb-4"
+                style={{
+                  borderRadius: '12px',
+                  backgroundColor: '#fff',
+                  boxShadow: '0 6px 20px rgba(0, 0, 0, 0.1)',
+                  padding: '20px',
+                  overflow: 'hidden',
+                  transition: 'all 0.3s ease',
+                  marginBottom: '30px',
+                  cursor: 'default',  // Bỏ hiệu ứng con trỏ chuột dạng pointer
 
+                  width: '73%',
+                }}
+              >
+                <Bar data={chartData} options={chartOptions} />
+              </div>
+
+
+              <div className="row justify-content-center">
+                <div className="col-md-12 d-flex justify-content-center" style={{ marginTop: '-29px', marginBottom: '18px' }}>
+
+                  {/* Chỉ hiển thị biểu đồ tròn mà không hiển thị các thông tin chi tiết */}
+                  <div style={{ width: '100%', height: '400px' }}>
+                    <Pie data={chartDatas} optionss={chartOptionss} />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
+
+
         )}
       </div>
       <style>{`
+
+      /* Thẻ chứa biểu đồ */
+.row {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.col-md-12 {
+  width: 100%;
+  max-width: 400px; /* Giới hạn kích thước chiều rộng tối đa của biểu đồ */
+  padding: 20px;
+  background: linear-gradient(135deg, #ffffff, #f7f7f7); /* Gradient nền đẹp */
+  border-radius: 15px; /* Bo góc */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+  transition: all 0.3s ease; /* Hiệu ứng chuyển động khi hover */
+}
+
+.col-md-12:hover {
+  transform: scale(1.05); /* Phóng to khi hover */
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2); /* Tăng bóng khi hover */
+}
+
+.col-md-12 .chart-container {
+  width: 100%;
+  height: 250px; /* Tăng chiều cao biểu đồ */
+  border-radius: 10px; /* Bo góc cho biểu đồ */
+  background: #ffffff; /* Nền trắng cho biểu đồ */
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ cho biểu đồ */
+  display: flex;
+  justify-content: center;
+  align-items: center; /* Căn giữa biểu đồ */
+}
+
+/* Biểu tượng hoặc hình ảnh có thể được thêm vào trước biểu đồ */
+.bi-boxes {
+  color: #FF5733; /* Màu sắc cho biểu tượng */
+  font-size: 2.5rem; /* Kích thước lớn cho biểu tượng */
+  margin-bottom: 15px;
+  transition: transform 0.3s ease; /* Hiệu ứng quay khi hover */
+}
+
+.bi-boxes:hover {
+  transform: rotate(360deg); /* Quay khi hover */
+}
+
+/* Phần padding và khoảng cách giữa các phần tử */
+.mb-4 {
+  margin-bottom: 25px;
+}
+
         .card {
           transition: all 0.3s ease;
           border-radius: 12px;
