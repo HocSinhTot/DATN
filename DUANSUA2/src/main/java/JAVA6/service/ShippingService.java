@@ -57,25 +57,22 @@ public class ShippingService {
     }
 
     // Phương thức tính phí vận chuyển
-    public String calculateShippingFee(int to_district_id, int to_ward_code) {
+    public String calculateShippingFee(int to_district_id, String to_ward_code,int service) {
         // Dữ liệu yêu cầu tính phí
         JSONObject requestBody = new JSONObject();
 
         // Các mã quận/phường thực tế (cập nhật từ danh sách mã của GHN)
-        requestBody.put("from_district_id", 1454);  // Ví dụ: Mã quận nơi lấy hàng (Quận 1)
-        requestBody.put("from_ward_code", "21211");  // Ví dụ: Mã phường nơi lấy hàng (Phường Bến Nghé, Quận 1)
+        requestBody.put("from_district_id", 1573);  // Ví dụ: Mã quận nơi lấy hàng (Quận 1)
+        requestBody.put("from_ward_code", "550202");  // Ví dụ: Mã phường nơi lấy hàng (Phường Bến Nghé, Quận 1)
         requestBody.put("to_district_id", to_district_id);    // Ví dụ: Mã quận nơi giao hàng (Quận 3)
         requestBody.put("to_ward_code", to_ward_code);    // Ví dụ: Mã phường nơi giao hàng (Phường 12, Quận 3)
-
-        // Mã dịch vụ vận chuyển (cập nhật theo dịch vụ có sẵn trong GHN)
-        requestBody.put("service_id", 53321);        // Ví dụ: Dịch vụ chuyển phát nhanh GHN
-        requestBody.put("weight", 1500);              // Cân nặng (gram) - Ví dụ: 1500g (1.5kg)
-        requestBody.put("length", 30);               // Chiều dài (cm) - Ví dụ: 30cm
-        requestBody.put("width", 30);                // Chiều rộng (cm) - Ví dụ: 30cm
-        requestBody.put("height", 40);               // Chiều cao (cm) - Ví dụ: 40cm
-        requestBody.put("insurance_value", 50000);   // Giá trị bảo hiểm (VND) - Ví dụ: 50.000 VND
-        requestBody.put("cod_failed_amount", 3000);  // Mức phí thu tiền khi giao thất bại (VND) - Ví dụ: 3.000 VND
-
+        requestBody.put("service_id", service);        // Ví dụ: Dịch vụ chuyển phát nhanh GHN
+        requestBody.put("weight", 200);              // Cân nặng (gram) - Ví dụ: 1500g (1.5kg)
+        requestBody.put("length", 20);               // Chiều dài (cm) - Ví dụ: 30cm
+        requestBody.put("width", 20);                // Chiều rộng (cm) - Ví dụ: 30cm
+        requestBody.put("height", 50);               // Chiều cao (cm) - Ví dụ: 40cm
+        requestBody.put("insurance_value", 10000);   // Giá trị bảo hiểm (VND) - Ví dụ: 50.000 VND
+        requestBody.put("cod_failed_amount", 2000);  // Mức phí thu tiền khi giao thất bại (VND) - Ví dụ: 3.000 VND
         // Gửi yêu cầu POST đến API GHN tính phí vận chuyển
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
