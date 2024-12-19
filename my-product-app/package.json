@@ -12,6 +12,7 @@
     "bootstrap": "^5.3.3",
     "chart.js": "^4.4.7",
     "cors": "^2.8.5",
+    "crypto-js": "^4.2.0",
     "jquery": "^3.7.1",
     "jwt-decode": "^4.0.0",
     "owl.carousel": "^2.3.4",

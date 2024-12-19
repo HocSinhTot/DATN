@@ -14,6 +14,7 @@ import Footer from './components/layout/footer';
 import Header from './components/layout/header';
 import VnPay from './components/user/vnPay';
 import Favorite from './components/user/favorite';
+import Forgot from './components/accounts/forgot';
 import Discount from './components/user/discount';
 
 // admin imports
@@ -31,6 +32,7 @@ import EvaluaesAmin from './components/admin/evaluaes';
 import ProductsPrice from './components/admin/productprice';
 import ProductsImage from './components/admin/productimages';
 import DiscountsAmin from './components/admin/discounts';
+
 
 import ThongkeAdmin from './components/admin/Thongke';
 
@@ -58,6 +60,7 @@ function App() {
         {/* Các route không yêu cầu đăng nhập */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot" element={<Forgot />} />
         <Route path="/product/:id" element={
           <>
             <Header setKeyword={setKeyword} setCategoryId={setCategoryId} />

@@ -24,10 +24,10 @@ const LoginPage = () => {
         .find((row) => row.startsWith(name + "="));
       return value ? value.split("=")[1] : null;
     };
-
+  
     const savedUsername = getCookie("username");
     const savedPassword = getCookie("password");
-
+  
     if (savedUsername) {
       setUsername(savedUsername);
       setRememberMe(true);
@@ -35,7 +35,7 @@ const LoginPage = () => {
     if (savedPassword) {
       setPassword(savedPassword);
     }
-
+  
     // Generate stars
     const newStars = Array.from({ length: 7 }).map((_, index) => ({
       id: index,
@@ -45,14 +45,14 @@ const LoginPage = () => {
     }));
     setStars(newStars);
   }, []);
-
+  
 
   const setCookie = (name, value, days) => {
     const expires = new Date();
     expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
     document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/`;
   };
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (username && password) {
@@ -61,15 +61,15 @@ const LoginPage = () => {
           username,
           password,
         });
-
+  
         setError(""); // Xóa lỗi nếu thành công
-
+  
         if (response.data.success) {
           // Lưu token và các thông tin vào sessionStorage
           sessionStorage.setItem("token", response.data.token);
           sessionStorage.setItem("username", username);
           sessionStorage.setItem("userId", response.data.userId);
-
+  
           // Nếu "Lưu mật khẩu" được chọn, lưu vào cookie
           if (rememberMe) {
             setCookie("username", username, 7); // Lưu trong 7 ngày
@@ -78,7 +78,7 @@ const LoginPage = () => {
             setCookie("username", "", -1); // Xóa cookie nếu không lưu
             setCookie("password", "", -1);
           }
-
+  
           navigate("/"); // Điều hướng sau khi đăng nhập
         } else {
           setError(response.data.message || "Đăng nhập thất bại.");
@@ -90,6 +90,7 @@ const LoginPage = () => {
       setError("Vui lòng nhập tên đăng nhập và mật khẩu.");
     }
   };
+  
 
 
   const styles = {
@@ -247,7 +248,7 @@ const LoginPage = () => {
             Login
           </button>
           <div style={{ paddingTop: "20px" }}>
-            <a href="/Forgot" style={{ ...styles.backToLogin, ...styles.backToLoginLeft }}>
+            <a href="/forgot" style={{ ...styles.backToLogin, ...styles.backToLoginLeft }}>
               Quên mật khẩu
             </a>
             <a href="/register" style={{ ...styles.backToLogin, ...styles.backToLoginRight }}>
