@@ -18,16 +18,25 @@ const LoginPage = () => {
   };
 
   useEffect(() => {
-    // Kiểm tra và lấy tên đăng nhập từ sessionStorage nếu có
-    const savedUsername = sessionStorage.getItem("username");
-    const savedRememberMe = sessionStorage.getItem("rememberMe") === "on";
-    if (savedUsername) setUsername(savedUsername);
-    if (savedRememberMe) setRememberMe(savedRememberMe);
-
+    const getCookie = (name) => {
+      const value = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith(name + "="));
+      return value ? value.split("=")[1] : null;
+    };
+  
+    const savedUsername = getCookie("username");
     const savedPassword = getCookie("password");
-    if (savedPassword && savedRememberMe) setPassword(savedPassword);
-
-    // Generate random stars for the background
+  
+    if (savedUsername) {
+      setUsername(savedUsername);
+      setRememberMe(true);
+    }
+    if (savedPassword) {
+      setPassword(savedPassword);
+    }
+  
+    // Generate stars
     const newStars = Array.from({ length: 7 }).map((_, index) => ({
       id: index,
       top: `${Math.random() * 100}%`,
@@ -36,7 +45,14 @@ const LoginPage = () => {
     }));
     setStars(newStars);
   }, []);
+  
 
+  const setCookie = (name, value, days) => {
+    const expires = new Date();
+    expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
+    document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/`;
+  };
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (username && password) {
@@ -44,39 +60,37 @@ const LoginPage = () => {
         const response = await axios.post("http://localhost:8080/api/auth/login", {
           username,
           password,
-          rememberMe: rememberMe ? "on" : "off",
-        }, {
-          headers: {
-            'Content-Type': 'application/json'
-          }
         });
-
-        // Xóa thông báo lỗi trước đó
-        setError(""); 
-
-        // Lưu thông tin vào sessionStorage nếu đăng nhập thành công
+  
+        setError(""); // Xóa lỗi nếu thành công
+  
         if (response.data.success) {
-          sessionStorage.setItem("token", response.data.token);  // Lưu token vào localStorage
-
-          sessionStorage.setItem("username", username); // Lưu tên đăng nhập vào sessionStorage
-          sessionStorage.setItem("rememberMe", rememberMe ? "on" : "off");
-          sessionStorage.setItem("userId", response.data.userId); // Lưu idUser vào sessionStorage
-          // Điều hướng đến trang chính sau khi đăng nhập
-          navigate("/"); 
+          // Lưu token và các thông tin vào sessionStorage
+          sessionStorage.setItem("token", response.data.token);
+          sessionStorage.setItem("username", username);
+          sessionStorage.setItem("userId", response.data.userId);
+  
+          // Nếu "Lưu mật khẩu" được chọn, lưu vào cookie
+          if (rememberMe) {
+            setCookie("username", username, 7); // Lưu trong 7 ngày
+            setCookie("password", password, 7); // Không mã hóa mật khẩu đơn giản ở client
+          } else {
+            setCookie("username", "", -1); // Xóa cookie nếu không lưu
+            setCookie("password", "", -1);
+          }
+  
+          navigate("/"); // Điều hướng sau khi đăng nhập
         } else {
           setError(response.data.message || "Đăng nhập thất bại.");
         }
       } catch (err) {
-        if (err.response) {
-          setError(err.response.data.message || "An error occurred.");
-        } else {
-          setError("An error occurred while logging in.");
-        }
+        setError(err.response?.data?.message || "Có lỗi xảy ra khi đăng nhập.");
       }
     } else {
       setError("Vui lòng nhập tên đăng nhập và mật khẩu.");
     }
   };
+  
 
   const styles = {
     body: {
@@ -233,7 +247,7 @@ const LoginPage = () => {
             Login
           </button>
           <div style={{ paddingTop: "20px" }}>
-            <a href="/Forgot" style={{ ...styles.backToLogin, ...styles.backToLoginLeft }}>
+            <a href="/forgot" style={{ ...styles.backToLogin, ...styles.backToLoginLeft }}>
               Quên mật khẩu
             </a>
             <a href="/register" style={{ ...styles.backToLogin, ...styles.backToLoginRight }}>

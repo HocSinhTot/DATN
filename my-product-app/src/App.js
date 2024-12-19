@@ -14,6 +14,7 @@ import Footer from './components/layout/footer';
 import Header from './components/layout/header';
 import VnPay from './components/user/vnPay';
 import Favorite from './components/user/favorite';
+import Forgot from './components/accounts/forgot';
 
 // admin imports
 import Headeradmin from './components/admin/formadmin/headeradmin';
@@ -56,6 +57,7 @@ function App() {
         {/* Các route không yêu cầu đăng nhập */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot" element={<Forgot />} />
         <Route path="/product/:id" element={
           <>
             <Header setKeyword={setKeyword} setCategoryId={setCategoryId} />

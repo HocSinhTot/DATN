@@ -4,6 +4,7 @@ package JAVA6.Request;
 public class LoginRequest {
     private String username;
     private String password;
+    private String rememberMe;
 
     // Constructor mặc định
     public LoginRequest() {
@@ -32,7 +33,13 @@ public class LoginRequest {
     public void setPassword(String password) {
         this.password = password;
     }
+    public String getRememberMe() {
+        return rememberMe;
+    }
 
+    public void setRememberMe(String rememberMe) {
+        this.rememberMe = rememberMe;
+    }
     // Phương thức toString (tuỳ chọn) để dễ dàng kiểm tra giá trị của đối tượng
     @Override
     public String toString() {

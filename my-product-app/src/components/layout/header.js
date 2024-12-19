@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 
 const Header = ({ setKeyword, setCategoryId }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -8,7 +9,8 @@ const Header = ({ setKeyword, setCategoryId }) => {
   const [localKeyword, setLocalKeyword] = useState('');
   const [showAlert, setShowAlert] = useState(false); // Trạng thái hiển thị thông báo
   const navigate = useNavigate();
-
+  const token = sessionStorage.getItem("token"); // Lấy token từ localStorage
+  let isAdmin = false;
   useEffect(() => {
     const storedUsername = sessionStorage.getItem("username");
     const alertDisplayed = localStorage.getItem("alertDisplayed");
@@ -23,7 +25,15 @@ const Header = ({ setKeyword, setCategoryId }) => {
       }
     }
   }, []);
+  if (token) {
+    try {
+      const decoded = jwtDecode(token); // Giải mã token
+      isAdmin = decoded.roles === "ROLE_ADMIN"; // Kiểm tra vai trò
 
+    } catch (error) {
+      console.error("Token không hợp lệ:", error);
+    }
+  }
   const handleSearch = (e) => {
     e.preventDefault();
     setKeyword(localKeyword);
@@ -106,9 +116,11 @@ const Header = ({ setKeyword, setCategoryId }) => {
                     <li>
                       <Link to="/change" className="menu-item">Đổi mật khẩu</Link>
                     </li>
-                    <li>
-                      <Link to="/admin" className="menu-item">Quản lý</Link>
-                    </li>
+                    {isAdmin && (
+        <li>
+          <Link to="/admin" className="menu-item">Quản lý</Link>
+        </li>
+      )}
                     <li>
                       <a href="/" onClick={handleLogout} className="menu-item">Đăng xuất</a>
                     </li>
