@@ -8,9 +8,19 @@ const Header = ({ setKeyword, setCategoryId }) => {
   const [username, setUsername] = useState('');
   const [localKeyword, setLocalKeyword] = useState('');
   const [showAlert, setShowAlert] = useState(false); // Trạng thái hiển thị thông báo
-  const navigate = useNavigate();
+
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [options, setOptions] = useState([]);
+  const [searchLink, setSearchLink] = useState('');
+  const [userMessage, setUserMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [showSearchButton, setShowSearchButton] = useState(false);  // Trạng thái hiển thị nút tìm kiếm sau 2 giây
   const token = sessionStorage.getItem("token"); // Lấy token từ localStorage
   let isAdmin = false;
+  const navigate = useNavigate();
+
   useEffect(() => {
     const storedUsername = sessionStorage.getItem("username");
     const alertDisplayed = localStorage.getItem("alertDisplayed");
@@ -25,6 +35,30 @@ const Header = ({ setKeyword, setCategoryId }) => {
       }
     }
   }, []);
+
+  useEffect(() => {
+    if (chatOpen) {
+      setChatMessages([
+        { text: 'Xin chào!Bạn muốn tìm sản phẩm nào?', type: 'bot' },
+      ]);
+      setOptions(['Điện thoại', 'Laptop', 'Máy tính bảng', 'Phụ kiện']);
+    }
+  }, [chatOpen]);
+
+  useEffect(() => {
+    if (searchLink) {
+      // Sau 2 giây, hiển thị nút tìm kiếm
+      const timer = setTimeout(() => {
+        setShowSearchButton(true);
+      }, 2000); // 2 giây
+
+      return () => clearTimeout(timer); // Dọn dẹp timer khi component unmount
+    }
+  }, [searchLink]);
+
+
+
+  //kiểm tra vai trò
   if (token) {
     try {
       const decoded = jwtDecode(token); // Giải mã token
@@ -34,11 +68,158 @@ const Header = ({ setKeyword, setCategoryId }) => {
       console.error("Token không hợp lệ:", error);
     }
   }
-  const handleSearch = (e) => {
+  const handleSearch = async (e) => {
     e.preventDefault();
-    setKeyword(localKeyword);
-    navigate('/categorys');
+    if (searchLink || localKeyword) {
+      const keywordToSearch = searchLink || localKeyword; // Chọn từ khóa tìm kiếm từ searchLink hoặc localKeyword
+      setKeyword(keywordToSearch);
+      setLoading(true);
+      setErrorMessage('');
+
+      try {
+        const result = await fetch(`/api/search?query=${keywordToSearch}`);
+        if (result.ok) {
+          navigate('/categorys');
+        } else {
+          setErrorMessage('Không tìm thấy sản phẩm phù hợp.');
+        }
+      } catch (error) {
+        setErrorMessage('Đã xảy ra lỗi khi tìm kiếm.');
+      } finally {
+        setLoading(false);
+      }
+    }
   };
+
+
+  const handleOptionClick = (option) => {
+    let newMessages = [...chatMessages];
+
+    // Thêm lựa chọn của người dùng vào
+    newMessages.push({ text: option, type: 'user' });
+
+    if (option === 'Phụ kiện.') {
+      setOptions(['Phụ kiện']);
+      newMessages.push({ text: 'Chức năng này chưa có.', type: 'bot' });
+    } else if (option === 'Điện thoại') {
+      setOptions(['Apple', 'Samsung', 'Oppo', 'Xiaomi']);
+      newMessages.push({ text: 'Vui lòng chọn hãng điện thoại bạn muốn tìm:', type: 'bot' });
+    } else if (option === 'Laptop') {
+      setOptions(['Acer', 'Asus', 'Dell', 'HP', 'MSI']);
+      newMessages.push({ text: 'Vui lòng chọn hãng laptop bạn muốn tìm:', type: 'bot' });
+
+    }
+    //điện thoại
+    else if (option === 'Apple') {
+      setSearchLink('iPhone');
+      setOptions([]); // Ẩn các nút khi đã chọn
+      newMessages.push({
+        text: 'Đã tìm thành công. Vui lòng ấn vào đây để xem chi tiết.',
+
+        type: 'bot',
+      });
+    } else if (option === 'Samsung') {
+      setSearchLink('Samsung');
+      setOptions([]); // Ẩn các nút khi đã chọn
+      newMessages.push({
+        text: 'Đã tìm thành công. Vui lòng ấn vào đây để xem chi tiết.',
+        type: 'bot',
+      });
+    } else if (option === 'Oppo') {
+      setSearchLink('Oppo'); setOptions([]); // Ẩn các nút khi đã chọn
+      newMessages.push({
+        text: 'Đã tìm thành công. Vui lòng ấn vào đây để xem chi tiết.',
+        type: 'bot',
+      });
+    } else if (option === 'Xiaomi') {
+      setSearchLink('Xiaomi');
+      setOptions([]); // Ẩn các nút khi đã chọn
+      newMessages.push({
+        text: 'Đã tìm thành công. Vui lòng ấn vào đây để xem chi tiết.',
+        type: 'bot',
+      });
+
+
+
+      //laptop
+    } else if (option === 'Acer') {
+      setSearchLink('Acer');
+      setOptions([]); // Ẩn các nút khi đã chọn
+      newMessages.push({
+        text: 'Đã tìm thành công. Vui lòng ấn vào đây để xem chi tiết.',
+        type: 'bot',
+      });
+    } else if (option === 'Asus') {
+      setSearchLink('Asus');
+      setOptions([]); // Ẩn các nút khi đã chọn
+      newMessages.push({
+        text: 'Đã tìm thành công. Vui lòng ấn vào đây để xem chi tiết.',
+        type: 'bot',
+      });
+    } else if (option === 'Dell') {
+      setSearchLink('Dell');
+      setOptions([]); // Ẩn các nút khi đã chọn
+      newMessages.push({
+        text: 'Đã tìm thành công. Vui lòng ấn vào đây để xem chi tiết.',
+        type: 'bot',
+      });
+    } else if (option === 'HP') {
+      setSearchLink('HP');
+      setOptions([]); // Ẩn các nút khi đã chọn
+      newMessages.push({
+        text: 'Đã tìm thành công. Vui lòng ấn vào đây để xem chi tiết.',
+        type: 'bot',
+      });
+    } else if (option === 'MSI') {
+      setSearchLink('MSI');
+      setOptions([]); // Ẩn các nút khi đã chọn
+      newMessages.push({
+        text: 'Đã tìm thành công. Vui lòng ấn vào đây để xem chi tiết.',
+        type: 'bot',
+      });
+
+      //phụ kiện
+
+    } else if (option === 'Phụ kiện') {
+      setSearchLink('Phụ kiện');
+      setOptions([]); // Ẩn các nút khi đã chọn
+      newMessages.push({
+        text: 'Đã tìm thành công. Vui lòng ấn vào đây để xem chi tiết.',
+        type: 'bot',
+      });
+
+
+    } else {
+      setOptions([]); // Ẩn các nút nếu không có lựa chọn hợp lệ
+    }
+
+    // Cập nhật lại các tin nhắn
+    setChatMessages(newMessages);
+  };
+
+  // Reset lại trạng thái của trang
+  // Hàm reset lại chat
+  const handleResetChat = () => {
+    setChatMessages([{ text: 'Xin chào! Tôi có thể giúp gì cho bạn?', type: 'bot' }]);
+    setOptions(['Sản phẩm', 'Hỗ trợ']);
+    setSearchLink('');
+    setShowSearchButton(false);
+  };
+
+  const handleSendMessage = () => {
+    if (userMessage.trim()) {
+      setChatMessages(prevMessages => [
+        ...prevMessages,
+        { text: userMessage, type: 'user' }
+      ]);
+      setUserMessage('');
+    }
+  };
+
+
+
+
+
 
 
   const handleVoiceSearch = () => {
@@ -117,10 +298,10 @@ const Header = ({ setKeyword, setCategoryId }) => {
                       <Link to="/change" className="menu-item">Đổi mật khẩu</Link>
                     </li>
                     {isAdmin && (
-        <li>
-          <Link to="/admin" className="menu-item">Quản lý</Link>
-        </li>
-      )}
+                      <li>
+                        <Link to="/admin" className="menu-item">Quản lý</Link>
+                      </li>
+                    )}
                     <li>
                       <a href="/" onClick={handleLogout} className="menu-item">Đăng xuất</a>
                     </li>
@@ -443,7 +624,199 @@ const Header = ({ setKeyword, setCategoryId }) => {
           </div>
         </div>
       </div>
+
+
+
+      <header className="header-style-1 container-fluid bg-light py-3">
+        <div className="container">
+          <div className="row">
+            <div className="col-xs-12 col-sm-12 col-md-3 top-search">
+              <button
+                onClick={() => setChatOpen(!chatOpen)}
+                className="btn btn-primary"
+                style={{
+                  position: 'fixed',
+                  bottom: '20px',
+                  right: '20px',
+                  borderRadius: '50%',
+                  width: '50px',
+                  height: '50px',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <span role="img" aria-label="chat">💬</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {chatOpen && (
+          <div className="chat-box" style={{
+            position: 'fixed',
+            bottom: '70px',
+            right: '20px',
+            width: '350px', // Increase width
+            height: '500px', // Increase height
+            backgroundColor: '#fff',
+            borderRadius: '12px',
+            boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)', // Add smooth shadow
+            padding: '20px',
+            zIndex: '9999',
+            display: 'flex',
+            flexDirection: 'column',
+            fontFamily: 'Arial, sans-serif',
+          }}>
+            <div className="chat-pointer" style={{
+              position: 'absolute',
+              bottom: '-10px', // Position below the chat box
+              right: '20px', // Align with the chat button
+              width: '0',
+              height: '0',
+              borderLeft: '10px solid transparent',
+              borderRight: '10px solid transparent',
+              borderTop: '10px solid #fff', // Color of the triangle (pointing downwards)
+            }} />
+
+
+            <div className="chat-header" style={{
+              marginBottom: '20px',
+              fontSize: '20px',
+              fontWeight: 'bold',
+              color: '#333',
+              borderBottom: '2px solid #007bff',
+              paddingBottom: '10px',
+            }}>
+              Chat với chúng tôi
+            </div>
+
+            <div className="chat-messages" style={{
+              height: '75%', // Adjust height for message area
+              overflowY: 'auto',
+              borderBottom: '1px solid #ddd',
+              paddingBottom: '10px',
+              marginBottom: '15px',
+            }}>
+              {chatMessages.map((msg, index) => (
+                <div
+                  key={index}
+                  style={{
+                    display: 'flex',
+                    justifyContent: msg.type === 'user' ? 'flex-end' : 'flex-start',
+                    marginBottom: '12px',
+                    opacity: 0,
+                    animation: `fadeIn 0.3s ease-out forwards ${index * 0.2}s`,
+                  }}
+                >
+                  <p
+                    style={{
+                      fontSize: '14px',
+                      color: msg.type === 'user' ? '#0066cc' : '#444',
+                      backgroundColor: msg.type === 'user' ? '#e0f7fa' : '#f4f4f4',
+                      borderRadius: '15px',
+                      padding: '10px 15px',
+                      maxWidth: '80%',
+                      fontWeight: msg.type === 'user' ? 'bold' : 'normal',
+                      textAlign: msg.type === 'user' ? 'right' : 'left',
+                      boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
+                    }}
+                  >
+                    {msg.text}
+                  </p>
+                </div>
+              ))}
+
+              {options.length > 0 && (
+                <div className="chat-options" style={{
+                  marginTop: '10px',
+                  display: 'flex',
+                  justifyContent: 'space-between', // Align options in a row
+                  flexWrap: 'wrap', // Allow options to wrap if needed
+                }}>
+                  {options.map((option, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleOptionClick(option)}
+                      className="btn btn-secondary"
+                      style={{
+                        padding: '6px 12px', // Smaller button size
+                        fontSize: '12px', // Smaller font size
+                        borderRadius: '8px',
+                        backgroundColor: '#007bff',
+                        color: '#fff',
+                        border: 'none',
+                        marginBottom: '5px',
+                        transition: 'background-color 0.3s ease',
+                      }}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {searchLink && !loading && showSearchButton && (
+                <a
+                  href="#"
+                  onClick={handleSearch}
+                  className="btn btn-info"
+                  style={{
+                    width: '100%',
+                    textAlign: 'center',
+                    textDecoration: 'underline',
+                    backgroundColor: 'transparent',
+                    color: '#007bff',
+                    border: 'none',
+                    padding: '0',
+                    fontSize: '16px',
+                    cursor: 'pointer',
+                    fontWeight: 'bold',
+                    transition: 'color 0.3s ease',
+                  }}
+                >
+                  Tìm kiếm
+                </a>
+              )}
+
+              {loading && <div className="text-center" style={{ color: '#007bff' }}>Đang tìm kiếm...</div>}
+              {errorMessage && <div className="text-danger text-center">{errorMessage}</div>}
+            </div>
+
+            {/* Reset button */}
+            <button
+              onClick={handleResetChat}
+              className="btn btn-danger"
+              style={{
+                marginTop: '10px',
+                padding: '10px 20px',
+                backgroundColor: '#f44336',
+                color: 'white',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer',
+                transition: 'background-color 0.3s ease',
+                fontSize: '16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+              }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+                <path fillRule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z" />
+                <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466" />
+              </svg>
+              <span style={{ marginLeft: '8px' }}>Làm mới</span>
+            </button>
+          </div>
+        )}
+      </header>
+
     </header>
+
+
+
   );
 };
 

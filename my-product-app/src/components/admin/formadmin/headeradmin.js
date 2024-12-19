@@ -371,12 +371,11 @@ background: linear-gradient(90deg, rgb(44, 62, 80), rgb(52, 73, 94));}
 									</li>
 
 									<li className="has-submenu" style={{ borderRadius: '5px', transition: 'background-color 0.3s ease' }}>
-										<a href="#" style={{ color: 'black', textDecoration: 'none', display: 'flex', alignItems: 'center', padding: '15px 20px', borderRadius: '5px', transition: 'background-color 0.3s ease' }}>
+										<a href="/products" style={{ color: 'black', textDecoration: 'none', display: 'flex', alignItems: 'center', padding: '15px 20px', borderRadius: '5px', transition: 'background-color 0.3s ease' }}>
 											<i className="bi bi-phone-fill" style={{ fontSize: '24px', marginRight: '10px' }}></i>
 											<span>Quản lý sản phẩm</span>
 										</a>
 										<ul className="submenu" style={{ listStyleType: 'none', padding: '0', margin: '0' }}>
-											<li><a href="/products" style={{ color: 'black', textDecoration: 'none', padding: '15px 20px', borderRadius: '5px', transition: 'background-color 0.3s ease' }}><span>Quản lý sản phẩm</span></a></li>
 											<li><a href="/products-prices" style={{ color: 'black', textDecoration: 'none', padding: '15px 20px', borderRadius: '5px', transition: 'background-color 0.3s ease' }}><span>Quản lý sản phẩm dung lượng</span></a></li>
 											<li><a href="/category" style={{ color: 'black', textDecoration: 'none', padding: '15px 20px', borderRadius: '5px', transition: 'background-color 0.3s ease' }}><span>Quản lý danh mục</span></a></li>
 											<li><a href="/brands" style={{ color: 'black', textDecoration: 'none', padding: '15px 20px', borderRadius: '5px', transition: 'background-color 0.3s ease' }}><span>Quản lý thương hiệu</span></a></li>
@@ -404,6 +403,12 @@ background: linear-gradient(90deg, rgb(44, 62, 80), rgb(52, 73, 94));}
 										<a href="favourite" style={{ color: 'black', textDecoration: 'none', display: 'flex', alignItems: 'center', padding: '15px 20px', borderRadius: '5px', transition: 'background-color 0.3s ease' }}>
 											<i className="bi bi-heart-fill" style={{ fontSize: '24px', marginRight: '10px' }}></i>
 											<span>Quản lý yêu thích</span>
+										</a>
+									</li>
+									<li style={{ borderRadius: '5px', transition: 'background-color 0.3s ease' }}>
+										<a href="discounts" style={{ color: 'black', textDecoration: 'none', display: 'flex', alignItems: 'center', padding: '15px 20px', borderRadius: '5px', transition: 'background-color 0.3s ease' }}>
+											<i className="bi bi-coin" style={{ fontSize: '24px', marginRight: '10px' }}></i>
+											<span>Quản lý mã giảm giá</span>
 										</a>
 									</li>
 								</ul>

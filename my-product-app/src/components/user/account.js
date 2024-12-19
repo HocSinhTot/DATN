@@ -348,8 +348,8 @@ const Account = () => {
 
                   {/* Giới tính */}
                   <div className="form-group">
-                    <label style={{ fontWeight: "bold" }}>Giới tính</label>
-                    <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+                    <label style={{ fontWeight: "bold",paddingLeft:"17px" }}>Giới tính</label>
+                    <div style={{ display: "flex", alignItems: "center", gap: "20px",paddingLeft:'17px' }}>
                       <div className="form-check">
                         <input
                           type="radio"

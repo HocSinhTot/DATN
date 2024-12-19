@@ -43,14 +43,12 @@ public class OrderController {
     }
 
     @PostMapping("/{orderId}/updateStatus")
-    public ResponseEntity<String> updateOrderStatus(
-            @PathVariable Integer orderId, // Thêm @PathVariable để nhận orderId từ URL
-            @RequestBody OrderStatusUpdateRequest request) {
-
-        orderService.updateOrderStatus(orderId, request.getStatusId()); // Sử dụng orderId từ URL
-        return ResponseEntity.ok("Order status updated successfully");
-    }
-
+public ResponseEntity<String> updateOrderStatus(
+        @PathVariable Integer orderId, 
+        @RequestBody OrderStatusUpdateRequest request) {
+    orderService.updateOrderStatus(orderId, request.getStatusId()); 
+    return ResponseEntity.ok("Order status updated successfully");
+}
     // DTO class to handle status update request (for POST method)
     public static class OrderStatusUpdateRequest {
         private Integer orderId;
