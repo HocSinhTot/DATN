@@ -24,13 +24,13 @@ public interface OrderRepository extends JpaRepository<OrderModel, Integer> {
 	@Query("SELECT COUNT(o) FROM OrderModel o")
 	Long countTotalOrders();
 
-	@Query("SELECT SUM(o.total) FROM OrderModel o")
+	@Query("SELECT SUM(o.total) FROM OrderModel o where o.status = 6")
 	Double getTotalRevenue();
 
 	@Query("SELECT YEAR(o.date) AS Year, MONTH(o.date) AS Month, COUNT(o) AS TotalOrders, SUM(o.total) AS TotalAmount "
 			+
 			"FROM OrderModel o " +
-			"WHERE YEAR(o.date) = :year " +
+			"WHERE YEAR(o.date) = :year and  o.status = 6 " +
 			"GROUP BY YEAR(o.date), MONTH(o.date) " +
 			"ORDER BY Month")
 	List<Object[]> getMonthlyRevenueByYear(@Param("year") Integer year);

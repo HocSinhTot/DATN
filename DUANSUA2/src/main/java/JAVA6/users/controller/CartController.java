@@ -447,7 +447,7 @@ public class CartController {
         OrderModel order = handleVNPayOrder(user, address, paymentMethod, vnp_Params);
 
         // Cập nhật trạng thái đơn hàng sau khi thanh toán thành công
-        order.setOrderStatus(orderStatusRepository.getReferenceById(3)); // Trạng thái "đã thanh toán"
+        order.setOrderStatus(orderStatusRepository.getReferenceById(2)); // Trạng thái "đã thanh toán"
         orderRepository.save(order);
 
         // Trả về kết quả

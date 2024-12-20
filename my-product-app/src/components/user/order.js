@@ -178,10 +178,18 @@ const OrderHistory = () => {
     );
 
   if (error) return <div>Error: {error}</div>;
+
   const handleSubmitReview = async () => {
     const userId = sessionStorage.getItem('userId');
     if (!userId || userId === 'null') {
       alert('Bạn cần đăng nhập để gửi đánh giá.');
+      return;
+    }
+
+    // Kiểm tra xem sản phẩm trong đơn hàng đã được đánh giá chưa
+    const reviewedProductKey = `reviewedProduct-${currentOrderDetailId}-${selectedProduct.product.id}`;
+    if (sessionStorage.getItem(reviewedProductKey) === 'true') {
+      alert('Bạn đã đánh giá sản phẩm này trong đơn hàng này rồi.');
       return;
     }
 
@@ -214,13 +222,13 @@ const OrderHistory = () => {
       }
 
       alert('Đánh giá của bạn đã được gửi thành công!');
+      // Đánh dấu sản phẩm này trong đơn hàng đã được đánh giá
+      sessionStorage.setItem(reviewedProductKey, 'true');
       handleClosePopup(); // Đóng popup
     } catch (error) {
       alert(`Lỗi: ${error.message}`);
     }
   };
-
-
 
 
 
@@ -376,25 +384,7 @@ const OrderHistory = () => {
                   Chưa nhận được hàng
                 </button>
               )}
-              {/* Kiểm tra trạng thái là số 6 và hiển thị nút "Đánh giá" */}
-              {order.orderStatus.status === 'Đã hoàn thành' && (
-                <button
-                  onClick={handleOpenPopup}
-                  style={{
-                    width: "100%",
-                    padding: "12px",
-                    marginTop: "10px",
-                    border: "none",
-                    borderRadius: "10px",
-                    backgroundColor: "red",
-                    color: "#fff",
-                    cursor: "pointer",
-                    fontWeight: "bold",
-                  }}
-                >
-                  Đánh giá
-                </button>
-              )}
+
             </div>
           ))}
         </div>

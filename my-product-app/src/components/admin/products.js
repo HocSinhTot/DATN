@@ -623,7 +623,15 @@ const Management = () => {
                           <tr key={product.id}>
                             <td style={{ width: "20px" }}>{index + 1}</td>
                             <td>{product.name}</td>
-                            <td>{product.price}</td>
+                            <td>
+                              {new Intl.NumberFormat("vi-VN", {
+                                style: "currency",
+                                currency: "VND",
+                              }).format(product.price)}
+
+                            </td>
+
+
                             <td style={{ color: product.quantity < 20 ? "red" : "inherit", fontWeight: product.quantity < 20 ? "bold" : "normal" }}>
                               {product.quantity}
                             </td>

@@ -171,7 +171,16 @@ const ProductsPriceTable = () => {
                       <tr key={`${item.id.productId || 'default-product'}-${item.id.capacityId || 'default-capacity'}`}>
                         <td style={{ textAlign: 'center', padding: '12px' }}>{item.product?.name || 'Unknown'}</td>
                         <td style={{ textAlign: 'center', padding: '12px' }}>{item.capacity?.name || 'N/A'}</td>
-                        <td style={{ textAlign: 'center', padding: '12px' }}>{item.price}</td>
+                        <td style={{ textAlign: 'center', padding: '12px' }}>  {new Intl.NumberFormat("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        }).format(item.price)}
+
+
+
+                        </td>
+
+
                         <td style={{ textAlign: 'center', padding: '12px' }}>
                           <button
                             onClick={() => handleEdit(item)}
