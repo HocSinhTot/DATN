@@ -6,6 +6,8 @@ const OrderManagement = () => {
   const [statuses, setStatuses] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [statusCount, setStatusCount] = useState({});
+  const [orderDetails, setOrderDetails] = useState(null); // State to hold selected order details
+  const [isModalOpen, setIsModalOpen] = useState(false); // Modal visibility state
   const token = sessionStorage.getItem('token');
 
   // Set up headers for API requests
@@ -82,6 +84,23 @@ const OrderManagement = () => {
       const filtered = orderList.filter((order) => order.orderStatus.id === statusId);
       setFilteredOrders(filtered);
     }
+  };
+
+  // Fetch order details and open modal
+  const fetchOrderDetails = (orderId) => {
+    fetch(`http://localhost:8080/api/history/${orderId}`, fetchOptions('GET'))
+      .then((response) => response.json())
+      .then((data) => {
+        setOrderDetails(data);
+        setIsModalOpen(true);
+      })
+      .catch((error) => console.error("Error fetching order details:", error));
+  };
+
+  // Close modal
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setOrderDetails(null);
   };
 
   return (
@@ -164,9 +183,12 @@ const OrderManagement = () => {
                           </td>
 
                           <td>
-                            <Link to={`/order/${order.id}/details`} className="btn btn-info">
+                            <button
+                              onClick={() => fetchOrderDetails(order.id)}
+                              className="btn btn-info"
+                            >
                               Xem chi tiết
-                            </Link>
+                            </button>
                           </td>
                         </tr>
                       ))
@@ -184,6 +206,101 @@ const OrderManagement = () => {
           </div>
         </div>
       </div>
+
+      {/* Modal for order details */}
+      {isModalOpen && orderDetails && (
+        <div
+          style={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            backgroundColor: '#ffffff',
+            padding: '25px 40px',
+            borderRadius: '15px',
+            boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)',
+            zIndex: '1000',
+            width: '90%',
+            maxWidth: '1000px',
+            maxHeight: '80vh',
+            overflowY: 'auto',
+            animation: 'fadeIn 0.3s ease-in-out',
+          }}
+        >
+          <h3
+            style={{
+              marginBottom: '20px',
+              fontSize: '24px',
+              fontWeight: '700',
+              textAlign: 'center',
+              color: '#4a90e2',
+              borderBottom: '2px solid #e0e0e0',
+              paddingBottom: '10px',
+            }}
+          >
+            Chi tiết đơn hàng
+          </h3>
+          <ul style={{ padding: '0', margin: '0', listStyleType: 'none' }}>
+            {orderDetails.length > 0 ? (
+              orderDetails.map((detail, idx) => (
+                <li
+                  key={idx}
+                  style={{
+                    marginBottom: '20px',
+                    padding: '20px',
+                    backgroundColor: '#f4f8fb',
+                    borderRadius: '10px',
+                    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+                    fontSize: '16px',
+                    color: '#333',
+                    transition: 'all 0.3s ease',
+                  }}
+                >
+                  <strong style={{ color: '#4a90e2' }}>Sản phẩm:</strong> {detail.product.product.name} <br />
+                  <strong style={{ color: '#4a90e2' }}>Màu sắc:</strong> {detail.product.color.name} <br />
+                  <strong style={{ color: '#4a90e2' }}>Dung lượng:</strong> {detail.product.productPrice.capacity.name}
+                  <div style={{ textAlign: 'center', margin: '15px 0' }}>
+                    <img
+                      src={`/assets/images/${detail.product.product.images[0].url}`}
+                      alt={detail.product.name}
+                      style={{
+                        maxWidth: '150px',
+                        maxHeight: '150px',
+                        borderRadius: '10px',
+                        boxShadow: '0 6px 15px rgba(0, 0, 0, 0.1)',
+                      }}
+                    />
+                  </div>
+                  <strong style={{ color: '#4a90e2' }}>Số lượng:</strong> {detail.totalQuantity} <br />
+                  <strong style={{ color: '#4a90e2' }}>Giá:</strong> {detail.product.price} <br />
+                </li>
+              ))
+            ) : (
+              <li>Không tìm thấy chi tiết đơn hàng</li>
+            )}
+          </ul>
+
+          <div style={{ textAlign: 'right', marginTop: '20px' }}>
+            <button
+              onClick={closeModal}
+              style={{
+                padding: "12px 24px", 
+                backgroundColor: "#6c757d", 
+                border: "none", 
+                borderRadius: "10px", 
+                color: "#fff", 
+                fontWeight: "bold", 
+                cursor: "pointer", 
+                fontSize: "16px", 
+                boxShadow: "0 5px 10px rgba(108, 117, 125, 0.3)", 
+                transition: "all 0.3s ease", 
+              }}
+            >
+              Đóng
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

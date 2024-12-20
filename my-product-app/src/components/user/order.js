@@ -10,6 +10,7 @@ const OrderHistory = () => {
   const [cancelReason, setCancelReason] = useState('');
   const [orderIdToCancel, setOrderIdToCancel] = useState(null);
   const [loadingCancel, setLoadingCancel] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   const userId = sessionStorage.getItem('userId');
   const [rating, setRating] = useState(0); // State cho số sao
@@ -40,6 +41,7 @@ const OrderHistory = () => {
   // Mở Popup
   const handleOpenPopup = () => {
     setIsOpen(true);
+    
   };
 
   // Đóng Popup
@@ -78,21 +80,30 @@ const OrderHistory = () => {
       setOrderDetails(null);
       const response = await fetch(`http://localhost:8080/api/history/${orderId}`);
       if (!response.ok) throw new Error('Failed to fetch order details');
-
+  
       const data = await response.json();
       setOrderDetails(data);
+      
+      // Lấy sản phẩm từ chi tiết đơn hàng
+      if (data.length > 0) {
+        setSelectedProduct(data[0].product.product); // Lấy sản phẩm đầu tiên
+      } else {
+        setSelectedProduct(null);
+      }
     } catch (err) {
       setError(err.message);
     } finally {
       setDetailsLoading(false);
     }
   };
+  
 
   const closeModal = () => {
     setOrderDetails(null);
     setIsCancelModalOpen(false);
     setCancelReason('');
   };
+
   
   const closeModalhuy = () => {
     setIsCancelModalOpen(false);
@@ -311,8 +322,81 @@ const OrderHistory = () => {
               >
                 Xem chi tiết
               </button>
-              <button onClick={() => openCancelModal(order.id)} style={{ width: "100%", padding: "12px", marginTop: "10px", border: "none", borderRadius: "10px", backgroundColor: "#ff6b6b", color: "#fff", cursor: "pointer", fontWeight: "bold" }}>Hủy đơn hàng</button>
-              <button onClick={handleOpenPopup} style={{ width: "100%", padding: "12px", marginTop: "10px", border: "none", borderRadius: "10px", backgroundColor: "#28a745", color: "#fff", cursor: "pointer", fontWeight: "bold" }}>Đánh giá</button>
+{/* Hiển thị nút "Hủy đơn hàng" khi trạng thái là Số 1 hoặc Số 2 */}
+{(order.orderStatus.status === 'Chờ xác nhận' || order.orderStatus.status === 'Đã xác nhận') && (
+  <button
+    onClick={() => openCancelModal(order.id)}
+    style={{
+      width: "100%",
+      padding: "12px",
+      marginTop: "10px",
+      border: "none",
+      borderRadius: "10px",
+      backgroundColor: "#ff6b6b",
+      color: "#fff",
+      cursor: "pointer",
+      fontWeight: "bold",
+    }}
+  >
+    Hủy đơn hàng
+  </button>
+)}
+{/* Kiểm tra trạng thái là số 6 và hiển thị nút "Đánh giá" */}
+{order.orderStatus.status === 'Đã giao' && (
+  <button
+    style={{
+      width: "100%",
+      padding: "12px",
+      marginTop: "10px",
+      border: "none",
+      borderRadius: "10px",
+      backgroundColor: "#28a745",
+      color: "#fff",
+      cursor: "pointer",
+      fontWeight: "bold",
+    }}
+  >
+    Hoàn thành
+  </button>
+)}
+{/* Kiểm tra trạng thái là số 6 và hiển thị nút "Đánh giá" */}
+{order.orderStatus.status === 'Đã giao' && (
+  <button
+    style={{
+      width: "100%",
+      padding: "12px",
+      marginTop: "10px",
+      border: "none",
+      borderRadius: "10px",
+      backgroundColor: "#ff6b6b",
+      color: "#fff",
+      cursor: "pointer",
+      fontWeight: "bold",
+    }}
+  >
+    Chưa nhận được hàng
+  </button>
+)}
+
+             {/* Kiểm tra trạng thái là số 6 và hiển thị nút "Đánh giá" */}
+{order.orderStatus.status === 'Đã hoàn thành' && (
+  <button
+    onClick={handleOpenPopup}
+    style={{
+      width: "100%",
+      padding: "12px",
+      marginTop: "10px",
+      border: "none",
+      borderRadius: "10px",
+      backgroundColor: "red",
+      color: "#fff",
+      cursor: "pointer",
+      fontWeight: "bold",
+    }}
+  >
+    Đánh giá
+  </button>
+)}
             </div>
           ))}
         </div>
@@ -524,7 +608,7 @@ const OrderHistory = () => {
         )}
       </div>
 
-      {isOpen && (
+      {isOpen && selectedProduct && (
         <div
           style={{
             position: 'fixed',
@@ -576,14 +660,14 @@ const OrderHistory = () => {
                 <h2>ĐÁNH GIÁ SẢN PHẨM</h2>
 
                 {/* Thông tin sản phẩm */}
-                <div style={{ display: "flex", alignItems: "center", marginBottom: "15px", justifyContent: "center" }}>
-                  <img
-                    src="https://via.placeholder.com/60"
-                    alt="Converse 03"
-                    style={{ width: "60px", height: "60px", marginRight: "10px" }}
-                  />
-                  <span style={{ fontSize: "18px", fontWeight: "bold" }}>Converse 03</span>
-                </div>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px', justifyContent: 'center' }}>
+              <img
+                src={`/assets/images/${selectedProduct.images[0].url}`} // Sử dụng URL của sản phẩm
+                alt={selectedProduct.name}
+                style={{ width: "100px", height: "80px", marginRight: "10px" }}
+              />
+              <span style={{ fontSize: "18px", fontWeight: "bold" }}>{selectedProduct.name}</span>
+            </div>
 
                 {/* Star Rating */}
                 <div style={{ margin: "10px 0" }}>
@@ -654,6 +738,7 @@ const OrderHistory = () => {
                 {/* Button */}
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
                   <button
+                   onClick={handleClosePopup}
                     style={{
                       padding: "10px 20px",
                       background: "#ccc",

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import JAVA6.Model.OrderModel;
@@ -11,6 +12,9 @@ import JAVA6.Model.OrderStatusModel;
 
 import JAVA6.repository.OrderRepository;
 import JAVA6.repository.OrderStatusRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class OrderService {
@@ -88,5 +92,10 @@ public class OrderService {
         order.setCancelReason(cancelReason);
         orderRepository.save(order);
     }
+    public List<OrderModel> getOrdersWithPagination(int page, int size) {
+    Pageable pageable = PageRequest.of(page, size);
+    Page<OrderModel> orderPage = orderRepository.findAll(pageable);
+    return orderPage.getContent(); // Return paginated orders
+}
 
 }

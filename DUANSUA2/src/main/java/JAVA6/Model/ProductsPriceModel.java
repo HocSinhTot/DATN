@@ -60,4 +60,5 @@ public class ProductsPriceModel {
     public void setPrice(BigDecimal price) {
         this.price = price;
     }
-}
+    
+}   

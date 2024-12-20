@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import Swal from 'sweetalert2';
 const InvoicePage = () => {
   const [cartItems, setCartItems] = useState([]);
   const [userId, setUserId] = useState(null);
@@ -15,6 +16,7 @@ const InvoicePage = () => {
   const [totalAmountAfterShipping, setTotalAmountAfterShipping] = useState(totalAmount);
   const location = useLocation();
   const { invoiceData } = location.state || {};
+
   const navigate = useNavigate();
   useEffect(() => {
     if (invoiceData) {
@@ -129,10 +131,19 @@ const InvoicePage = () => {
           }
         );
         if (response.ok) {
-          alert("Thanh toán COD thành công!");
-          navigate("/");
+          Swal.fire({
+            title: 'Thanh toán COD thành công!',
+            icon: 'success',
+            confirmButtonText: 'OK'
+          }).then(() => {
+            navigate("/");
+          });
         } else {
-          alert("Thanh toán COD thất bại.");
+          Swal.fire({
+            title: 'Thanh toán COD thất bại.',
+            icon: 'error',
+            confirmButtonText: 'Thử lại'
+          });
         }
       } catch (error) {
         alert("Đã xảy ra lỗi: " + error.message);

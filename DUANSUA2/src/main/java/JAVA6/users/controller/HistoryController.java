@@ -7,16 +7,22 @@ import JAVA6.service.OrderService; // Đảm bảo import service OrderService
 import JAVA6.Model.EvaluateModel;
 import JAVA6.Model.OrderDetailModel;
 import JAVA6.Model.OrderModel;
+import JAVA6.repository.UsersRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping; // Đảm bảo import @PutMapping
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class HistoryController {
@@ -30,6 +36,14 @@ public class HistoryController {
 
     @Autowired
     private EvaluaesService evaluaesService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder; 
+    @Autowired
+    private UsersRepository usersRepository;
+
+    private Map<String, String> mapOTP = new HashMap<>();
+
     
 
     @PostMapping("/api/history")
@@ -62,6 +76,8 @@ public ResponseEntity<String> submitEvaluation(@RequestBody EvaluateModel evalua
         return new ResponseEntity<>("Lỗi khi gửi đánh giá: " + e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
+
+
     
 
     // Lớp CancelRequest phải là static

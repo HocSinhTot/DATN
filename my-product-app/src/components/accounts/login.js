@@ -247,7 +247,7 @@ const LoginPage = () => {
             Login
           </button>
           <div style={{ paddingTop: "20px" }}>
-            <a href="/Forgot" style={{ ...styles.backToLogin, ...styles.backToLoginLeft }}>
+            <a href="/forgot" style={{ ...styles.backToLogin, ...styles.backToLoginLeft }}>
               Quên mật khẩu
             </a>
             <a href="/register" style={{ ...styles.backToLogin, ...styles.backToLoginRight }}>

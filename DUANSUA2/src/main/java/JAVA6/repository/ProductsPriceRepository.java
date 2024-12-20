@@ -10,7 +10,7 @@ import JAVA6.Model.ProductsPriceModel;
 
 @Repository
 public interface ProductsPriceRepository extends JpaRepository<ProductsPriceModel, Integer> {
-    Optional<ProductsPriceModel> findByProduct_IdAndCapacity_Id(int productId, int capacityId);
+    Optional<ProductsPriceModel> findByProductIdAndCapacityId(Integer productId, Integer capacityId);
 
     // // Truy vấn theo productId
     // List<ProductsPriceModel> findByIdProductId(int product);

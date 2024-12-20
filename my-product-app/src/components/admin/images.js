@@ -131,7 +131,6 @@ const ImageManagement = () => {
                     <th style={{ textAlign: "center" }}>STT</th>
                     <th style={{ textAlign: "center" }}>Url</th>
                     <th style={{ textAlign: "center" }}>Hình ảnh</th>
-                    <th style={{ textAlign: "center" }}>Sản phẩm</th>
                     <th style={{ width: "500px", textAlign: "center" }}>Thao tác</th>
                   </tr>
                 </thead>
@@ -144,9 +143,6 @@ const ImageManagement = () => {
                         </td>
                         <td style={{ padding: "15px", textAlign: "center" }}>
                           {image.url}
-                        </td>
-                        <td style={{ padding: "15px", textAlign: "center" }}>
-                          {image.product ? image.product.name : "N/A"}
                         </td>
                         <td style={{ padding: "15px", textAlign: "center" }}>
                           <img

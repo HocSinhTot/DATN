@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 
+
 const Header = ({ setKeyword, setCategoryId }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
@@ -274,6 +275,12 @@ const Header = ({ setKeyword, setCategoryId }) => {
           <div className="header-top-inner">
             <div className="cnt-account">
               <ul className="account-menu">
+              <li>
+  <Link to="/discount" className="menu-item">
+    <i className="icon fa fa-gift"></i> Mã giảm giá
+  </Link>
+</li>
+
                 <li>
                   <Link to="/account" className="menu-item">
                     <i className="icon fa fa-user"></i> Tài khoản
