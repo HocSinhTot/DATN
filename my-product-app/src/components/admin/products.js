@@ -648,7 +648,7 @@ const Management = () => {
                     </tbody>
                   </table>
                   <div className="pagination" style={{ width: "100%", justifyContent: "center", paddingRight: "70px" }}>
-                    <button disabled={currentPage === 0} onClick={() => setCurrentPage(currentPage - 1)} style={{ backgroundColor: '#007bff', color: '#fff', padding: '12px 30px', borderRadius: '10px', border: 'none', cursor: currentPage === 0 ? 'not-allowed' : 'pointer', fontSize: '16px', fontWeight: 'bold', boxShadow: '0 5px 10px rgba(0, 123, 255, 0.3)', transition: 'all 0.3s ease', opacity: currentPage === 0 ? '0.5' : '1' }}>
+                    <button disabled={currentPage === 0} onClick={() => setCurrentPage(currentPage - 1)} style={{ width: '105px', backgroundColor: '#007bff', color: '#fff', padding: '12px 30px', borderRadius: '10px', border: 'none', cursor: currentPage === 0 ? 'not-allowed' : 'pointer', fontSize: '16px', fontWeight: 'bold', boxShadow: '0 5px 10px rgba(0, 123, 255, 0.3)', transition: 'all 0.3s ease', opacity: currentPage === 0 ? '0.5' : '1' }}>
                       <i class="bi bi-caret-left-square-fill"></i>
                     </button>
 

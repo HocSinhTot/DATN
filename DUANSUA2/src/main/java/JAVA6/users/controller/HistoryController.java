@@ -70,7 +70,6 @@ public class HistoryController {
             @RequestParam("star") int star,
             @RequestParam("image") String image, // Handling image file upload
             @RequestParam("comment") String comment,
-            @RequestParam("status") boolean status,
             @RequestParam("userId") int userId,
             @RequestParam("productId") int productId,
             @RequestParam("orderDetailId") Integer orderDetailId) {
@@ -85,12 +84,10 @@ public class HistoryController {
             // Truy vấn các đối tượng từ ID
             ProductModel product = productService.getProductById(productId);
             UserModel user = userService.getUserById(userId);
-            List<OrderDetailModel> orderDetails = orderDetailService
-                    .getOrderDetailsByOrderId(orderDetailId);
-            if (orderDetails == null || orderDetails.isEmpty()) {
+            OrderDetailModel orderDetail = orderDetailService.getOrderDetailById(orderDetailId);
+            if (orderDetail == null) {
                 return new ResponseEntity<>("Không tìm thấy chi tiết đơn hàng.", HttpStatus.BAD_REQUEST);
             }
-            OrderDetailModel orderDetail = orderDetails.get(0); // Chỉ truy cập nếu danh sách không rỗng
 
             // Kiểm tra nếu không tìm thấy đối tượng nào
             if (product == null || user == null || orderDetail == null) {
@@ -102,7 +99,7 @@ public class HistoryController {
             evaluateModel.setStar(star);
             evaluateModel.setImg(image); // Assuming you want to save image bytes
             evaluateModel.setComment(comment);
-            evaluateModel.setStatus(status);
+            evaluateModel.setStatus(true);
             evaluateModel.setProduct(product);
             evaluateModel.setUser(user);
             evaluateModel.setOrderDetail(orderDetail);

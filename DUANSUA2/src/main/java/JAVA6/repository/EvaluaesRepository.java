@@ -10,5 +10,5 @@ import JAVA6.Model.FavouriteModel;
 import JAVA6.Model.UserModel;
 
 public interface EvaluaesRepository extends JpaRepository<EvaluateModel, Integer> {
-
+    List<EvaluateModel> findByProduct_Id(int productId); // Truy vấn thông qua ProductModel
 }

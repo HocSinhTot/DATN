@@ -206,21 +206,19 @@ const Index = () => {
       <div className="container-fluid" style={{ backgroundColor: "white", width: '1350px', paddingTop: '1px' }}>
         <div className="row" style={{ marginTop: "-30px" }}>
           {/* Sidebar Section */}
-          <div className="col-xs-12 col-sm-12 col-md-3 sidebar" style={{ width: '8%' }}>
-            <SideMenu />
+          <SideMenu />
 
-            {/* Thông báo */}
-            <Notification
-              message={notificationMessage}
-              type={notificationType}
-              show={showNotification}
-              onClose={() => setShowNotification(false)}
-            />
-
+          {/* Thông báo */}
+          <Notification
+            message={notificationMessage}
+            type={notificationType}
+            show={showNotification}
+            onClose={() => setShowNotification(false)}
+          />
 
 
 
-          </div>
+
 
           <div className="col-xs-12 col-sm-12 col-md-9 homebanner-holder" style={{ width: '100%' }}>
 

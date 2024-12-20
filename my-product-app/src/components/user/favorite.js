@@ -109,13 +109,13 @@ const WishlistPage = () => {
         >
             <h2
                 style={{
-                    fontSize: '2.5rem',
+                    fontSize: '24px', fontWeight: 'bold',
                     textAlign: 'center',
                     color: '#333',
                     marginBottom: '20px',
                 }}
             >
-                Sản Phẩm Yêu Thích
+                Yêu thích
             </h2>
 
             <div className="table-responsive">
@@ -151,16 +151,16 @@ const WishlistPage = () => {
                                 >
                                     {like.product.images.length > 0 && (
                                         <a href={`/product/${like.product.id}`}>
-                                        <img
-                                            src={`/assets/images/${like.product.images[0].url}`}
-                                            alt={like.product.name}
-                                            style={{
-                                                width: '150px',
-                                                height: 'auto',
-                                                objectFit: 'cover',
-                                                borderRadius: '10px',
-                                            }}
-                                        />
+                                            <img
+                                                src={`/assets/images/${like.product.images[0].url}`}
+                                                alt={like.product.name}
+                                                style={{
+                                                    width: '150px',
+                                                    height: 'auto',
+                                                    objectFit: 'cover',
+                                                    borderRadius: '10px',
+                                                }}
+                                            />
                                         </a>
                                     )}
                                 </td>

@@ -64,14 +64,14 @@ const Account = () => {
     formData.append("image", user.imageFile);  // Gửi hình ảnh nếu có
     formData.append("password", passwordInput);  // Gửi mật khẩu để xác thực
 
- if (!passwordInput) {
-  setNotificationMessage('Mật khẩu không chính xác vui lòng nhập lại!');
-  setNotificationType('error');
-  setShowNotification(true);
+    if (!passwordInput) {
+      setNotificationMessage('Mật khẩu không chính xác vui lòng nhập lại!');
+      setNotificationType('error');
+      setShowNotification(true);
 
-  setTimeout(() => setShowNotification(false), 3000); // Ẩn sau 3 giây
-    return;
-  }
+      setTimeout(() => setShowNotification(false), 3000); // Ẩn sau 3 giây
+      return;
+    }
     axios
       .put("http://localhost:8080/api/users/update", formData, {
         headers: {
@@ -92,13 +92,13 @@ const Account = () => {
           setNotificationMessage('Mật khẩu không chính xác vui lòng nhập lại!');
           setNotificationType('error');
           setShowNotification(true);
-  
+
           setTimeout(() => setShowNotification(false), 3000); // Ẩn sau 3 giây
         } else {
           setNotificationMessage("Đã xảy ra lỗi khi cập nhật thông tin");
           setNotificationType("error");
           setShowNotification(true);
-  
+
           setTimeout(() => setShowNotification(false), 3000); // Ẩn sau 3 giây
         }
       });
@@ -348,8 +348,8 @@ const Account = () => {
 
                   {/* Giới tính */}
                   <div className="form-group">
-                    <label style={{ fontWeight: "bold",paddingLeft:"17px" }}>Giới tính</label>
-                    <div style={{ display: "flex", alignItems: "center", gap: "20px",paddingLeft:'17px' }}>
+                    <label style={{ fontWeight: "bold", paddingLeft: "17px" }}>Giới tính</label>
+                    <div style={{ display: "flex", alignItems: "center", gap: "20px", paddingLeft: '17px' }}>
                       <div className="form-check">
                         <input
                           type="radio"
@@ -360,7 +360,7 @@ const Account = () => {
                           checked={user.gender === true}
                           onChange={(e) => setUser({ ...user, gender: true })}
                         />
-                        <label className="form-check-label" htmlFor="genderMale">
+                        <label style={{ marginLeft: '6px' }} className="form-check-label" htmlFor="genderMale">
                           Nam
                         </label>
                       </div>
@@ -374,7 +374,7 @@ const Account = () => {
                           checked={user.gender === false}
                           onChange={(e) => setUser({ ...user, gender: false })}
                         />
-                        <label className="form-check-label" htmlFor="genderFemale">
+                        <label style={{ marginLeft: '6px' }} className="form-check-label" htmlFor="genderFemale">
                           Nữ
                         </label>
                       </div>

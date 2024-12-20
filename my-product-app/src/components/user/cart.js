@@ -155,10 +155,11 @@ const CartPage = () => {
     >
       <h2
         style={{
-          fontSize: '2.5rem',
+          fontSize: '26px',
           textAlign: 'center',
           color: '#333',
           marginBottom: '20px',
+          fontWeight: 'bold'
         }}
       >
         Giỏ Hàng
@@ -321,17 +322,22 @@ const CartPage = () => {
         </tbody>
       </table>
 
+      {/* Đường kẻ ngang */}
+      <hr style={{ border: '1px solid #ddd', margin: '20px 0' }} />
       <div
         style={{
           textAlign: 'right',
           marginBottom: '20px',
-          fontSize: '1.5rem',
+          fontSize: '2.5rem',
+          fontWeight: 'bold',
+
         }}
       >
         Tổng cộng:{' '}
+
         <span
           style={{
-            color: '#ff6f61',
+            padding: '40px',
             fontWeight: 'bold',
           }}
         >
@@ -342,10 +348,18 @@ const CartPage = () => {
         </span>
       </div>
 
+      <hr style={{
+        border: '1px solid #ddd',
+        margin: '20px 0',
+        width: '30%',  // Điều chỉnh chiều rộng để nó nhỏ lại
+        marginLeft: 'auto',  // Đẩy sang bên phải
+        marginRight: '0'  // Đảm bảo không có khoảng cách bên phải
+      }} />
+
       <div
         style={{
-          display: 'flex',
-          justifyContent: 'center',
+          display: 'flex',  // Sử dụng flexbox
+          justifyContent: 'flex-end',  // Đẩy các phần tử sang bên phải
           gap: '20px',
           marginTop: '20px',
         }}
@@ -368,17 +382,30 @@ const CartPage = () => {
           onClick={handlePayment}
           style={{
             padding: '15px 30px',
-            backgroundColor: '#28a745',
-            color: '#fff',
-            border: 'none',
+            color: '#000', // Màu chữ bên trong là màu đen
+            backgroundColor: '#fff', // Màu nền bên trong là màu trắng
+            border: '2px solid #000', // Viền ngoài màu đen
             cursor: 'pointer',
             fontSize: '1.2rem',
             borderRadius: '5px',
+            display: 'flex',  // Đảm bảo các phần tử con nằm trên cùng một hàng
+            alignItems: 'center',  // Căn chỉnh các phần tử theo chiều dọc
+            justifyContent: 'center',  // Căn chỉnh nội dung
           }}
         >
-          Thanh Toán
+          Tiến hành thanh toán
+          <div style={{ marginLeft: '10px' }}>  {/* Thêm khoảng cách giữa chữ và icon */}
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8" />
+            </svg>
+          </div>
         </button>
+
+
+
       </div>
+
+
       {popup.show && (
         <Popup
           message={popup.message}

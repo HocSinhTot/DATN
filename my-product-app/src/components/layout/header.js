@@ -408,7 +408,7 @@ const Header = ({ setKeyword, setCategoryId }) => {
       <div
         className="main-header"
         style={{
-          width: "1567px",
+          width: "1892px",
         }}
       >
         <div className="container">
@@ -664,7 +664,7 @@ const Header = ({ setKeyword, setCategoryId }) => {
                 <div className="nav-outer">
                   <ul
                     className="nav navbar-nav"
-                    style={{ height: "55px", paddingLeft: "120px" }}
+                    style={{ height: "55px", paddingLeft: "230px" }}
                   >
                     <li className="active dropdown yamm-fw">
                       <Link

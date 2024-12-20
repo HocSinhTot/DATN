@@ -10,24 +10,16 @@ const LoginPage = () => {
   const [stars, setStars] = useState([]);
   const navigate = useNavigate();
 
-  // Function to get cookie value
   const getCookie = (name) => {
     const value = document.cookie;
-    const parts = value.split("; ").find(row => row.startsWith(name + "="));
+    const parts = value.split("; ").find((row) => row.startsWith(name + "="));
     return parts ? parts.split("=")[1] : null;
   };
 
   useEffect(() => {
-    const getCookie = (name) => {
-      const value = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith(name + "="));
-      return value ? value.split("=")[1] : null;
-    };
-  
     const savedUsername = getCookie("username");
     const savedPassword = getCookie("password");
-  
+
     if (savedUsername) {
       setUsername(savedUsername);
       setRememberMe(true);
@@ -35,8 +27,7 @@ const LoginPage = () => {
     if (savedPassword) {
       setPassword(savedPassword);
     }
-  
-    // Generate stars
+
     const newStars = Array.from({ length: 7 }).map((_, index) => ({
       id: index,
       top: `${Math.random() * 100}%`,
@@ -45,14 +36,20 @@ const LoginPage = () => {
     }));
     setStars(newStars);
   }, []);
-  
+
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(""), 3000); // Tự động ẩn sau 3 giây
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
 
   const setCookie = (name, value, days) => {
     const expires = new Date();
     expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
     document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/`;
   };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (username && password) {
@@ -61,25 +58,23 @@ const LoginPage = () => {
           username,
           password,
         });
-  
+
         setError(""); // Xóa lỗi nếu thành công
-  
+
         if (response.data.success) {
-          // Lưu token và các thông tin vào sessionStorage
           sessionStorage.setItem("token", response.data.token);
           sessionStorage.setItem("username", username);
           sessionStorage.setItem("userId", response.data.userId);
-  
-          // Nếu "Lưu mật khẩu" được chọn, lưu vào cookie
+
           if (rememberMe) {
-            setCookie("username", username, 7); // Lưu trong 7 ngày
-            setCookie("password", password, 7); // Không mã hóa mật khẩu đơn giản ở client
+            setCookie("username", username, 7);
+            setCookie("password", password, 7);
           } else {
-            setCookie("username", "", -1); // Xóa cookie nếu không lưu
+            setCookie("username", "", -1);
             setCookie("password", "", -1);
           }
-  
-          navigate("/"); // Điều hướng sau khi đăng nhập
+
+          navigate("/");
         } else {
           setError(response.data.message || "Đăng nhập thất bại.");
         }
@@ -90,8 +85,6 @@ const LoginPage = () => {
       setError("Vui lòng nhập tên đăng nhập và mật khẩu.");
     }
   };
-  
-
 
   const styles = {
     body: {
@@ -170,6 +163,11 @@ const LoginPage = () => {
       color: "red",
       fontSize: "14px",
       marginTop: "10px",
+      padding: "10px",
+      borderRadius: "5px",
+      backgroundColor: "rgba(255, 0, 0, 0.1)",
+      position: "relative",
+      animation: "fadeout 3s forwards",
     },
     backToLogin: {
       textDecoration: "none",
@@ -203,7 +201,7 @@ const LoginPage = () => {
         ))}
       </div>
       <div style={styles.container}>
-        <h1 style={styles.h1}>Login</h1>
+        <h1 style={styles.h1}>Đăng nhập</h1>
         <form onSubmit={handleSubmit}>
           <div style={styles.formGroup}>
             <label htmlFor="username" style={styles.formLabel}>
@@ -243,9 +241,56 @@ const LoginPage = () => {
             />
             <label htmlFor="rememberMe">Lưu mật khẩu</label>
           </div>
-          {error && <div style={styles.errorMessage}>{error}</div>}
+          {error && (
+            <div style={{
+              ...styles.errorMessage,
+              position: "fixed", // Đặt vị trí cố định trên toàn bộ trang
+              top: "50px", // Điều chỉnh vị trí theo chiều dọc
+              right: "70px", // Điều chỉnh vị trí theo chiều ngang
+              animation: "slideInFromRight 0.5s ease-out", // Thêm hiệu ứng xuất hiện từ bên phải vào
+              backgroundColor: "#d32f2f", // Màu đỏ đậm
+              color: "#fff", // Màu chữ trắng
+              width: '500px'
+            }}>
+              {error}
+              <button
+                onClick={() => setError("")}
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  right: "10px",
+                  transform: "translateY(-50%)",
+                  background: "none",
+                  border: "none",
+                  color: "white", // Màu nút đóng trắng để dễ nhìn
+                  cursor: "pointer",
+                  fontSize: "16px",
+                }}
+              >
+                ×
+              </button>
+            </div>
+          )}
+
+          <style>
+            {`
+    @keyframes slideInFromRight {
+      0% {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      100% {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+  `}
+          </style>
+
+
+
           <button type="submit" style={styles.btn}>
-            Login
+            Đăng nhập
           </button>
           <div style={{ paddingTop: "20px" }}>
             <a href="/forgot" style={{ ...styles.backToLogin, ...styles.backToLoginLeft }}>
@@ -257,7 +302,6 @@ const LoginPage = () => {
           </div>
         </form>
       </div>
-
       <style>
         {`
           @keyframes shoot {
@@ -269,7 +313,15 @@ const LoginPage = () => {
               transform: translateY(100vh) translateX(50px);
               opacity: 0;
             }
-          } 
+          }
+          @keyframes fadeout {
+            0% {
+              opacity: 1;
+            }
+            100% {
+              opacity: 0;
+            }
+          }
         `}
       </style>
     </div>

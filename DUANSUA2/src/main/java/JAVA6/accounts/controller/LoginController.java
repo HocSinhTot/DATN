@@ -27,46 +27,45 @@ public class LoginController {
 
     @Autowired
     private JwtTokenUtil jwtUtils;
-@Autowired
-private PasswordEncoder passwordEncoder;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     // Đăng nhập và gửi thông tin người dùng về frontend
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         String username = loginRequest.getUsername();
         String password = loginRequest.getPassword();
-    
+
         // Tìm người dùng theo username
         List<UserModel> users = usersRepository.findByUsername(username);
-    
+
         if (!users.isEmpty()) {
             UserModel user = users.get(0);
-    
+
             // Kiểm tra trạng thái tài khoản
             if (!user.isStatus()) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body(new ApiResponse(false, "Tài khoản đã bị khóa.", false, 0, null));
             }
-    
+
             // Kiểm tra mật khẩu
             if (passwordEncoder.matches(password, user.getPassword())) {
                 boolean isAdmin = user.isRole(); // Kiểm tra quyền admin
                 int userId = user.getId();
-    
+
                 // Tạo JWT token
                 String role = user.isRole() ? "ROLE_ADMIN" : "ROLE_USER";
                 String token = jwtUtils.generateToken(user.getUsername(), role);
-                
-    
+
                 return ResponseEntity.ok(new ApiResponse(true, "Đăng nhập thành công!", isAdmin, userId, token));
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ApiResponse(false, "Sai mật khẩu.", false, 0, null));
+                    .body(new ApiResponse(false, "Tài khoản và mật khẩu sai.", false, 0, null));
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ApiResponse(false, "Tài khoản không tồn tại.", false, 0, null));
     }
-    
+
     @RequestMapping("/logout")
     public ResponseEntity<ApiResponse> logout(HttpSession session, HttpServletResponse response) {
         // Ghi lại thông tin phiên người dùng trước khi hủy

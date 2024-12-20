@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Notification from './Notification';
 
 const Discount = () => {
   const [discount, setDiscount] = useState([]);
@@ -68,6 +69,28 @@ const Discount = () => {
     fetchOrders();
   }, [userId]);
 
+
+  const [showNotification, setShowNotification] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState('');
+  const [notificationType, setNotificationType] = useState('success')
+  const handleCopy = (code) => {
+    // Sử dụng Clipboard API để sao chép mã giảm giá vào clipboard
+    navigator.clipboard.writeText(code).then(() => {
+      setNotificationMessage(`Mã giảm giá ${code} đã được lấy!`);
+      setNotificationType('success');
+      setShowNotification(true);
+
+      // Ẩn thông báo sau 3 giây
+      setTimeout(() => setShowNotification(false), 3000);
+    }).catch(err => {
+      setNotificationMessage('Không thể sao chép mã giảm giá.');
+      setNotificationType('error');
+      setShowNotification(true);
+
+      // Ẩn thông báo sau 3 giây
+      setTimeout(() => setShowNotification(false), 3000);
+    });
+  };
   const fetchOrderDetails = async (discountId) => {
     try {
       setDetailsLoading(true);
@@ -102,10 +125,19 @@ const Discount = () => {
       }}
     >
       <div style={{ maxWidth: '1300px', margin: '20px auto', padding: '10px' }}>
-        <h2 style={{ textAlign: 'center', color: '#333', fontSize: '2.5rem' }}>
+        <h2 style={{ textAlign: 'center', color: '#333', fontSize: '24px', fontWeight: 'bold' }}>
           Mã giảm giá
         </h2>
-        {/* Kiểm tra xem dữ liệu có rỗng không */}
+
+        {/* Thông báo */}
+        <Notification
+          message={notificationMessage}
+          type={notificationType}
+          show={showNotification}
+          onClose={() => setShowNotification(false)}
+        />
+
+        {/* Kiểm tra dữ liệu */}
         {loading ? (
           <p>Đang tải...</p>
         ) : error ? (
@@ -116,12 +148,17 @@ const Discount = () => {
               <div
                 key={discount.id}
                 style={{
-                  width: '300px',
+                  width: '300px', // Điều chỉnh lại chiều rộng mỗi mã giảm giá
                   backgroundColor: '#fff',
                   borderRadius: '15px',
-                  boxShadow: '0 6px 12px rgba(0, 0, 0, 0.15)',
+                  boxShadow: '0 6px 12px rgba(0, 0, 0, 0.1)',
                   padding: '20px',
                   transition: 'transform 0.3s, box-shadow 0.3s',
+                  display: 'flex',
+                  flexDirection: 'column', // Xếp các phần tử theo chiều dọc
+                  gap: '16px', // Khoảng cách giữa các phần tử
+                  alignItems: 'center', // Căn giữa các phần tử
+                  justifyContent: 'space-between',
                 }}
                 onMouseOver={(e) => {
                   e.currentTarget.style.transform = 'scale(1.05)';
@@ -129,22 +166,66 @@ const Discount = () => {
                 }}
                 onMouseOut={(e) => {
                   e.currentTarget.style.transform = 'scale(1)';
-                  e.currentTarget.style.boxShadow = '0 6px 12px rgba(0, 0, 0, 0.15)';
+                  e.currentTarget.style.boxShadow = '0 6px 12px rgba(0, 0, 0, 0.1)';
                 }}
               >
-                <div>
-                  <p>
-                    <strong>Mã giảm giá:</strong> {discount.code}
+                {/* Icon */}
+                <div
+                  style={{
+                    backgroundColor: '#4CAF50',
+                    color: '#fff',
+                    padding: '16px',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '24px', // Tăng kích thước icon
+                    fontWeight: 'bold',
+                  }}
+                >
+                  <span>🌟</span>
+                </div>
+
+                {/* Thông tin mã giảm giá */}
+                <div style={{ fontSize: '14px', textAlign: 'center' }}>
+                  <p style={{ marginRight: '-10px' }} >
+                    <strong style={{ marginRight: '28px' }}>Mã giảm giá:</strong> {discount.code}
                   </p>
-                  <p>
-                    <strong>Giá trị giảm:</strong> {discount.value}
+                  <p style={{ marginRight: '48px' }}>
+                    <strong style={{ marginRight: '48px' }} >Giảm giá:</strong> {discount.value}%
                   </p>
-                  <p>
-                    <strong>Ngày bắt đầu:</strong> {formatDate(discount.startDate)}
+                  <p style={{ marginRight: '8px' }} >
+                    <strong style={{ marginRight: '18px' }} >Ngày bắt đầu:</strong> {formatDate(discount.startDate)}
                   </p>
-                  <p>
-                    <strong>Ngày kết thúc:</strong> {formatDate(discount.endDate)}
+                  <p style={{ marginRight: '6px' }} >
+                    <strong style={{ marginRight: '17px' }}  >Ngày kết thúc:</strong> {formatDate(discount.endDate)}
                   </p>
+                </div>
+
+                {/* Nút hành động */}
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  <button
+                    onClick={() => handleCopy(discount.code)}
+                    style={{
+                      backgroundColor: '#FF5722',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: '50px',
+                      padding: '12px 25px', // Tăng kích thước padding
+                      cursor: 'pointer',
+                      fontSize: '14px',
+                      transition: 'all 0.3s ease',
+                      width: '100%',
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.backgroundColor = '#E64A19';
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.backgroundColor = '#FF5722';
+                    }}
+                  >
+                    Lấy mã
+                  </button>
                 </div>
               </div>
             ))}
@@ -153,6 +234,7 @@ const Discount = () => {
       </div>
     </div>
   );
+
 };
 
 export default Discount;

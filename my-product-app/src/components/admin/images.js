@@ -14,7 +14,7 @@ const ImageManagement = () => {
           axios.get("http://localhost:8080/api/admin/images"),
           axios.get("http://localhost:8080/api/admin/products"),
         ]);
-  
+
         setImage(imagesRes.data);
         setProducts(Array.isArray(productRes.data) ? productRes.data : []); // Kiểm tra nếu dữ liệu là mảng
         console.log("Products:", productRes.data); // Kiểm tra xem dữ liệu sản phẩm có đầy đủ không
@@ -22,10 +22,10 @@ const ImageManagement = () => {
         console.error("Error fetching data:", error);
       }
     };
-  
+
     fetchData();
   }, []);
-  
+
 
   const handleDelete = (id) => {
     setPopup({ show: true, type: "delete", image: { id } });
@@ -131,7 +131,6 @@ const ImageManagement = () => {
                     <th style={{ textAlign: "center" }}>STT</th>
                     <th style={{ textAlign: "center" }}>Url</th>
                     <th style={{ textAlign: "center" }}>Hình ảnh</th>
-                    <th style={{ textAlign: "center" }}>Sản phẩm</th>
                     <th style={{ width: "500px", textAlign: "center" }}>Thao tác</th>
                   </tr>
                 </thead>
@@ -144,9 +143,6 @@ const ImageManagement = () => {
                         </td>
                         <td style={{ padding: "15px", textAlign: "center" }}>
                           {image.url}
-                        </td>
-                        <td style={{ padding: "15px", textAlign: "center" }}>
-                          {image.product ? image.product.name : "N/A"}
                         </td>
                         <td style={{ padding: "15px", textAlign: "center" }}>
                           <img
@@ -266,8 +262,8 @@ const ImageManagement = () => {
               {popup.type === "edit"
                 ? "Sửa hình ảnh"
                 : popup.type === "delete"
-                ? "Xác nhận xóa"
-                : "Thêm hình ảnh"}
+                  ? "Xác nhận xóa"
+                  : "Thêm hình ảnh"}
             </h3>
 
             {popup.type !== "delete" ? (
@@ -304,28 +300,28 @@ const ImageManagement = () => {
                     Chọn sản phẩm
                   </label>
                   <select
-  id="product"
-  className="form-control"
-  value={popup.image && popup.image.product ? popup.image.product.id : ""} // Đảm bảo đúng value
-  onChange={(e) => {
-    const selectedProduct = products.find(
-      (product) => product.id === Number(e.target.value)  // Sử dụng Number() thay vì parseInt
-    );
-    setPopup({
-      ...popup,
-      image: { ...popup.image, product: selectedProduct }, // Cập nhật sản phẩm đã chọn
-    });
-  }}
-  required
->
-  <option value="">Chọn sản phẩm</option>
-  {Array.isArray(products) &&
-    products.map((product) => (
-      <option key={product.id} value={product.id}>
-        {product.name}
-      </option>
-    ))}
-</select>
+                    id="product"
+                    className="form-control"
+                    value={popup.image && popup.image.product ? popup.image.product.id : ""} // Đảm bảo đúng value
+                    onChange={(e) => {
+                      const selectedProduct = products.find(
+                        (product) => product.id === Number(e.target.value)  // Sử dụng Number() thay vì parseInt
+                      );
+                      setPopup({
+                        ...popup,
+                        image: { ...popup.image, product: selectedProduct }, // Cập nhật sản phẩm đã chọn
+                      });
+                    }}
+                    required
+                  >
+                    <option value="">Chọn sản phẩm</option>
+                    {Array.isArray(products) &&
+                      products.map((product) => (
+                        <option key={product.id} value={product.id}>
+                          {product.name}
+                        </option>
+                      ))}
+                  </select>
 
                 </div>
                 <div

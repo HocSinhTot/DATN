@@ -16,6 +16,8 @@ const ProductDetail = () => {
   const [capacities, setCapacities] = useState([]);
   const [selectedCapacity, setSelectedCapacity] = useState(null);
   const [price, setPrice] = useState(null);
+  const [evaluations, setEvaluations] = useState([]); // Lưu trữ danh sách đánh giá
+
   const [currentImage, setCurrentImage] = useState(null);
   const [similarProducts, setSimilarProducts] = useState([]); // Dữ liệu sản phẩm tương tự
   const [activeTab, setActiveTab] = useState('description'); // Quản lý tab hiện tại
@@ -54,6 +56,20 @@ const ProductDetail = () => {
       currency: 'VND',
     }).format(amount);
   };
+  useEffect(() => {
+    if (id) {
+      // Gọi API đánh giá
+      axios
+        .get(`http://localhost:8080/api/evaluations/product/${id}`)
+        .then((response) => {
+          setEvaluations(response.data); // Lưu trữ đánh giá vào state
+        })
+        .catch((error) => {
+          console.error("Lỗi khi lấy dữ liệu đánh giá:", error);
+        });
+    }
+  }, [id]);
+
   useEffect(() => {
     const username = sessionStorage.getItem('username');
     if (!username) {
@@ -153,7 +169,6 @@ const ProductDetail = () => {
 
   const handleAddToCart = async (e) => {
     e.preventDefault();
-
     const stockResponse = await axios.get(`http://localhost:8080/api/product/checkStock/${product.id}`);
     const stockQuantity = stockResponse.data.stockQuantity;
 
@@ -353,7 +368,6 @@ const ProductDetail = () => {
                     <div className="product-info">
                       <h1 className="name">{product.name}</h1>
                       <div className="description-container m-t-20">
-                        <span>{product.description}</span>
                         <div class="stock-container info-container m-t-10">
                           <div class="row">
                             <div class="col-sm-2">
@@ -468,6 +482,70 @@ const ProductDetail = () => {
                   </div>
                   {/* End Product Info */}
 
+                </div>
+              </div>
+              <div className="product-tabs inner-bottom-xs wow fadeInUp">
+                <div className="row">
+                  <div className="col-sm-3">
+                    <ul id="product-tabs" className="nav nav-tabs nav-tab-cell">
+                      <li className={activeTab === 'description' ? 'active' : ''}>
+                        <a href="#description" onClick={() => handleTabClick('description')}>
+                          Mô tả
+                        </a>
+                      </li>
+                      <li className={activeTab === 'review' ? 'active' : ''}>
+                        <a href="#review" onClick={() => handleTabClick('review')}>
+                          Đánh giá
+                        </a>
+                      </li>
+
+                    </ul>
+                  </div>
+                  <div className="col-sm-9">
+                    <div className="tab-content">
+                      {/* Description Tab */}
+                      <div id="description" className={`tab-pane ${activeTab === 'description' ? 'in active' : ''}`}>
+                        <div className="product-tab">
+                          <p className="text">
+                            {product.description}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Review Tab */}
+                      <div id="review" className={`tab-pane ${activeTab === 'review' ? 'in active' : ''}`}>
+                        <div className="product-tab">
+                          <div className="product-reviews">
+                            <h4 className="title">Phản hồi</h4>
+                            <div className="reviews">
+                              {evaluations.length > 0 ? (
+                                evaluations.map((evaluation, index) => (
+                                  <div className="review" key={index}>
+                                    <div className="review-title">
+                                      <span className="summary">{evaluation.comment}</span>
+                                      <span className="date">
+                                        <i className="fa fa-calendar"></i>
+                                        <span>Đăng bởi: {evaluation.username}</span>
+                                      </span>
+                                    </div>
+                                    <div className="text">Số sao: {evaluation.star}</div>
+                                    <div className="text">Màu: {evaluation.color}</div>
+                                    <div className="text">Dung lượng: {evaluation.capacity}</div>
+                                  </div>
+                                ))
+                              ) : (
+                                <p>Không có đánh giá nào.</p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+
+                      {/* Tags Tab */}
+
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

@@ -6,10 +6,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import JAVA6.Model.ProductsPriceModel;
-
+import JAVA6.repository.ProductsPriceRepository;
 import JAVA6.service.ProductsPriceService;
+import jakarta.persistence.EntityNotFoundException;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/admin/products-price")
@@ -17,6 +19,9 @@ public class ProductsPriceController {
 
     @Autowired
     private ProductsPriceService productsPriceService;
+
+    @Autowired
+    private ProductsPriceRepository productsPriceRepository;
 
     @GetMapping
     public ResponseEntity<List<ProductsPriceModel>> getAllProductsPrices() {
@@ -27,52 +32,51 @@ public class ProductsPriceController {
         }
     }
 
-    // @GetMapping("/product/{productId}")
-    // public ResponseEntity<List<ProductsPriceModel>> getProductsPricesByProductId(@PathVariable Integer productId) {
-    //     try {
-    //         List<ProductsPriceModel> result = productsPriceService.getProductsPricesByProductId(productId);
-    //         if (result.isEmpty()) {
-    //             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-    //         }
-    //         return ResponseEntity.ok(result);
-    //     } catch (Exception e) {
-    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-    //     }
-    // }
-
     @PostMapping
     public ResponseEntity<ProductsPriceModel> createProductsPrice(@RequestBody ProductsPriceModel productsPrice) {
+        if (productsPrice.getPrice() == null) {
+            System.out.println("Price is null!"); // Log lỗi
+            return ResponseEntity.badRequest().build();
+        }
         try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(productsPriceService.createProductsPrice(productsPrice));
+            ProductsPriceModel createdProductPrice = productsPriceService.createProductsPrice(productsPrice);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdProductPrice);
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 
-    // @PutMapping
-    // public ResponseEntity<ProductsPriceModel> updateProductsPrice(@RequestBody ProductsPriceModel productsPrice) {
-    //     try {
-    //         return ResponseEntity.ok(productsPriceService.updateProductsPrice(productsPrice.getId(), productsPrice));
-    //     } catch (RuntimeException e) {
-    //         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-    //     } catch (Exception e) {
-    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-    //     }
-    // }
+    @PutMapping("/{productId}/{capacityId}")
+    public ResponseEntity<ProductsPriceModel> updateProductsPrice(@PathVariable Integer productId,
+            @PathVariable Integer capacityId,
+            @RequestBody ProductsPriceModel productsPrice) {
+        try {
+            return ResponseEntity.ok(productsPriceService.updateProductsPrice(productId, capacityId, productsPrice));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
-    // @DeleteMapping("/{productId}/{capacityId}/{colorId}")
-    // public ResponseEntity<Void> deleteProductsPrice(@PathVariable Integer productId,
-    //                                                 @PathVariable Integer capacityId,
-    //                                                 @PathVariable Integer colorId) {
-    //     try {
-    //         ProductsPriceId id = new ProductsPriceId();
-    //         id.setProductId(productId);
-    //         id.setCapacityId(capacityId);
-    //         id.setColorId(colorId);
-    //         productsPriceService.deleteProductsPrice(id);
-    //         return ResponseEntity.noContent().build();
-    //     } catch (Exception e) {
-    //         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-    //     }
-    // }
+    @DeleteMapping("/{productId}/{capacityId}")
+    public ResponseEntity<Void> deleteProductsPrice(@PathVariable Integer productId,
+            @PathVariable Integer capacityId) {
+        try {
+            Optional<ProductsPriceModel> productPriceOptional = productsPriceRepository
+                    .findByProductIdAndCapacityId(productId, capacityId);
+            if (productPriceOptional.isPresent()) {
+                System.out.println("Xóa sản phẩm với ID " + productId + " và Capacity ID " + capacityId); // Logging
+                productsPriceRepository.delete(productPriceOptional.get());
+                return ResponseEntity.noContent().build(); // Trả về 204 No Content khi xóa thành công
+            } else {
+                System.out.println("Không tìm thấy sản phẩm với ID " + productId + " và Capacity ID " + capacityId); // Logging
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Trả về 404 nếu không tìm thấy sản phẩm
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); // In lỗi ra console để xem chi tiết
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // Trả về 500 nếu có lỗi trong
+                                                                                    // server
+        }
+    }
+
 }

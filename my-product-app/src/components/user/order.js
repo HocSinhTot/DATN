@@ -11,6 +11,7 @@ const OrderHistory = () => {
   const [orderIdToCancel, setOrderIdToCancel] = useState(null);
   const [loadingCancel, setLoadingCancel] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [currentOrderDetailId, setCurrentOrderDetailId] = useState(null); // State lưu orderDetailId
 
   const userId = sessionStorage.getItem('userId');
   const [rating, setRating] = useState(0); // State cho số sao
@@ -84,9 +85,9 @@ const OrderHistory = () => {
       const data = await response.json();
       setOrderDetails(data);
 
-      // Lấy sản phẩm từ chi tiết đơn hàng
+      // Cập nhật sản phẩm đầu tiên để đánh giá
       if (data.length > 0) {
-        setSelectedProduct(data.product); // Lấy sản phẩm đầu tiên
+        setSelectedProduct(data[0].product); // Cập nhật đúng sản phẩm
       } else {
         setSelectedProduct(null);
       }
@@ -96,8 +97,6 @@ const OrderHistory = () => {
       setDetailsLoading(false);
     }
   };
-
-
   const closeModal = () => {
     setOrderDetails(null);
     setIsCancelModalOpen(false);
@@ -173,7 +172,7 @@ const OrderHistory = () => {
     );
 
   if (error) return <div>Error: {error}</div>;
-  const handleSubmitReview = async (orderDetailId) => {
+  const handleSubmitReview = async () => {
     const userId = sessionStorage.getItem('userId');
     if (!userId || userId === 'null') {
       alert('Bạn cần đăng nhập để gửi đánh giá.');
@@ -185,20 +184,23 @@ const OrderHistory = () => {
       return;
     }
 
-    const productId = selectedProduct.product.id; // Lấy productId từ selectedProduct
+    if (!currentOrderDetailId) {
+      alert('Không xác định được sản phẩm để đánh giá.');
+      return;
+    }
+
     const evaluationData = new FormData();
     evaluationData.append('star', rating);
-    evaluationData.append('image', image);  // Đảm bảo 'image' là đối tượng File
+    evaluationData.append('image', image);
     evaluationData.append('comment', reviewText);
-    evaluationData.append('status', true);
     evaluationData.append('userId', parseInt(userId, 10));
-    evaluationData.append('productId', productId);
-    evaluationData.append('orderDetailId', orderDetailId); // Sử dụng orderDetailId đã truyền vào
+    evaluationData.append('productId', selectedProduct.product.id);
+    evaluationData.append('orderDetailId', currentOrderDetailId); // Sử dụng orderDetailId từ state
 
     try {
       const response = await fetch('http://localhost:8080/api/history/evaluate', {
         method: 'POST',
-        body: evaluationData,  // Gửi FormData làm body của yêu cầu
+        body: evaluationData,
       });
 
       if (!response.ok) {
@@ -206,11 +208,13 @@ const OrderHistory = () => {
       }
 
       alert('Đánh giá của bạn đã được gửi thành công!');
-      handleClosePopup();
+      handleClosePopup(); // Đóng popup
     } catch (error) {
       alert(`Lỗi: ${error.message}`);
     }
   };
+
+
 
 
 
@@ -366,7 +370,6 @@ const OrderHistory = () => {
                   Chưa nhận được hàng
                 </button>
               )}
-
               {/* Kiểm tra trạng thái là số 6 và hiển thị nút "Đánh giá" */}
               {order.orderStatus.status === 'Đã hoàn thành' && (
                 <button
@@ -466,7 +469,11 @@ const OrderHistory = () => {
 
                   {/* Thêm nút đánh giá và truyền orderDetailId */}
                   <button
-                    onClick={handleOpenPopup}
+                    onClick={() => {
+                      setCurrentOrderDetailId(detail.id); // Cập nhật orderDetailId hiện tại
+                      setSelectedProduct(detail.product); // Cập nhật sản phẩm hiện tại
+                      handleOpenPopup(); // Mở popup đánh giá
+                    }}
                     style={{
                       width: "100%",
                       padding: "12px",
@@ -481,6 +488,8 @@ const OrderHistory = () => {
                   >
                     Đánh giá
                   </button>
+
+
                 </li>
               ))}
             </ul>
@@ -666,15 +675,15 @@ const OrderHistory = () => {
               >
                 <h2>ĐÁNH GIÁ SẢN PHẨM</h2>
 
-                {/* Thông tin sản phẩm */}
                 <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px', justifyContent: 'center' }}>
                   <img
-                    src={`/assets/images/${selectedProduct.images[0].url}`} // Sử dụng URL của sản phẩm
+                    src={`/assets/images/${selectedProduct.product.images[0].url}`} // URL ảnh sản phẩm
                     alt={selectedProduct.name}
                     style={{ width: "100px", height: "80px", marginRight: "10px" }}
                   />
                   <span style={{ fontSize: "18px", fontWeight: "bold" }}>{selectedProduct.name}</span>
                 </div>
+
 
                 {/* Star Rating */}
                 <div style={{ margin: "10px 0" }}>

@@ -225,7 +225,7 @@ const Category = ({ keyword, categoryId: headerCategoryId, setCategoryId }) => {
             className="col-md-12"
             style={{
               width: '100%', // Đảm bảo chiều rộng của div chiếm toàn bộ chiều rộng
-              maxWidth: '1675px', // Bạn có thể thay đổi maxWidth theo ý muốn
+              maxWidth: '1740px', // Bạn có thể thay đổi maxWidth theo ý muốn
               margin: '0 auto', // Căn giữa phần tử
               backgroundColor: 'white',
               paddingLeft: '190px'
@@ -267,7 +267,7 @@ const Category = ({ keyword, categoryId: headerCategoryId, setCategoryId }) => {
               }}
             >
               <div style={{ flex: '1', minWidth: '200px' }}>
-                <label style={{ fontWeight: 'bold', marginBottom: '5px', display: 'block' }}>
+                <label style={{ fontWeight: 'bold', marginBottom: '5px', display: 'block', fontSize: '24px', fontWeight: 'bold' }}>
                   Danh mục
                 </label>
                 <select
@@ -285,7 +285,7 @@ const Category = ({ keyword, categoryId: headerCategoryId, setCategoryId }) => {
               </div>
 
               <div style={{ flex: '1', minWidth: '200px' }}>
-                <label style={{ fontWeight: 'bold', marginBottom: '5px', display: 'block' }}>
+                <label style={{ fontWeight: 'bold', marginBottom: '5px', display: 'block', fontSize: '24px', fontWeight: 'bold' }}>
                   Thương hiệu
                 </label>
                 <select
@@ -310,7 +310,7 @@ const Category = ({ keyword, categoryId: headerCategoryId, setCategoryId }) => {
               />
 
               <div style={{ flex: '1', minWidth: '200px' }}>
-                <label style={{ fontWeight: 'bold', marginBottom: '5px', display: 'block' }}>
+                <label style={{ fontWeight: 'bold', marginBottom: '5px', display: 'block', fontSize: '24px', fontWeight: 'bold' }}>
                   Giá
                 </label>
                 <div style={{ display: 'flex', gap: '10px' }}>
@@ -332,7 +332,7 @@ const Category = ({ keyword, categoryId: headerCategoryId, setCategoryId }) => {
               </div>
 
               <div style={{ flex: '1', minWidth: '200px' }}>
-                <label style={{ fontWeight: 'bold', marginBottom: '5px', display: 'block' }}>
+                <label style={{ fontWeight: 'bold', marginBottom: '5px', display: 'block', fontSize: '24px', fontWeight: 'bold' }}>
                   Sắp xếp
                 </label>
                 <select

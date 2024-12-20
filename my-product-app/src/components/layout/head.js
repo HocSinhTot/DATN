@@ -41,6 +41,7 @@ export default function Head() {
                 {/* Sửa lại phần style */}
                 <style jsx="true">
                     {`
+                
                     .alert {
                         position: fixed;
                         top: 20px;
