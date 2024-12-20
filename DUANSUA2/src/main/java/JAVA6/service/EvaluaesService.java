@@ -22,4 +22,7 @@ public class EvaluaesService {
         // Lưu trực tiếp đối tượng evaluateModel mà không cần tạo mới
         evaluaesRepository.save(evaluateModel);
     }
+    public List<EvaluateModel> getEvaluationsByProductId(int productId) {
+        return evaluaesRepository.findByProduct_Id(productId);
+    }
 }

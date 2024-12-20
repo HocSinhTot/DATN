@@ -18,4 +18,8 @@ public class OrderDetailService {
     public List<OrderDetailModel> getOrderDetailsByOrderId(int orderId) {
         return orderDetailRepository.findByOrderId(orderId);
     }
+    public OrderDetailModel getOrderDetailById(Integer id) {
+        return orderDetailRepository.findById(id).orElse(null);
+    }
+    
 }
