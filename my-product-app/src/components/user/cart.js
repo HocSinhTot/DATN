@@ -52,8 +52,13 @@ const CartPage = () => {
           fetchCartData(); // Làm mới dữ liệu giỏ hàng
         })
         .catch(error => {
-          alert('Cập nhật giỏ hàng thất bại.');
-          console.error(error);
+          if (error.response) {
+            console.error('Lỗi từ server:', error.response.data);
+          } else if (error.request) {
+            console.error('Không nhận được phản hồi từ server:', error.request);
+          } else {
+            console.error('Lỗi khi gửi yêu cầu:', error.message);
+          }
         });
     }
   };

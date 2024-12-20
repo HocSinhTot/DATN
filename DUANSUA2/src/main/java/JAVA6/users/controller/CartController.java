@@ -421,7 +421,6 @@ public class CartController {
         // Lấy các tham số từ VNPay trả về
         Map<String, String> vnp_Params = new HashMap<>();
         request.getParameterMap().forEach((key, value) -> vnp_Params.put(key, value[0]));
-
         // Kiểm tra mã checksum (vnp_SecureHash) để xác minh tính toàn vẹn dữ liệu
         String vnp_SecureHash = vnp_Params.remove("vnp_SecureHash");
         String hashData = VnPayConfig.hashAllFields(vnp_Params); // Tạo chuỗi hash từ tham số
