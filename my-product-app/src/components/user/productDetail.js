@@ -63,7 +63,9 @@ const ProductDetail = () => {
         .then((response) => {
           // Kiểm tra nếu response.data là mảng
           if (Array.isArray(response.data)) {
-            setEvaluations(response.data); // Gán dữ liệu vào state nếu là mảng
+            // Lọc các đánh giá có status là true
+            const filteredEvaluations = response.data.filter(evaluation => evaluation.status === true);
+            setEvaluations(filteredEvaluations); // Gán dữ liệu đã lọc vào state
           } else {
             console.error("API không trả về mảng:", response.data);
             setEvaluations([]); // Đặt giá trị mặc định

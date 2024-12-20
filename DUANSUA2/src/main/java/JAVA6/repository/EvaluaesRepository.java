@@ -1,6 +1,7 @@
 package JAVA6.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -11,4 +12,8 @@ import JAVA6.Model.UserModel;
 
 public interface EvaluaesRepository extends JpaRepository<EvaluateModel, Integer> {
     List<EvaluateModel> findByProduct_Id(int productId); // Truy vấn thông qua ProductModel
+
+    List<EvaluateModel> findAllByStatus(boolean status);
+
+    Optional<EvaluateModel> findById(int id);
 }

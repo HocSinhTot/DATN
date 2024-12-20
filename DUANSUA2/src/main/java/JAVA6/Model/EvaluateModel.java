@@ -110,4 +110,18 @@ public class EvaluateModel {
 	public int getOrderDetailId() {
 		return orderDetail != null ? orderDetail.getId() : 0; // Trả về orderDetailId nếu orderDetail không null
 	}
+
+	public void blockEvalues() {
+		this.status = false; // Đặt status = 0 (khóa tài khoản)
+	}
+
+	// Phương thức mở khóa tài khoản
+	public void unblockEvalues() {
+		this.status = true; // Đặt status = 1 (mở khóa tài khoản)
+	}
+
+	// Thêm phương thức setActive
+	public void setActive(boolean active) {
+		this.status = active;
+	}
 }

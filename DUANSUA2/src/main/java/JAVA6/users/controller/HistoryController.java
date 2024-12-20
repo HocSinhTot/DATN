@@ -157,7 +157,7 @@ public class HistoryController {
             evaluateModel.setStar(star);
             evaluateModel.setImg(image); // Assuming you want to save image bytes
             evaluateModel.setComment(comment);
-            evaluateModel.setStatus(true);
+            evaluateModel.setStatus(false);
             evaluateModel.setProduct(product);
             evaluateModel.setUser(user);
             evaluateModel.setOrderDetail(orderDetail);

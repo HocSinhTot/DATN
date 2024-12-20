@@ -44,6 +44,7 @@ public class EvaluateController {
                                 evaluation.getImg(), // Hình ảnh trong đánh giá
                                 user.getUsername(),
                                 user.getImage(), // Hình ảnh của người dùng
+                                evaluation.getStatus(), // Truyền status vào constructor
                                 evaluation.getOrderDetail().getProduct().getColor().getName(),
                                 evaluation.getOrderDetail().getProduct().getProductPrice().getCapacity().getName());
                     })
@@ -62,16 +63,19 @@ public class EvaluateController {
         private String image; // Hình ảnh trong đánh giá
         private String username;
         private String userImage; // Hình ảnh người dùng
+        private Boolean status;
         private String color;
         private String capacity;
 
         public EvaluationResponse(int star, String comment, String image, String username, String userImage,
+                Boolean status,
                 String color, String capacity) {
             this.star = star;
             this.comment = comment;
             this.image = image;
             this.username = username;
             this.userImage = userImage;
+            this.status = status;
             this.color = color;
             this.capacity = capacity;
         }
@@ -115,6 +119,14 @@ public class EvaluateController {
 
         public void setUserImage(String userImage) {
             this.userImage = userImage;
+        }
+
+        public Boolean getStatus() {
+            return status; // Getter cho status
+        }
+
+        public void setStatus(Boolean status) {
+            this.status = status; // Setter cho status
         }
 
         public String getColor() {
