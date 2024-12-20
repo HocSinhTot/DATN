@@ -1,4 +1,10 @@
 package JAVA6.users.controller;
+import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.util.*;
+import jakarta.mail.*;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 
 import JAVA6.service.EvaluaesService;
 import JAVA6.service.HistoryService;
@@ -7,12 +13,13 @@ import JAVA6.service.OrderService; // Đảm bảo import service OrderService
 import JAVA6.service.ProductService;
 import JAVA6.service.UserService;
 import JAVA6.service.UsersService;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 import JAVA6.Model.EvaluateModel;
 import JAVA6.Model.OrderDetailModel;
 import JAVA6.Model.OrderModel;
 import JAVA6.Model.ProductModel;
 import JAVA6.Model.UserModel;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +31,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @RestController
 public class HistoryController {
@@ -58,12 +63,67 @@ public class HistoryController {
     @PutMapping("/api/history/cancel/{orderId}")
     public ResponseEntity<String> cancelOrder(@PathVariable int orderId, @RequestBody CancelRequest cancelRequest) {
         try {
+            // Lấy thông tin đơn hàng
+            OrderModel order = orderService.getOrderById(orderId);
+            if (order == null) {
+                return new ResponseEntity<>("Không tìm thấy đơn hàng.", HttpStatus.NOT_FOUND);
+            }
+    
+            // Lý do hủy đơn hàng
+            order.setCancelReason(cancelRequest.getCancelReason());
+            
+            // Cập nhật trạng thái đơn hàng thành "Hủy"
             orderService.cancelOrder(orderId, cancelRequest.getCancelReason());
+    
+            // Kiểm tra nếu paymentmethod_id là 2 (VNPAY)
+            if (order.getPaymentMethod() != null && order.getPaymentMethod().getId() == 2) {
+                // Gửi email thông báo hủy đơn hàng cho người dùng
+                sendCancelOrderEmail(order.getUser().getEmail(), orderId,order.getTotal(),order.getCancelReason());
+            }
+    
             return new ResponseEntity<>("Đơn hàng đã được hủy thành công.", HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("Không thể hủy đơn hàng. Lỗi: " + e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+    
+    // Phương thức gửi email
+     private void sendCancelOrderEmail(String userEmail, int orderId,BigDecimal total, String reason) throws MessagingException {
+        Properties properties = new Properties();
+        properties.put("mail.smtp.auth", "true");
+        properties.put("mail.smtp.starttls.enable", "true");
+        properties.put("mail.smtp.host", "smtp.gmail.com");
+        properties.put("mail.smtp.port", "587");
+
+        String email = "dinhlhpc05738@fpt.edu.vn";
+        String password = "dllr oinc rovw jcvr";
+
+        Session session = Session.getInstance(properties, new Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(email, password);
+            }
+        });
+        String formattedTotal = formatCurrency(total);
+
+        Message message = new MimeMessage(session);
+        message.setFrom(new InternetAddress(email));
+        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(userEmail));
+        message.setSubject("Thông báo hủy đơn hàng");
+        message.setText("Chúng tôi xin thông báo rằng mã đơn hàng " + orderId + " của bạn đã bị hủy.\n"
+        + "Tổng tiền sản phẩm là: " + formattedTotal + ".\n"
+        + "Với lí do hủy là: " + reason + ".\n"
+        + "Vui lòng liên hệ với chúng tôi để được hoàn tiền."+ ".\n"
+        + "Email: dinhlhpc05738@fpt.edu.vn");
+
+
+        Transport.send(message);
+    }
+    public String formatCurrency(BigDecimal amount) {
+    NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+    return currencyFormat.format(amount);
+}
+
+    
 
     @PostMapping("/api/history/evaluate")
     public ResponseEntity<String> submitEvaluation(

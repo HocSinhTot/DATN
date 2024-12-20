@@ -122,17 +122,17 @@ const OrderHistory = () => {
       alert('Vui lòng nhập lý do hủy!');
       return;
     }
-
+  
     if (!orderIdToCancel) {
       alert('Không có đơn hàng để hủy!');
       return;
     }
-
+  
     const confirmCancel = window.confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?');
     if (!confirmCancel) return;
-
+  
     setLoadingCancel(true);
-
+  
     try {
       const response = await fetch(`http://localhost:8080/api/history/cancel/${orderIdToCancel}`, {
         method: 'PUT',
@@ -143,12 +143,12 @@ const OrderHistory = () => {
           cancelReason,
         }),
       });
-
+  
       if (!response.ok) {
         const errorDetails = await response.json();
         throw new Error(`Hủy đơn hàng thất bại: ${errorDetails.message || 'Không rõ lý do'}`);
       }
-
+  
       setOrders((prevOrders) => prevOrders.filter((order) => order.id !== orderIdToCancel));
       alert('Hủy đơn hàng thành công');
       closeModal();
@@ -158,6 +158,7 @@ const OrderHistory = () => {
       setLoadingCancel(false);
     }
   };
+  
 
   const formatDate = (date) => {
     const d = new Date(date);
@@ -476,6 +477,7 @@ const OrderHistory = () => {
   onClick={() => {
     setCurrentOrderDetailId(detail.id); // Cập nhật orderDetailId hiện tại
     setSelectedProduct(detail.product); // Cập nhật sản phẩm hiện tại
+    
     handleOpenPopup(); // Mở popup đánh giá
   }}
   style={{

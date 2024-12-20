@@ -11,9 +11,6 @@ const CartPage = () => {
   const navigate = useNavigate();
   const userId = sessionStorage.getItem('userId'); // Lấy userId từ sessionStorage
   const [popup, setPopup] = useState({ show: false, message: '', onConfirm: null });
-  useEffect(() => {
-    fetchCartData();
-  }, [userId]);
 
   const fetchCartData = () => {
     if (!userId) {
@@ -35,6 +32,9 @@ const CartPage = () => {
         setMessage("Lỗi khi tải giỏ hàng. Vui lòng thử lại.");
       });
   };
+  useEffect(() => {
+    fetchCartData();
+  }, [userId]);
 
   const updateQuantity = (productId, quantity, colorId, capacity) => {
     if (quantity <= 0) {
