@@ -65,6 +65,8 @@ public class HistoryController {
         }
     }
 
+    
+
     @PostMapping("/api/history/evaluate")
     public ResponseEntity<String> submitEvaluation(
             @RequestParam("star") int star,
@@ -137,4 +139,35 @@ public class HistoryController {
             this.userId = userId;
         }
     }
+
+
+    @PostMapping("/api/history/{orderId}/updateStatus")
+    public ResponseEntity<String> updateOrderStatus(
+            @PathVariable Integer orderId, 
+            @RequestBody OrderStatusUpdateRequest request) {
+        orderService.updateOrderStatus(orderId, request.getStatusId()); 
+        return ResponseEntity.ok("Order status updated successfully");
+    }
+        // DTO class to handle status update request (for POST method)
+        public static class OrderStatusUpdateRequest {
+            private Integer orderId;
+            private Integer statusId;
+    
+            // Getters and Setters
+            public Integer getOrderId() {
+                return orderId;
+            }
+    
+            public void setOrderId(Integer orderId) {
+                this.orderId = orderId;
+            }
+    
+            public Integer getStatusId() {
+                return statusId;
+            }
+    
+            public void setStatusId(Integer statusId) {
+                this.statusId = statusId;
+            }
+        }
 }

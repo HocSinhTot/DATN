@@ -47,7 +47,7 @@ const EvaluateManagement = () => {
                                                     </td>
                                                     <td>
                                                         <img
-                                                            src={`/assets/images/${evaluate.img}`}
+src={`/assets/images/${evaluate.img}`}
                                                             alt="Product Image"
                                                             width="100"
                                                             height="100"

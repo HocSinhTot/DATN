@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
+
 const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -17,21 +18,27 @@ const OrderHistory = () => {
   const [rating, setRating] = useState(0); // State cho số sao
   const [reviewText, setReviewText] = useState(""); // State cho text review
   const [image, setImage] = useState(null); // State cho hình ảnh
+    const [filteredOrders, setFilteredOrders] = useState([]);
+    const token = sessionStorage.getItem('token');
+      const [statusCount, setStatusCount] = useState({});
 
   // Xử lý click chọn sao
   const handleRating = (index) => {
     setRating(index + 1);
   };
 
-  const handleImageChange = (e) => {
-    if (e.target) {
-      const file = e.target.files[0]; // Lấy ảnh đầu tiên từ files
-      if (file) {
-        const imageUrl = URL.createObjectURL(file); // Tạo URL cho ảnh
-        setImage(imageUrl); // Cập nhật trạng thái với ảnh
-      }
-    } else {
-      console.error('Sự kiện không có target!');
+  const handleImageChange = (event) => {
+    const file = event.target.files[0]; // Lấy tệp đầu tiên từ input
+    if (file) {
+      const reader = new FileReader();
+
+      // Xử lý khi file được đọc xong
+      reader.onload = (e) => {
+        setImage(e.target.result); // Lưu Base64 URL vào state
+      };
+
+      // Đọc tệp dưới dạng Data URL (Base64)
+      reader.readAsDataURL(file);
     }
   };
 
@@ -50,6 +57,15 @@ const OrderHistory = () => {
     setIsOpen(false);
   };
 
+   // Set up headers for API requests
+   const fetchOptions = (method, body = null) => ({
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,  // Send token for authorization
+    },
+    body: body ? JSON.stringify(body) : null,
+  });
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -94,9 +110,12 @@ const OrderHistory = () => {
     } catch (err) {
       setError(err.message);
     } finally {
-      setDetailsLoading(false);
+setDetailsLoading(false);
     }
   };
+
+
+
   const closeModal = () => {
     setOrderDetails(null);
     setIsCancelModalOpen(false);
@@ -200,7 +219,7 @@ const OrderHistory = () => {
     try {
       const response = await fetch('http://localhost:8080/api/history/evaluate', {
         method: 'POST',
-        body: evaluationData,
+body: evaluationData,
       });
 
       if (!response.ok) {
@@ -217,6 +236,37 @@ const OrderHistory = () => {
 
 
 
+  const handleUpdateStatus = (orderId, statusId) => {
+    // Gửi yêu cầu API để cập nhật trạng thái
+    fetch(`http://localhost:8080/api/history/${orderId}/updateStatus`, fetchOptions('POST', {
+      orderId: orderId,
+      statusId: statusId
+    }))
+      .then((response) => {
+        if (response.ok) {
+          alert("Order status updated successfully!");
+// Cập nhật trạng thái mới ngay lập tức trong orderList (UI)
+const updatedOrders = orders.map((order) =>
+  order.id === orderId ? { ...order, orderStatus: { id: statusId } } : order
+);
+setOrders(updatedOrders);
+
+
+          // Cập nhật lại count trạng thái và filteredOrders
+          setFilteredOrders(updatedOrders);
+          updateStatusCount(updatedOrders);
+        }
+      })
+      .catch((error) => console.error("Error updating order status:", error));
+  };
+   // Update status count for filter buttons
+   const updateStatusCount = (orders) => {
+    const count = {};
+    orders.forEach((order) => {
+      count[order.orderStatus.id] = (count[order.orderStatus.id] || 0) + 1;
+    });
+    setStatusCount(count);
+  };
 
 
 
@@ -295,7 +345,7 @@ const OrderHistory = () => {
                   padding: "12px",
                   marginTop: "10px",
                   border: "none",
-                  borderRadius: "10px",
+borderRadius: "10px",
                   backgroundColor: "#007bff",
                   color: "#fff",
                   cursor: "pointer",
@@ -348,6 +398,7 @@ const OrderHistory = () => {
                     cursor: "pointer",
                     fontWeight: "bold",
                   }}
+                  onClick={() => handleUpdateStatus(order.id, 6)}
                 >
                   Hoàn thành
                 </button>
@@ -366,29 +417,12 @@ const OrderHistory = () => {
                     cursor: "pointer",
                     fontWeight: "bold",
                   }}
+                  onClick={() => handleUpdateStatus(order.id, 5)}
                 >
                   Chưa nhận được hàng
                 </button>
               )}
-              {/* Kiểm tra trạng thái là số 6 và hiển thị nút "Đánh giá" */}
-              {order.orderStatus.status === 'Đã hoàn thành' && (
-                <button
-                  onClick={handleOpenPopup}
-                  style={{
-                    width: "100%",
-                    padding: "12px",
-                    marginTop: "10px",
-                    border: "none",
-                    borderRadius: "10px",
-                    backgroundColor: "red",
-                    color: "#fff",
-                    cursor: "pointer",
-                    fontWeight: "bold",
-                  }}
-                >
-                  Đánh giá
-                </button>
-              )}
+
             </div>
           ))}
         </div>
@@ -450,7 +484,7 @@ const OrderHistory = () => {
                   }}
                 >
                   <strong style={{ color: '#4a90e2' }}>Sản phẩm:</strong> {detail.product.product.name} <br />
-                  <strong style={{ color: '#4a90e2' }}>Màu sắc:</strong> {detail.product.color.name} <br />
+<strong style={{ color: '#4a90e2' }}>Màu sắc:</strong> {detail.product.color.name} <br />
                   <strong style={{ color: '#4a90e2' }}>Dung lượng:</strong> {detail.product.productPrice.capacity.name}
                   <div style={{ textAlign: 'center', margin: '15px 0' }}>
                     <img
@@ -468,6 +502,7 @@ const OrderHistory = () => {
                   <strong style={{ color: '#4a90e2' }}>Giá:</strong> {formatCurrency(detail.product.price)} <br />
 
                   {/* Thêm nút đánh giá và truyền orderDetailId */}
+                  
                   <button
                     onClick={() => {
                       setCurrentOrderDetailId(detail.id); // Cập nhật orderDetailId hiện tại
@@ -517,7 +552,7 @@ const OrderHistory = () => {
                   e.target.style.backgroundColor = "#6c757d";
                   e.target.style.boxShadow = "0 5px 10px rgba(108, 117, 125, 0.3)";
                 }}
-              >
+>
                 Đóng
               </button>
             </div>
@@ -605,7 +640,7 @@ const OrderHistory = () => {
                   fontWeight: "bold",
                   cursor: "pointer",
                   fontSize: "16px",
-                  boxShadow: "0 5px 10px rgba(108, 117, 125, 0.3)",
+boxShadow: "0 5px 10px rgba(108, 117, 125, 0.3)",
                   transition: "all 0.3s ease",
                 }}
                 onMouseOver={(e) => {
@@ -693,7 +728,7 @@ const OrderHistory = () => {
                       onClick={() => handleRating(index)}
                       style={{
                         fontSize: "30px",
-                        cursor: "pointer",
+cursor: "pointer",
                         color: index < rating ? "orange" : "lightgray",
                       }}
                     >
@@ -774,7 +809,7 @@ const OrderHistory = () => {
                       color: "#fff",
                       border: "none",
                       borderRadius: "4px",
-                      cursor: "pointer",
+cursor: "pointer",
                     }}
                   >
                     Hoàn thành
