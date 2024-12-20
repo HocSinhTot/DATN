@@ -464,26 +464,29 @@ const OrderHistory = () => {
                   <strong style={{ color: '#4a90e2' }}>Giá:</strong> {formatCurrency(detail.product.price)} <br />
 
                   {/* Thêm nút đánh giá và truyền orderDetailId */}
-                  <button
-                    onClick={() => {
-                      setCurrentOrderDetailId(detail.id); // Cập nhật orderDetailId hiện tại
-                      setSelectedProduct(detail.product); // Cập nhật sản phẩm hiện tại
-                      handleOpenPopup(); // Mở popup đánh giá
-                    }}
-                    style={{
-                      width: "100%",
-                      padding: "12px",
-                      marginTop: "10px",
-                      border: "none",
-                      borderRadius: "10px",
-                      backgroundColor: "red",
-                      color: "#fff",
-                      cursor: "pointer",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Đánh giá
-                  </button>
+                  {detail.order.status === 6 && ( // Chỉ hiển thị nếu trạng thái là "Đã hoàn thành"
+  <button
+    onClick={() => {
+      setCurrentOrderDetailId(detail.id); // Cập nhật orderDetailId hiện tại
+      setSelectedProduct(detail.product); // Cập nhật sản phẩm hiện tại
+      handleOpenPopup(); // Mở popup đánh giá
+    }}
+    style={{
+      width: "20%",
+      padding: "12px",
+      marginTop: "10px",
+      border: "none",
+      borderRadius: "10px",
+      backgroundColor: "green",
+      color: "#fff",
+      cursor: "pointer",
+      fontWeight: "bold",
+    }}
+  >
+    Đánh giá
+  </button>
+)}
+
 
 
                 </li>
