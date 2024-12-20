@@ -246,12 +246,12 @@ const ProductDetail = () => {
     <div className="body-content outer-top-xs">
       <div className="container">
         <div className="row single-product">
-          <div style={{ width: '1400px' }}>'
-            <div className="col-md-3 sidebar" style={{ backgroundColor: '#f8f8f8', padding: '15px', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }}>
+          <div style={{ width: '1400px'}}>'
+            <div className="col-md-3 sidebar" style={{ backgroundColor: '#f8f8f8', marginTop:'18px' ,height:'504px',padding: '15px', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }}>
               <div className="sidebar-module-container">
                 <div className="sidebar-widget">
-                  <h3 className="section-title" style={{ fontSize: '18px', fontWeight: '600', marginBottom: '15px', color: '#333' }}>
-                    Sản phẩm tương tự
+                  <h3 className="section-title" style={{ fontSize: '18px', fontWeight: '600',marginBottom: '15px', color: '#333' }}>
+                   <br/> Sản phẩm tương tự
                   </h3>
                   <Swiper
                     autoplay={{
@@ -261,11 +261,8 @@ const ProductDetail = () => {
                     slidesPerView={1}
                     spaceBetween={30}
                     loop={true}
-                    pagination={{
-                      clickable: true,
-                    }}
-                    navigation={true}
-                    modules={[Autoplay, Pagination, Navigation]}
+                   
+                modules={[Autoplay, Pagination, Navigation]}
                     className="mySwiper"
                     style={{ marginTop: '10px' }}
                   >
@@ -526,7 +523,6 @@ const ProductDetail = () => {
                       <div id="review" className={`tab-pane ${activeTab === 'review' ? 'in active' : ''}`}>
                         <div className="product-tab">
                           <div className="product-reviews">
-                            <h4 className="title">Phản hồi</h4>
                             <div className="reviews">
                               {Array.isArray(evaluations) && evaluations.length > 0 ? (
                                 evaluations.map((evaluation, index) => (

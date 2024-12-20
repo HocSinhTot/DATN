@@ -457,8 +457,8 @@ const Header = ({ setKeyword, setCategoryId }) => {
                       border: "none", // Không có viền
                       height: "100%",
                       paddingLeft: "20px",
-                      fontSize: "16px",
-                      color: "#a9c7ff",
+                      fontSize: "18px",
+                      color: "#BEBEBE",
                       outline: "none",
                       borderRadius: "0", // Không bo góc
                     }}

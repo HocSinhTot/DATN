@@ -255,97 +255,217 @@ const Category = ({ keyword, categoryId: headerCategoryId, setCategoryId }) => {
             </div>
 
             <div
-              className="clearfix filters-container"
-              style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: '15px',
-                marginBottom: '20px',
-                padding: '15px',
-                backgroundColor: 'white',
-                borderRadius: '8px',
-              }}
-            >
-              <div style={{ flex: '1', minWidth: '200px' }}>
-                <label style={{ fontWeight: 'bold', marginBottom: '5px', display: 'block', fontSize: '24px', fontWeight: 'bold' }}>
-                  Danh mục
-                </label>
-                <select
-                  className="form-control"
-                  value={categoryId || ''}
-                  onChange={(e) => handleCategoryClick(e.target.value)}
-                  style={{ padding: '8px', borderRadius: '4px', width: '100%' }}
-                >
-                  <option value="">Tất cả</option>
-                  <option value="1">Điện thoại di động</option>
-                  <option value="2">Laptop</option>
-                  <option value="3">Máy tính bảng</option>
-                  <option value="4">Phụ kiện</option>
-                </select>
-              </div>
+  className="clearfix filters-container"
+  style={{
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '15px',
+    marginBottom: '20px',
+    padding: '15px',
+    backgroundColor: '#f9f9f9',
+    borderRadius: '8px',
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+  }}
+>
+  {/* Danh mục */}
+  <div style={{ flex: '1', minWidth: '200px' }}>
+    <label
+      style={{
+        fontWeight: 'bold',
+        marginBottom: '5px',
+        display: 'block',
+        fontSize: '18px',
+        color: '#333',
+      }}
+    >
+      Danh mục
+    </label>
+    <select
+      className="form-control"
+      value={categoryId || ''}
+      onChange={(e) => handleCategoryClick(e.target.value)}
+      style={{
+        padding: '10px',
+        borderRadius: '6px',
+        width: '100%',
+        border: '1px solid #ddd',
+        height: '40px',
 
-              <div style={{ flex: '1', minWidth: '200px' }}>
-                <label style={{ fontWeight: 'bold', marginBottom: '5px', display: 'block', fontSize: '24px', fontWeight: 'bold' }}>
-                  Thương hiệu
-                </label>
-                <select
-                  className="form-control"
-                  onChange={(e) => setSelectedBrand(e.target.value)}
-                  style={{ padding: '8px', borderRadius: '4px', width: '100%' }}
-                >
-                  <option value="">Tất cả</option>
-                  {brands.map((brand) => (
-                    <option key={brand.id} value={brand.id}>
-                      {brand.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              {/* Thông báo */}
-              <Notification
-                message={notificationMessage}
-                type={notificationType}
-                show={showNotification}
-                onClose={() => setShowNotification(false)}
-              />
+        backgroundColor: '#fff',
+        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+        transition: 'all 0.3s ease',
+      }}
+      onMouseOver={(e) => {
+        e.target.style.borderColor = '#007bff';
+        e.target.style.boxShadow = '0 2px 6px rgba(0, 123, 255, 0.3)';
+      }}
+      onMouseOut={(e) => {
+        e.target.style.borderColor = '#ddd';
+        e.target.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
+      }}
+    >
+      <option value="">Tất cả</option>
+      <option value="1">Điện thoại di động</option>
+      <option value="2">Laptop</option>
+      <option value="3">Máy tính bảng</option>
+      <option value="4">Phụ kiện</option>
+    </select>
+  </div>
 
-              <div style={{ flex: '1', minWidth: '200px' }}>
-                <label style={{ fontWeight: 'bold', marginBottom: '5px', display: 'block', fontSize: '24px', fontWeight: 'bold' }}>
-                  Giá
-                </label>
-                <div style={{ display: 'flex', gap: '10px' }}>
-                  <input
-                    type="number"
-                    className="form-control"
-                    placeholder="Thấp nhất"
-                    onChange={(e) => setMinPrice(e.target.value)}
-                    style={{ flex: '1', padding: '8px', borderRadius: '4px' }}
-                  />
-                  <input
-                    type="number"
-                    className="form-control"
-                    placeholder="Cao nhất"
-                    onChange={(e) => setMaxPrice(e.target.value)}
-                    style={{ flex: '1', padding: '8px', borderRadius: '4px' }}
-                  />
-                </div>
-              </div>
+  {/* Thương hiệu */}
+  <div style={{ flex: '1', minWidth: '200px' }}>
+    <label
+      style={{
+        fontWeight: 'bold',
+        marginBottom: '5px',
+        display: 'block',
+        fontSize: '18px',
+        color: '#333',
+      }}
+    >
+      Thương hiệu
+    </label>
+    <select
+      className="form-control"
+      onChange={(e) => setSelectedBrand(e.target.value)}
+      style={{
+        padding: '10px',
+        borderRadius: '6px',
+        width: '100%',
+        border: '1px solid #ddd',
+        height: '40px',
 
-              <div style={{ flex: '1', minWidth: '200px' }}>
-                <label style={{ fontWeight: 'bold', marginBottom: '5px', display: 'block', fontSize: '24px', fontWeight: 'bold' }}>
-                  Sắp xếp
-                </label>
-                <select
-                  className="form-control"
-                  onChange={(e) => setSort(e.target.value)}
-                  style={{ padding: '8px', borderRadius: '4px', width: '100%' }}
-                >
-                  <option value="">Sắp xếp theo</option>
-                  <option value="asc">Giá thấp đến cao</option>
-                  <option value="desc">Giá cao đến thấp</option>
-                </select>
-              </div>
-            </div>
+        backgroundColor: '#fff',
+        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+        transition: 'all 0.3s ease',
+      }}
+      onMouseOver={(e) => {
+        e.target.style.borderColor = '#28a745';
+        e.target.style.boxShadow = '0 2px 6px rgba(40, 167, 69, 0.3)';
+      }}
+      onMouseOut={(e) => {
+        e.target.style.borderColor = '#ddd';
+        e.target.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
+      }}
+    >
+      <option value="">Tất cả</option>
+      {brands.map((brand) => (
+        <option key={brand.id} value={brand.id}>
+          {brand.name}
+        </option>
+      ))}
+    </select>
+  </div>
+
+  {/* Giá */}
+  <div style={{ flex: '1', minWidth: '200px' }}>
+    <label
+      style={{
+        fontWeight: 'bold',
+        marginBottom: '5px',
+        display: 'block',
+        fontSize: '18px',
+        color: '#333',
+      }}
+    >
+      Giá
+    </label>
+    <div style={{ display: 'flex', gap: '10px' }}>
+      <input
+        type="number"
+        className="form-control"
+        placeholder="Thấp nhất"
+        onChange={(e) => setMinPrice(e.target.value)}
+        style={{
+          flex: '1',
+          padding: '10px',
+          borderRadius: '6px',
+          height: '40px',
+
+          border: '1px solid #ddd',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+          backgroundColor: '#fff',
+          transition: 'all 0.3s ease',
+        }}
+        onMouseOver={(e) => {
+          e.target.style.borderColor = '#ffc107';
+          e.target.style.boxShadow = '0 2px 6px rgba(255, 193, 7, 0.3)';
+        }}
+        onMouseOut={(e) => {
+          e.target.style.borderColor = '#ddd';
+          e.target.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
+        }}
+      />
+      <input
+        type="number"
+        className="form-control"
+        placeholder="Cao nhất"
+        onChange={(e) => setMaxPrice(e.target.value)}
+        style={{
+          flex: '1',
+          padding: '10px',
+          borderRadius: '6px',
+          height: '40px',
+
+          border: '1px solid #ddd',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+          backgroundColor: '#fff',
+          transition: 'all 0.3s ease',
+        }}
+        onMouseOver={(e) => {
+          e.target.style.borderColor = '#ffc107';
+          e.target.style.boxShadow = '0 2px 6px rgba(255, 193, 7, 0.3)';
+        }}
+        onMouseOut={(e) => {
+          e.target.style.borderColor = '#ddd';
+          e.target.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
+        }}
+      />
+    </div>
+  </div>
+
+  {/* Sắp xếp */}
+  <div style={{ flex: '1', minWidth: '200px' }}>
+    <label
+      style={{
+        fontWeight: 'bold',
+        marginBottom: '5px',
+        display: 'block',
+        fontSize: '18px',
+        color: '#333',
+      }}
+    >
+      Sắp xếp
+    </label>
+    <select
+      className="form-control"
+      onChange={(e) => setSort(e.target.value)}
+      style={{
+        padding: '10px',
+        borderRadius: '6px',
+        height: '40px',
+        width: '100%',
+        border: '1px solid #ddd',
+        backgroundColor: '#fff',
+        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+        transition: 'all 0.3s ease',
+      }}
+      onMouseOver={(e) => {
+        e.target.style.borderColor = '#007bff';
+        e.target.style.boxShadow = '0 2px 6px rgba(0, 123, 255, 0.3)';
+      }}
+      onMouseOut={(e) => {
+        e.target.style.borderColor = '#ddd';
+        e.target.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
+      }}
+    >
+      <option value="">Sắp xếp theo</option>
+      <option value="asc">Giá thấp đến cao</option>
+      <option value="desc">Giá cao đến thấp</option>
+    </select>
+  </div>
+</div>
+
 
             <div className="search-result-container">
               <div id="myTabContent" className="tab-content category-list">
