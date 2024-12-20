@@ -131,7 +131,13 @@ const OrderManagement = () => {
                           <td>{order.id}</td>
                           <td>{order.user.name}</td>
                           <td>{new Date(order.date).toLocaleDateString('vi-VN')}</td>
-                          <td>{order.total}</td>
+                          <td>
+                            {new Intl.NumberFormat("vi-VN", {
+                              style: "currency",
+                              currency: "VND",
+                            }).format(order.total)}
+
+                          </td>
                           <td>{order.address}</td>
                           <td>{order.paymentMethod.methods}</td>
                           <td>

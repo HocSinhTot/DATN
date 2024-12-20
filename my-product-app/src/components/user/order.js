@@ -191,10 +191,18 @@ setDetailsLoading(false);
     );
 
   if (error) return <div>Error: {error}</div>;
+
   const handleSubmitReview = async () => {
     const userId = sessionStorage.getItem('userId');
     if (!userId || userId === 'null') {
       alert('Bạn cần đăng nhập để gửi đánh giá.');
+      return;
+    }
+
+    // Kiểm tra xem sản phẩm trong đơn hàng đã được đánh giá chưa
+    const reviewedProductKey = `reviewedProduct-${currentOrderDetailId}-${selectedProduct.product.id}`;
+    if (sessionStorage.getItem(reviewedProductKey) === 'true') {
+      alert('Bạn đã đánh giá sản phẩm này trong đơn hàng này rồi.');
       return;
     }
 
@@ -227,6 +235,8 @@ body: evaluationData,
       }
 
       alert('Đánh giá của bạn đã được gửi thành công!');
+      // Đánh dấu sản phẩm này trong đơn hàng đã được đánh giá
+      sessionStorage.setItem(reviewedProductKey, 'true');
       handleClosePopup(); // Đóng popup
     } catch (error) {
       alert(`Lỗi: ${error.message}`);
@@ -267,8 +277,6 @@ setOrders(updatedOrders);
     });
     setStatusCount(count);
   };
-
-
 
 
   return (

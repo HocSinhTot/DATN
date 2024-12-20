@@ -2,6 +2,7 @@ package JAVA6.users.controller;
 
 import JAVA6.Model.EvaluateModel;
 import JAVA6.Model.ProductDetailsModel;
+import JAVA6.Model.UserModel;
 import JAVA6.service.EvaluaesService;
 import JAVA6.service.ProductDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,14 +37,15 @@ public class EvaluateController {
             // Tạo response chứa thông tin đánh giá và chi tiết sản phẩm
             List<EvaluationResponse> response = evaluations.stream()
                     .map(evaluation -> {
-                        ProductDetailsModel productDetail = evaluation.getOrderDetail().getProduct();
+                        UserModel user = evaluation.getUser(); // Lấy thông tin người dùng
                         return new EvaluationResponse(
                                 evaluation.getStar(),
                                 evaluation.getComment(),
-                                evaluation.getImg(),
-                                evaluation.getUser().getUsername(),
-                                productDetail.getColor().getName(),
-                                productDetail.getProductPrice().getCapacity().getName());
+                                evaluation.getImg(), // Hình ảnh trong đánh giá
+                                user.getUsername(),
+                                user.getImage(), // Hình ảnh của người dùng
+                                evaluation.getOrderDetail().getProduct().getColor().getName(),
+                                evaluation.getOrderDetail().getProduct().getProductPrice().getCapacity().getName());
                     })
                     .collect(Collectors.toList());
 
@@ -57,17 +59,19 @@ public class EvaluateController {
     public static class EvaluationResponse {
         private int star;
         private String comment;
-        private String image;
+        private String image; // Hình ảnh trong đánh giá
         private String username;
+        private String userImage; // Hình ảnh người dùng
         private String color;
         private String capacity;
 
-        public EvaluationResponse(int star, String comment, String image, String username, String color,
-                String capacity) {
+        public EvaluationResponse(int star, String comment, String image, String username, String userImage,
+                String color, String capacity) {
             this.star = star;
             this.comment = comment;
             this.image = image;
             this.username = username;
+            this.userImage = userImage;
             this.color = color;
             this.capacity = capacity;
         }
@@ -103,6 +107,14 @@ public class EvaluateController {
 
         public void setUsername(String username) {
             this.username = username;
+        }
+
+        public String getUserImage() {
+            return userImage;
+        }
+
+        public void setUserImage(String userImage) {
+            this.userImage = userImage;
         }
 
         public String getColor() {

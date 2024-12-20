@@ -242,50 +242,80 @@ const LoginPage = () => {
             <label htmlFor="rememberMe">Lưu mật khẩu</label>
           </div>
           {error && (
-            <div style={{
-              ...styles.errorMessage,
-              position: "fixed", // Đặt vị trí cố định trên toàn bộ trang
-              top: "50px", // Điều chỉnh vị trí theo chiều dọc
-              right: "70px", // Điều chỉnh vị trí theo chiều ngang
-              animation: "slideInFromRight 0.5s ease-out", // Thêm hiệu ứng xuất hiện từ bên phải vào
-              backgroundColor: "#d32f2f", // Màu đỏ đậm
-              color: "#fff", // Màu chữ trắng
-              width: '500px'
-            }}>
-              {error}
+            <div
+              style={{
+                position: "fixed", // Vị trí cố định
+                top: "30px", // Khoảng cách từ trên xuống
+                right: "50px", // Khoảng cách từ phải vào
+                background: "linear-gradient(45deg, #e53935, #e35d5b)", // Màu đỏ đậm dạng gradient
+                color: "white", // Màu chữ trắng
+                padding: "10px 20px", // Khoảng cách bên trong
+                borderRadius: "8px", // Góc bo tròn
+                boxShadow: "0 3px 8px rgba(0, 0, 0, 0.15)", // Đổ bóng
+                opacity: 1,
+                transform: "translateY(0)", // Vị trí ban đầu
+                transition: "opacity 0.6s ease, transform 0.6s ease", // Hiệu ứng chuyển đổi
+                zIndex: 1000, // Lớp nổi trên cùng
+              }}
+            >
+              <div
+                className="circle-animation"
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "20px",
+                  transform: "translate(-50%, -50%)",
+                  borderRadius: "50%", // Hình tròn
+                  height: "30px",
+                  width: "30px",
+                  backgroundImage: "linear-gradient(#f44336, #ff6f61, #ff8a65)", // Gradient vòng tròn
+                  animation: "rotate_3922 1.2s linear infinite", // Hiệu ứng quay
+                }}
+              >
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "10px",
+                    left: "10px",
+                    right: "10px",
+                    bottom: "10px",
+                    backgroundColor: "white", // Màu trắng ở giữa
+                    borderRadius: "50%", // Bo tròn
+                  }}
+                ></div>
+              </div>
+              <p style={{ marginLeft: "30px", marginBottom: 0, paddingRight: "13px" }}>{error}</p>
               <button
                 onClick={() => setError("")}
                 style={{
                   position: "absolute",
-                  top: "50%",
-                  right: "10px",
-                  transform: "translateY(-50%)",
-                  background: "none",
+                  top: "-3px",
+                  right: "-2px",
+                  background: "transparent",
                   border: "none",
-                  color: "white", // Màu nút đóng trắng để dễ nhìn
+                  color: "white",
+                  fontSize: "18px",
                   cursor: "pointer",
-                  fontSize: "16px",
                 }}
               >
                 ×
               </button>
+              <style>
+                {`
+        @keyframes rotate_3922 {
+          from {
+            transform: translate(-50%, -50%) rotate(0deg);
+          }
+          to {
+            transform: translate(-50%, -50%) rotate(360deg);
+          }
+        }
+      `}
+              </style>
             </div>
           )}
 
-          <style>
-            {`
-    @keyframes slideInFromRight {
-      0% {
-        transform: translateX(100%);
-        opacity: 0;
-      }
-      100% {
-        transform: translateX(0);
-        opacity: 1;
-      }
-    }
-  `}
-          </style>
+
 
 
 

@@ -58,17 +58,24 @@ const ProductDetail = () => {
   };
   useEffect(() => {
     if (id) {
-      // Gọi API đánh giá
       axios
         .get(`http://localhost:8080/api/evaluations/product/${id}`)
         .then((response) => {
-          setEvaluations(response.data); // Lưu trữ đánh giá vào state
+          // Kiểm tra nếu response.data là mảng
+          if (Array.isArray(response.data)) {
+            setEvaluations(response.data); // Gán dữ liệu vào state nếu là mảng
+          } else {
+            console.error("API không trả về mảng:", response.data);
+            setEvaluations([]); // Đặt giá trị mặc định
+          }
         })
         .catch((error) => {
           console.error("Lỗi khi lấy dữ liệu đánh giá:", error);
+          setEvaluations([]); // Đặt giá trị mặc định khi có lỗi
         });
     }
   }, [id]);
+
 
   useEffect(() => {
     const username = sessionStorage.getItem('username');
@@ -169,6 +176,7 @@ const ProductDetail = () => {
 
   const handleAddToCart = async (e) => {
     e.preventDefault();
+
     const stockResponse = await axios.get(`http://localhost:8080/api/product/checkStock/${product.id}`);
     const stockQuantity = stockResponse.data.stockQuantity;
 
@@ -518,25 +526,69 @@ const ProductDetail = () => {
                           <div className="product-reviews">
                             <h4 className="title">Phản hồi</h4>
                             <div className="reviews">
-                              {evaluations.length > 0 ? (
+                              {Array.isArray(evaluations) && evaluations.length > 0 ? (
                                 evaluations.map((evaluation, index) => (
+
                                   <div className="review" key={index}>
+
                                     <div className="review-title">
-                                      <span className="summary">{evaluation.comment}</span>
-                                      <span className="date">
-                                        <i className="fa fa-calendar"></i>
-                                        <span>Đăng bởi: {evaluation.username}</span>
+                                      {evaluation.userImage && (
+                                        <img
+                                          src={`http://localhost:8080/assets/images/${evaluation.userImage}`}
+                                          alt="Review Image"
+                                          className="review-image"
+                                          style={{
+                                            width: "45px",
+                                            borderRadius: '50%',
+
+                                            height: "45px",
+                                            objectFit: "cover",
+                                            marginTop: "5px",
+                                            marginRight: "10px",
+
+                                          }}
+                                        />
+                                      )}  <span>{evaluation.username}</span> <br /> <span>
+                                        {Array.from({ length: 5 }).map((_, i) => (
+                                          <i
+                                            key={i}
+                                            className={`fa ${i < evaluation.star ? "fa-star" : "fa-star-o"
+                                              }`}
+                                            style={{ color: "#FFD700", marginRight: "2px" }} // Ngôi sao màu vàng
+                                          ></i>
+                                        ))}
                                       </span>
                                     </div>
-                                    <div className="text">Số sao: {evaluation.star}</div>
+
                                     <div className="text">Màu: {evaluation.color}</div>
                                     <div className="text">Dung lượng: {evaluation.capacity}</div>
+                                    <div className="text">   <span className="summary">{evaluation.comment}</span>
+
+                                    </div>
+                                    <div className="text">
+                                      {evaluation.image && (
+                                        <img
+                                          src={`${evaluation.image}`}
+                                          alt="Review Image"
+                                          className="review-image"
+                                          style={{
+                                            width: "100px",
+                                            height: "100px",
+                                            objectFit: "cover",
+                                            marginTop: "10px",
+
+                                          }}
+                                        />
+                                      )}
+                                    </div>
+
                                   </div>
                                 ))
                               ) : (
                                 <p>Không có đánh giá nào.</p>
                               )}
                             </div>
+
                           </div>
                         </div>
                       </div>

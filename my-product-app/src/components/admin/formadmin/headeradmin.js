@@ -221,7 +221,7 @@ background: linear-gradient(90deg, rgb(44, 62, 80), rgb(52, 73, 94));}
 										borderRadius: '50%',
 										objectFit: 'cover',
 									}}
-									src="/assets/images/banners/logo1.jpg"
+									src="/assets/images/banners/logochinh.jpg"
 									alt="logo"
 								/>
 							</div>

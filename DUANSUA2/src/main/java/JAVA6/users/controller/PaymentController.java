@@ -59,9 +59,11 @@ public class PaymentController {
             String orderInfo = "Thanhtoandonhang" + vnp_TxnRef;
             String encodedOrderInfo = URLEncoder.encode(orderInfo, StandardCharsets.UTF_8);
             vnp_Params.put("vnp_OrderType", "110000"); // Ví dụ mã danh mục hàng hóa
-            vnp_Params.put("vnp_ReturnUrl",
-                    "http://localhost:8080/api/cart/order/vnpayReturn?userId=" + userId + "&address=" + address);
+            String encodedAddress = URLEncoder.encode(address, StandardCharsets.UTF_8.toString());
+            String returnUrl = "http://localhost:8080/api/cart/order/vnpayReturn?userId=" + userId + "&address="
+                    + encodedAddress;
 
+            vnp_Params.put("vnp_ReturnUrl", returnUrl);
             vnp_Params.put("vnp_OrderInfo", encodedOrderInfo);
             vnp_Params.put("vnp_Locale", language);
 
