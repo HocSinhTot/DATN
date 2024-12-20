@@ -23,15 +23,18 @@ const OrderHistory = () => {
     setRating(index + 1);
   };
 
-  const handleImageChange = (e) => {
-    if (e.target) {
-      const file = e.target.files[0]; // Lấy ảnh đầu tiên từ files
-      if (file) {
-        const imageUrl = URL.createObjectURL(file); // Tạo URL cho ảnh
-        setImage(imageUrl); // Cập nhật trạng thái với ảnh
-      }
-    } else {
-      console.error('Sự kiện không có target!');
+  const handleImageChange = (event) => {
+    const file = event.target.files[0]; // Lấy tệp đầu tiên từ input
+    if (file) {
+      const reader = new FileReader();
+
+      // Xử lý khi file được đọc xong
+      reader.onload = (e) => {
+        setImage(e.target.result); // Lưu Base64 URL vào state
+      };
+
+      // Đọc tệp dưới dạng Data URL (Base64)
+      reader.readAsDataURL(file);
     }
   };
 
@@ -97,6 +100,9 @@ const OrderHistory = () => {
       setDetailsLoading(false);
     }
   };
+
+
+
   const closeModal = () => {
     setOrderDetails(null);
     setIsCancelModalOpen(false);

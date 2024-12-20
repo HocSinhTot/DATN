@@ -26,4 +26,5 @@ public class EvaluaesService {
     public List<EvaluateModel> getEvaluationsByProductId(int productId) {
         return evaluaesRepository.findByProduct_Id(productId);
     }
+
 }

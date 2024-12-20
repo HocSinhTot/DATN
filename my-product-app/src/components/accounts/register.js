@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Notification from './Notification';
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -20,7 +21,7 @@ const Register = () => {
         const hasLowerCase = /[a-z]/.test(password);
         const hasNumber = /\d/.test(password);
         const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-        
+
         return password.length < minLength || !hasUpperCase || !hasLowerCase || !hasNumber || !hasSpecialChar;
     };
 
@@ -34,33 +35,33 @@ const Register = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
+
         // Kiểm tra tên người dùng không để trống
         if (!formData.username.trim()) {
             setError("Tên người dùng không được để trống!");
             return;
         }
-    
+
         // Kiểm tra email có đúng định dạng không
         const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
         if (!emailPattern.test(formData.email)) {
             setError("Email không hợp lệ!");
             return;
         }
-    
+
         // Kiểm tra số điện thoại có hợp lệ không (giả sử số điện thoại phải là 10 chữ số)
         const phonePattern = /^[0-9]{10}$/;
         if (!phonePattern.test(formData.phone)) {
             setError("Số điện thoại không hợp lệ! Vui lòng nhập đúng 10 chữ số.");
             return;
         }
-    
+
         // Kiểm tra địa chỉ không để trống
         if (!formData.address.trim()) {
             setError("Địa chỉ không được để trống!");
             return;
         }
-    
+
         // Kiểm tra ngày sinh không phải là ngày tương lai
         const dob = new Date(formData.dob);
         const today = new Date();
@@ -69,7 +70,7 @@ const Register = () => {
             setError("Ngày sinh không thể là ngày tương lai!");
             return;
         }
-    
+
         // Kiểm tra tuổi lớn hơn hoặc bằng 16
         const age = today.getFullYear() - dob.getFullYear();
         const m = today.getMonth() - dob.getMonth();
@@ -80,7 +81,7 @@ const Register = () => {
             setError("Bạn phải lớn hơn 16 tuổi để đăng ký.");
             return;
         }
-    
+
         // Kiểm tra mật khẩu có khớp không
         if (formData.password !== formData.confirmPassword) {
             setError("Mật khẩu không khớp!");
@@ -98,13 +99,21 @@ const Register = () => {
                 },
                 body: JSON.stringify(formData),
             });
-    
+
             const result = await response.json();
-    
+
+
             if (response.ok) {
                 setSuccess('Đăng ký thành công! Hãy kiểm tra email của bạn.');
                 setError('');
-            } else {
+                // Thêm thông báo thành công khi đăng ký thành công
+                setNotificationMessage('Đăng ký thành công! Hãy kiểm tra email của bạn.');
+                setNotificationType('success');
+                setShowNotification(true);
+
+                setTimeout(() => setShowNotification(false), 3000); // Ẩn sau 3 giây
+            }
+            else {
                 setError(result.error || 'Đã có lỗi xảy ra. Vui lòng thử lại.');
                 setSuccess('');
             }
@@ -113,10 +122,19 @@ const Register = () => {
             setSuccess('');
         }
     };
-    
-    
+
+
+    ///thông báo
+    const [showNotification, setShowNotification] = useState(false);
+    const [notificationMessage, setNotificationMessage] = useState('');
+    const [notificationType, setNotificationType] = useState('success');
+
+
+
+
 
     return (
+
         <div style={{
             background: 'radial-gradient(ellipse at bottom, #3a6e71 0%, #1a2b3d 100%)',
             height: '100vh',
@@ -139,6 +157,14 @@ const Register = () => {
                 zIndex: 10,
                 transition: 'transform 0.3s ease-in-out'
             }}>
+                {/* Thông báo */}
+                <Notification
+                    message={notificationMessage}
+                    type={notificationType}
+                    show={showNotification}
+                    onClose={() => setShowNotification(false)}
+                />
+
                 <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>Đăng ký</h1>
                 <form onSubmit={handleSubmit}>
                     <div style={{
