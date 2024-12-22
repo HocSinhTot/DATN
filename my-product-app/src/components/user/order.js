@@ -12,7 +12,9 @@ const OrderHistory = () => {
   const [loadingCancel, setLoadingCancel] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [currentOrderDetailId, setCurrentOrderDetailId] = useState(null); // State lưu orderDetailId
-
+  const [filteredOrders, setFilteredOrders] = useState([]);
+  const token = sessionStorage.getItem('token');
+  const [statusCount, setStatusCount] = useState({});
   const userId = sessionStorage.getItem('userId');
   const [rating, setRating] = useState(0); // State cho số sao
   const [reviewText, setReviewText] = useState(""); // State cho text review
@@ -232,6 +234,52 @@ const OrderHistory = () => {
 
 
 
+  //đánh
+  const handleUpdateStatus = (orderId, statusId) => {
+    // Gửi yêu cầu API để cập nhật trạng thái
+    fetch(`http://localhost:8080/api/history/${orderId}/updateStatus`, fetchOptions('POST', {
+      orderId: orderId,
+      statusId: statusId
+    }))
+      .then((response) => {
+        if (response.ok) {
+          alert("Cập nhật thành công!");
+          // Cập nhật trạng thái mới ngay lập tức trong orderList (UI)
+          const updatedOrders = orders.map((order) =>
+            order.id === orderId ? { ...order, orderStatus: { id: statusId } } : order
+          );
+          setOrders(updatedOrders);
+
+
+          // Cập nhật lại count trạng thái và filteredOrders
+          setFilteredOrders(updatedOrders);
+          updateStatusCount(updatedOrders);
+        }
+      })
+      .catch((error) => console.error("Error updating order status:", error));
+  };
+  // Update status count for filter buttons
+  const updateStatusCount = (orders) => {
+    const count = {};
+    orders.forEach((order) => {
+      count[order.orderStatus.id] = (count[order.orderStatus.id] || 0) + 1;
+    });
+    setStatusCount(count);
+  };
+
+
+  // Set up headers for API requests
+  const fetchOptions = (method, body = null) => ({
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,  // Send token for authorization
+    },
+    body: body ? JSON.stringify(body) : null,
+  });
+
+
+
 
 
 
@@ -362,6 +410,7 @@ const OrderHistory = () => {
                     cursor: "pointer",
                     fontWeight: "bold",
                   }}
+                  onClick={() => handleUpdateStatus(order.id, 6)}
                 >
                   Hoàn thành
                 </button>
@@ -380,6 +429,7 @@ const OrderHistory = () => {
                     cursor: "pointer",
                     fontWeight: "bold",
                   }}
+                  onClick={() => handleUpdateStatus(order.id, 5)}
                 >
                   Chưa nhận được hàng
                 </button>
@@ -465,27 +515,27 @@ const OrderHistory = () => {
 
                   {/* Thêm nút đánh giá và truyền orderDetailId */}
                   {detail.order.status === 6 && ( // Chỉ hiển thị nếu trạng thái là "Đã hoàn thành"
-  <button
-    onClick={() => {
-      setCurrentOrderDetailId(detail.id); // Cập nhật orderDetailId hiện tại
-      setSelectedProduct(detail.product); // Cập nhật sản phẩm hiện tại
-      handleOpenPopup(); // Mở popup đánh giá
-    }}
-    style={{
-      width: "20%",
-      padding: "12px",
-      marginTop: "10px",
-      border: "none",
-      borderRadius: "10px",
-      backgroundColor: "green",
-      color: "#fff",
-      cursor: "pointer",
-      fontWeight: "bold",
-    }}
-  >
-    Đánh giá
-  </button>
-)}
+                    <button
+                      onClick={() => {
+                        setCurrentOrderDetailId(detail.id); // Cập nhật orderDetailId hiện tại
+                        setSelectedProduct(detail.product); // Cập nhật sản phẩm hiện tại
+                        handleOpenPopup(); // Mở popup đánh giá
+                      }}
+                      style={{
+                        width: "20%",
+                        padding: "12px",
+                        marginTop: "10px",
+                        border: "none",
+                        borderRadius: "10px",
+                        backgroundColor: "green",
+                        color: "#fff",
+                        cursor: "pointer",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      Đánh giá
+                    </button>
+                  )}
 
 
 

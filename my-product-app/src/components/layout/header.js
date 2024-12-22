@@ -201,7 +201,9 @@ const Header = ({ setKeyword, setCategoryId }) => {
   // Hàm reset lại chat
   const handleResetChat = () => {
     setChatMessages([{ text: 'Xin chào! Tôi có thể giúp gì cho bạn?', type: 'bot' }]);
-    setOptions(['Sản phẩm', 'Hỗ trợ']);
+    setOptions(['Điện thoại', 'Laptop', 'Máy tính bảng', 'Phụ kiện']);
+
+
     setSearchLink('');
     setShowSearchButton(false);
   };

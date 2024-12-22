@@ -15,8 +15,8 @@ import java.util.*;
 @RestController
 @RequestMapping("/api/forgot")
 public class ForgotController {
-  @Autowired
-    private PasswordEncoder passwordEncoder; 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     @Autowired
     private UsersRepository usersRepository;
 
