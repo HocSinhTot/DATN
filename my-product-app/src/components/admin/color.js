@@ -43,7 +43,7 @@ const ColorManagement = () => {
             const url = popup.type === 'edit'
                 ? `http://localhost:8080/api/admin/colors/${popup.color.id}`
                 : 'http://localhost:8080/api/admin/colors';
-            
+
             const response = await axios({ method, url, data: formData });
             if (response.status === 200 || response.status === 201) {
                 alert(popup.type === 'edit' ? 'Cập nhật màu sắc thành công!' : 'Thêm màu sắc thành công!');

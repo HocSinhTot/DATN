@@ -11,20 +11,30 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public interface ProductRepository extends JpaRepository<ProductModel, Integer> {
-    List<ProductModel> findByNameContainingIgnoreCase(String name);
+        List<ProductModel> findByNameContainingIgnoreCase(String name);
 
-    // Phương thức tìm kiếm sản phẩm nâng cao với phân trang
-    @Query("SELECT p FROM ProductModel p " +
-            "WHERE (:categoryId IS NULL OR p.category.id = :categoryId) " +
-            "AND (:brandId IS NULL OR p.brand.id = :brandId) " +
-            "AND (:minPrice IS NULL OR p.price >= :minPrice) " +
-            "AND (:maxPrice IS NULL OR p.price <= :maxPrice) " +
-            "AND (:keyword IS NULL OR p.name LIKE %:keyword% OR p.description LIKE %:keyword%)")
-    Page<ProductModel> findByFilters(
-            @Param("categoryId") Integer categoryId,
-            @Param("brandId") Integer brandId,
-            @Param("minPrice") BigDecimal minPrice,
-            @Param("maxPrice") BigDecimal maxPrice,
-            @Param("keyword") String keyword,
-            Pageable pageable);
+        // Phương thức tìm kiếm sản phẩm nâng cao với phân trang
+        @Query("SELECT p FROM ProductModel p " +
+                        "WHERE (:categoryId IS NULL OR p.category.id = :categoryId) " +
+                        "AND (:brandId IS NULL OR p.brand.id = :brandId) " +
+                        "AND (:minPrice IS NULL OR p.price >= :minPrice) " +
+                        "AND (:maxPrice IS NULL OR p.price <= :maxPrice) " +
+                        "AND (:keyword IS NULL OR p.name LIKE %:keyword% OR p.description LIKE %:keyword%)")
+        Page<ProductModel> findByFilters(
+                        @Param("categoryId") Integer categoryId,
+                        @Param("brandId") Integer brandId,
+                        @Param("minPrice") BigDecimal minPrice,
+                        @Param("maxPrice") BigDecimal maxPrice,
+                        @Param("keyword") String keyword,
+                        Pageable pageable);
+
+        // Lấy danh sách sản phẩm có tồn kho (quantity > 0)
+
+        boolean existsById(Long id); // Kiểm tra sản phẩm có tồn tại hay không
+
+        List<ProductModel> findByQuantityGreaterThan(int quantity);
+
+        Page<ProductModel> findByQuantityGreaterThan(int quantity, Pageable pageable);
+
+        Page<ProductModel> findByNameContainingAndQuantityGreaterThan(String name, int quantity, Pageable pageable);
 }

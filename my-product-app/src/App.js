@@ -32,6 +32,7 @@ import EvaluaesAmin from './components/admin/evaluaes';
 import ProductsPrice from './components/admin/productprice';
 import ProductsImage from './components/admin/productimages';
 import DiscountsAmin from './components/admin/discounts';
+import TonkhosAmin from './components/admin/tonkho';
 
 
 import ThongkeAdmin from './components/admin/Thongke';
@@ -122,7 +123,7 @@ function App() {
             </>
           </ProtectedRoute>
         } />
-         <Route path="/discount" element={
+        <Route path="/discount" element={
           <ProtectedRoute roles={['ROLE_USER', 'ROLE_ADMIN']}>
             <>
               <Header setKeyword={setKeyword} setCategoryId={setCategoryId} />
@@ -272,6 +273,19 @@ function App() {
             <>
               <Headeradmin />
               <ThongkeAdmin />
+            </>
+          </ProtectedRoute>
+        } />
+
+
+
+
+
+        <Route path="/tonkho" element={
+          <ProtectedRoute roles={['ROLE_ADMIN']}>
+            <>
+              <Headeradmin />
+              <TonkhosAmin />
             </>
           </ProtectedRoute>
         } />
