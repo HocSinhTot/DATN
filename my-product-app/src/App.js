@@ -63,7 +63,6 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot" element={<Forgot />} />
-        <Route path="/comment" element={<Comment />} />
 
         <Route path="/product/:id" element={
           <>
