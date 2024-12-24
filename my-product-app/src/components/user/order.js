@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from "axios";
 
 const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
@@ -19,6 +20,8 @@ const OrderHistory = () => {
   const [rating, setRating] = useState(0); // State cho số sao
   const [reviewText, setReviewText] = useState(""); // State cho text review
   const [image, setImage] = useState(null); // State cho hình ảnh
+const [comment, setComment] = useState("");
+  const [analysisResult, setAnalysisResult] = useState(null);
 
   // Xử lý click chọn sao
   const handleRating = (index) => {
@@ -182,55 +185,85 @@ const OrderHistory = () => {
   if (error) return <div>Error: {error}</div>;
 
   const handleSubmitReview = async () => {
-    const userId = sessionStorage.getItem('userId');
-    if (!userId || userId === 'null') {
-      alert('Bạn cần đăng nhập để gửi đánh giá.');
+    const userId = sessionStorage.getItem("userId");
+    if (!userId || userId === "null") {
+      alert("You need to log in to submit a review.");
       return;
     }
-
-    // Kiểm tra xem sản phẩm trong đơn hàng đã được đánh giá chưa
+  
+    // Check if the product in the order has already been reviewed
     const reviewedProductKey = `reviewedProduct-${currentOrderDetailId}-${selectedProduct.product.id}`;
-    if (sessionStorage.getItem(reviewedProductKey) === 'true') {
-      alert('Bạn đã đánh giá sản phẩm này trong đơn hàng này rồi.');
+    if (sessionStorage.getItem(reviewedProductKey) === "true") {
+      alert("You have already reviewed this product in this order.");
       return;
     }
-
+  
     if (!reviewText || reviewText.trim() === "") {
-      alert('Vui lòng nhập nội dung đánh giá.');
+      alert("Please enter your review content.");
       return;
     }
-
+  
     if (!currentOrderDetailId) {
-      alert('Không xác định được sản phẩm để đánh giá.');
+      alert("Unable to identify the product to review.");
       return;
     }
-
-    const evaluationData = new FormData();
-    evaluationData.append('star', rating);
-    evaluationData.append('image', image);
-    evaluationData.append('comment', reviewText);
-    evaluationData.append('userId', parseInt(userId, 10));
-    evaluationData.append('productId', selectedProduct.product.id);
-    evaluationData.append('orderDetailId', currentOrderDetailId); // Sử dụng orderDetailId từ state
-
+  
+    // Step 1: Analyze the review content
     try {
-      const response = await fetch('http://localhost:8080/api/history/evaluate', {
-        method: 'POST',
+      const analysisResponse = await axios.post(
+        "http://localhost:8080/api/comments/analyze",
+        {
+          comment: reviewText,
+        }
+      );
+  
+      const analysisResult = analysisResponse.data;
+      const toxicityScore =
+        analysisResult?.attributeScores?.TOXICITY?.summaryScore?.value || 0;
+  
+      // Step 2: Check toxicity level
+      if (toxicityScore >= 0.25) {
+        alert(
+          "Đánh giá của bạn vi phạm tiêu chuẩn cộng đồng của chúng tôi. Vui lòng bình tĩnh và liên hệ chúng tôi để giải quyết vấn đề."
+        );
+        return;
+      }
+    } catch (error) {
+      console.error("Error analyzing comment:", error);
+      alert("An error occurred while analyzing your review. Please try again.");
+      return;
+    }
+  
+    // Step 3: Proceed with submitting the review
+    const evaluationData = new FormData();
+    evaluationData.append("star", rating);
+    evaluationData.append("image", image);
+    evaluationData.append("comment", reviewText);
+    evaluationData.append("userId", parseInt(userId, 10));
+    evaluationData.append("productId", selectedProduct.product.id);
+    evaluationData.append("orderDetailId", currentOrderDetailId);
+  
+    try {
+      const response = await fetch("http://localhost:8080/api/history/evaluate", {
+        method: "POST",
         body: evaluationData,
       });
-
+  
       if (!response.ok) {
-        throw new Error('Failed to submit review');
+        throw new Error("Failed to submit review");
       }
-
-      alert('Đánh giá của bạn đã được gửi thành công!');
-      // Đánh dấu sản phẩm này trong đơn hàng đã được đánh giá
-      sessionStorage.setItem(reviewedProductKey, 'true');
-      handleClosePopup(); // Đóng popup
+  
+      alert("Đánh giá thành công!");
+      // Mark the product as reviewed
+      sessionStorage.setItem(reviewedProductKey, "true");
+      handleClosePopup(); // Close the popup
     } catch (error) {
-      alert(`Lỗi: ${error.message}`);
+      alert(`Error: ${error.message}`);
     }
   };
+  
+  
+  
 
 
 
@@ -277,8 +310,6 @@ const OrderHistory = () => {
     },
     body: body ? JSON.stringify(body) : null,
   });
-
-
 
 
 
