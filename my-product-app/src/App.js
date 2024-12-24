@@ -16,7 +16,6 @@ import VnPay from './components/user/vnPay';
 import Favorite from './components/user/favorite';
 import Forgot from './components/accounts/forgot';
 import Discount from './components/user/discount';
-import Comment from './components/user/test';
 
 // admin imports
 import Headeradmin from './components/admin/formadmin/headeradmin';
